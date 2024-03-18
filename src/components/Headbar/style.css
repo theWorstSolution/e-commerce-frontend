@@ -1,0 +1,132 @@
+.headbar {
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    /* transform: translateZ(0); */
+    /* z-index: 100; */
+    background: #f53d2d;
+    background: linear-gradient(-180deg, #f53d2d, #f63);
+    /* transition: transform .2s cubic-bezier(.4, 0, .2, 1); */
+
+}
+
+.center-child {}
+
+.headbar_row1 {
+    /* margin-top: auto;
+    margin-bottom: auto; */
+    display: flex;
+    /* flex-direction: row; */
+    justify-content: flex-end;
+    margin-right: 50px;
+}
+
+.headbar_row1_item {
+    color: white;
+    /* font-size: .8125rem; */
+    /* font-weight: 300; */
+    /* margin-left: .3125rem; */
+    text-transform: capitalize;
+    cursor: pointer;
+    display: flex;
+    padding: 6px 6px;
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* flex-wrap: 'wrap'; */
+}
+
+.headbar_row1_item:hover {
+    color: hsla(0, 0%, 100%, .7);
+
+}
+
+.headbar_row2 {
+    max-width: 1200px;
+    margin-left: 50px;
+    margin-right: 100px;
+    margin-bottom: 10px;
+    display: flex;
+    /* height: 5.3125rem; */
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 1rem 0 0.625rem */
+
+}
+
+.headbar_logo {
+    font-family: 'Pacifico', cursive;
+    /* font-style: italic; */
+    transform: skew(-5deg);
+    font-size: 48px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    padding: 10px 0px;
+    background-color: #f84e77;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    display: inline-block;
+    transition: transform 0.2s ease-in-out;
+    text-decoration: none;
+    line-height: 1;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Thêm hiệu ứng bóng đổ */
+}
+
+.headbar_logo:hover {
+    transform: scale(1.05) skew(-10deg);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    /* Hiệu ứng bóng đổ khi hover */
+}
+
+.headbar_searchbar {
+    width: 800px;
+    /* --focus-indicator-spacing: 3px; */
+    /* align-items: stretch; */
+    background: #fff;
+    border-radius: 2px;
+    /* box-sizing: border-box; */
+    display: flex;
+    /* height: 2.5rem; */
+    /* justify-content: space-between; */
+    padding: 0.1875rem;
+}
+
+.headbar_searchbar_input {
+    /* align-items: stretch; */
+    border: 0;
+    display: flex;
+    flex: 1;
+    /* margin: 0; */
+    outline: none;
+    /* padding: 0; */
+}
+
+.headbar_searchbar_button {
+    background: #fb5533;
+    outline: 0;
+    overflow: visible;
+    height: 34px;
+    padding: 0 15px;
+    min-width: 60px;
+    max-width: 190px;
+    border-radius: 2px;
+    font-size: 14px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .09);
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: capitalize;
+    outline: 0;
+    cursor: pointer;
+
+}

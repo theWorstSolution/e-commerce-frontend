@@ -3,12 +3,28 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { Helmet } from 'react-helmet';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
+import { BrowserRouter } from 'react-router-dom';
+import {UserProvider} from './contexts/userContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  // <React.StrictMode>
+  <UserProvider>
+    <ThemeProvider theme={theme}>
+      <Helmet>
+        <title>Page Title</title>
+        <meta name="description" content="Description of the page" />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Helmet>
+      <CssBaseline />
+      <BrowserRouter><App /></BrowserRouter>
+    </ThemeProvider>
+  </UserProvider>
+  // </React.StrictMode >
 );
 
 // If you want to start measuring performance in your app, pass a function
