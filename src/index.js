@@ -8,7 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
-import {UserProvider} from './contexts/userContext';
+import {UserProvider} from './contexts/globalContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

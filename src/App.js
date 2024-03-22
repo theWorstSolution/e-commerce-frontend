@@ -6,8 +6,8 @@ import Router from './routes';
 
 function App() {
   return (
-    // <Router/>
-    <Headbar/>
+    <Router/>
+    // <Headbar/>
   );
 }
 

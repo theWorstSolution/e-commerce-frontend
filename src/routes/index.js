@@ -1,9 +1,8 @@
 import { Navigate, useRoutes } from 'react-router-dom';
-import Login from '../pages/auth/Login';
-import SignInScreen from '../pages/auth/SignInScreen'
+import AuthGuard from '../guards/AuthGuard'
 import Home from '../pages/Home';
 import TestPage from '../pages/TestPage';
-
+import AdminLayout from '../pages/admin/AdminLayout';
 export default function Router() {
   return useRoutes([
     {
@@ -12,17 +11,21 @@ export default function Router() {
         {
           path: 'login',
           element: (
-            <SignInScreen />
+            <AuthGuard />
           ),
         },
       ],
     },
     {
+      path: 'admin',
+      element: <AdminLayout />
+    },
+    {
       path: 'test',
       element: (
-        <SignInScreen>
+        <AuthGuard>
           <TestPage />
-        </SignInScreen>
+        </AuthGuard>
       )
     },
     {

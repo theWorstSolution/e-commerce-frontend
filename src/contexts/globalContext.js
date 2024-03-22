@@ -1,7 +1,8 @@
 import { createContext, useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
-
-export var userContext = createContext();
+/* import user, onauthstatechange -> if user, new User(), gọi user.refresh, save user vào context */
+import User from '../models/User'
+export var globalContext = createContext();
 
 // Configure Firebase.
 const config = {
@@ -23,15 +24,31 @@ export function UserProvider({children}){
   // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
     const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
-      setUser(user);
+      
+      if(user){
+        const localUser = new User();
+        // localUser = {...user}
+        // Object.assign(localUser,user);
+        localUser.refresh();
+        setUser(localUser);
+      }else{
+        setUser(null);
+      }
+      
     });
     // nếu lỗi thì cần bỏ unregister đi
     return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
   }, []);
 
   return (
-    <userContext.Provider value={user}>
+    <globalContext.Provider value={{user}}>
       {children}
-    </userContext.Provider>
+    </globalContext.Provider>
   )
 }
+/* 
+cart thì sao, nói chung tôi muốn cho làm global object thì cho hết vào provider/context
+cartContext: khi nào khởi tạo cart? khi onauthstatechange
+vậy cho vào chung 1 cái là global context, pass nhiều object trong 1 provider
+
+*/

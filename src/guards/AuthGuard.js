@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
-import { userContext } from '../../contexts/userContext';
+import { globalContext } from '../contexts/globalContext';
 import { Navigate } from 'react-router-dom';
 
 // Configure FirebaseUI.
@@ -20,8 +20,8 @@ const uiConfig = {
   },
 };
 
-function SignInScreen({children}) {
-  const user = useContext(userContext)
+function AuthGuard({children}) {
+  const {user} = useContext(globalContext)
   
   if (!user) {
     return (
@@ -48,4 +48,4 @@ function SignInScreen({children}) {
   }
 }
 
-export default SignInScreen;
+export default AuthGuard;
