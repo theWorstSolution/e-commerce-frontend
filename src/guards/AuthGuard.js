@@ -19,10 +19,9 @@ const uiConfig = {
     signInSuccessWithAuthResult: () => false,
   },
 };
-
+/* login xong nó ko redirect */
 function AuthGuard({children}) {
   const {user} = useContext(globalContext)
-  
   if (!user) {
     return (
       <div>

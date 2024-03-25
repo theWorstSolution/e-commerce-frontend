@@ -1,11 +1,17 @@
 import {getUser} from '../services/userService'
 
 export default class User{
+    // constructor(){
+    //     this.role = null;
+    //     this.emailVerified = null;
+    //     this.providerData = null;
+    //     this.email = null;
+    //     this.id = null;
+    // }
     async refresh(){
-        console.log('await getUser();')
-        const res = await getUser();
-        console.log('await getUser();123')
-        Object.assign(this, res.data)
+        const res = await getUser()
+        Object.assign(this, res.data);
+        
         // console.log(this)
     }
 }

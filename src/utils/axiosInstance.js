@@ -10,15 +10,28 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(async function (config) {
-    await firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-        // Send token to your backend via HTTPS
-        // ...
-        config.headers['x-access-token'] = idToken ? idToken : '';
-        // console.log(idToken);
-      }).catch(function(error) {
-        // Handle error
-        console.log("error in axios intercep request");
-      });
+  // console.log('Start interceptor')
+    // await firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+    //     // Send token to your backend via HTTPS
+    //     // ...
+    //     config.headers['x-access-token'] = idToken;
+    //     console.log('finish interceptor')
+    //     console.log(config)
+    //     console.log(idToken);
+    //   }).catch(function(error) {
+    //     // Handle error
+    //     console.log("error in axios intercep request: no id token");
+    //   });
+
+    const idToken = await firebase.auth().currentUser.getIdToken(/* forceRefresh */ true)
+      // Send token to your backend via HTTPS
+      // ...
+      config.headers['x-access-token'] = idToken;
+      // console.log('finish interceptor')
+      // console.log(config)
+      // console.log(idToken);
+
+
 //   const token = localStorage.getItem('zennomi-token');
 // config.headers['x-access-token'] = 'abcd'
 return config;
@@ -26,13 +39,13 @@ return config;
 }
 );
 
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.log("error in axios intercep response");
-    console.log(error.response);
-    return Promise.reject((error.response && error.response.data && (error.response.data.message || error.response.data || error.response )) || 'Something went wrong')
-  }
-);
+// axiosInstance.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     console.log("error in axios intercep response");
+//     console.log(error.response);
+//     return Promise.reject((error.response && error.response.data && (error.response.data.message || error.response.data || error.response )) || 'Something went wrong')
+//   }
+// );
 
 export default axiosInstance;

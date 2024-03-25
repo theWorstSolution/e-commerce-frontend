@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
 /* import user, onauthstatechange -> if user, new User(), gọi user.refresh, save user vào context */
 import User from '../models/User'
-export var globalContext = createContext();
+export const globalContext = createContext();
 
 // Configure Firebase.
 const config = {
@@ -20,29 +20,30 @@ firebase.initializeApp(config);
 
 export function UserProvider({children}){
     const [user, setUser] = useState(); // Local signed-in state.
-
+  const [isInit, setIsInit] = useState(false)
   // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
-    const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
-      
-      if(user){
-        const localUser = new User();
-        // localUser = {...user}
-        // Object.assign(localUser,user);
-        localUser.refresh();
-        setUser(localUser);
+    const unregisterAuthObserver = firebase.auth().onAuthStateChanged(async authUser => {
+      if(authUser){
+        if (!user) {
+          const newUser = new User()
+          await newUser.refresh()
+          setUser(newUser);
+          // console.log(JSON.stringify(user));
+        }
       }else{
         setUser(null);
       }
-      
+      setIsInit(true);
     });
     // nếu lỗi thì cần bỏ unregister đi
     return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
   }, []);
 
   return (
+    
     <globalContext.Provider value={{user}}>
-      {children}
+      {isInit?children:<div>Is Loading</div>}
     </globalContext.Provider>
   )
 }
