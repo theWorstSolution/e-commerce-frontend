@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.horizontalUl{
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+}
+
+h2{
+  margin: 0;
+  padding: 0;
+}
+

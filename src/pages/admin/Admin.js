@@ -38,33 +38,43 @@ export default function Admin() {
     }
     return (
         <div className='screen'>
-            <div className='admin_header'>
-                <span className='admin_header_item'><Badge badgeContent={2} overlap="circular" sx={{ "& .MuiBadge-badge": { fontSize: 'xx-small', top: 5 } }}><NotificationsNoneIcon fontSize='small' /></Badge> Thông báo</span><span className='admin_header_item'><AccountCircleRoundedIcon fontSize='small' />Tài khoản</span>
-            </div>
-            <div className='admin_tab'>
-                {tabNames.map((tabName, index) => (
-                    <a key={index} onClick={() => onClickTab(tabName)} style={{ textDecoration: tab === tabName ? 'none' : 'underline' }}>{tabName}</a>
-                ))}
-                {/* <a href='#' onClick={() => onClickTab('User')}>{tabName}</a><a href='#' onClick={() => onClickTab('Item')}>Item</a><a href='#' onClick={() => onClickTab('Order')}>Order</a> */}
-            </div>
-            <div className='admin_main'>
-                <div className='admin_detailSearch_panel'>
-                    <div className='admin_detailSearch_panel_header'>DETAIL SEARCH</div>
+            <header className='admin_header'>
+                <ul className='horizontalUl mock' style={{justifyContent:'flex-end'}}>
+                    <li className='admin_header_item mock'><Badge badgeContent={2} overlap="circular" sx={{ "& .MuiBadge-badge": { fontSize: 'xx-small', top: 5 } }}><NotificationsNoneIcon fontSize='small' /></Badge> Thông báo</li>
+                    <li className='admin_header_item mock'><AccountCircleRoundedIcon fontSize='small' />Tài khoản</li>
+                </ul>
+            </header>
+            <nav className='admin_tab'>
+                <ul className='horizontalUl' style={{justifyContent:'space-around'}}>
+                    {tabNames.map((tabName, index) => (
+                        <a key={index} onClick={() => onClickTab(tabName)} style={{ textDecoration: tab === tabName ? 'none' : 'underline' }}><h2 className='mock'>{tabName}</h2></a>
+                    ))}
+                </ul>
+            </nav>
+            <article className='admin_main'>
+                <section className='admin_detailSearch_panel'>
+                    <h3 className='admin_detailSearch_panel_header'>DETAIL SEARCH</h3>
                     <div className='admin_detailSearch_panel_field'>
                         <div className='admin_detailSearch_panel_field_name'>Tên</div>
                         <div className='admin_detailSearch_panel_field_input'><input></input></div>
                     </div>
-                </div>
-                <div className='admin_main_content'>
-                    <div className='admin_main_content_header'>
-                        <span><input className='admin_searchbar'></input><span><Button sx={{ height: 25, width: 90, fontSize: 'small', marginLeft: 1 }} variant="contained" startIcon={<SearchRoundedIcon />}>Search</Button></span></span>
-                        <span style={{ float: 'right' }}>Thêm</span>
+                </section>
+                <section className='admin_main_content'>
+                    <div>
+                        <form className='admin_main_content_header'>
+                            <input className='admin_searchbar'></input>
+                            <input type='submit'></input>
+                        </form>
+                        <form style={{ float: 'right' }}>
+                            <input type='submit'></input>
+                        </form>
                     </div>
+
                     {result && (<div className='admin_searchResult'>
                         <ResultTable result={result} onPageChange={onPageChange} tab={tab}></ResultTable>
                     </div>)}
-                </div>
-            </div>
+                </section>
+            </article>
         </div>
     )
 }

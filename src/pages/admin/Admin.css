@@ -4,8 +4,7 @@
 }
 
 .admin_header{
-    display: flex;
-    justify-content: end;
+    
     background: #f53d2d;
     background: linear-gradient(-180deg, #f53d2d, #f63);
 }
@@ -19,8 +18,7 @@
 }
 
 .admin_tab{
-    display: flex;
-    justify-content: space-around;
+
     background: #99b8f2be;
 }
 
@@ -56,3 +54,4 @@
     margin: 10px;
     display: none;
 }
+
