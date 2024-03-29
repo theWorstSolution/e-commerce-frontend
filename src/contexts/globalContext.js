@@ -27,6 +27,7 @@ export function UserProvider({children}){
       if(authUser){
         if (!user) {
           const newUser = new User()
+          newUser.setId(authUser.uid)
           await newUser.refresh()
           setUser(newUser);
           // console.log(JSON.stringify(user));

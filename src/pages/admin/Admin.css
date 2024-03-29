@@ -27,22 +27,11 @@
     margin-top: 10px;
 }
 
-.admin_detailSearch_panel_header{
-    text-align: center;
-}
-
-.admin_detailSearch_panel_field{
-    text-align: right;
-}
-
 .admin_main_content{
     flex: 5;
     text-align: center;
 }
 
-.admin_main_content_header{
-    
-}
 
 .editForm{
     display: flex;

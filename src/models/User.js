@@ -8,8 +8,12 @@ export default class User{
     //     this.email = null;
     //     this.id = null;
     // }
+    setId(uid) {
+        this.uid = uid
+    }
     async refresh(){
-        const res = await getUser()
+        console.log('id: ' + this.uid);
+        const res = await getUser(this.uid)
         Object.assign(this, res.data);
         
         // console.log(this)

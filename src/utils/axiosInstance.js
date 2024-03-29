@@ -10,19 +10,6 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(async function (config) {
-  // console.log('Start interceptor')
-    // await firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-    //     // Send token to your backend via HTTPS
-    //     // ...
-    //     config.headers['x-access-token'] = idToken;
-    //     console.log('finish interceptor')
-    //     console.log(config)
-    //     console.log(idToken);
-    //   }).catch(function(error) {
-    //     // Handle error
-    //     console.log("error in axios intercep request: no id token");
-    //   });
-
     const idToken = await firebase.auth().currentUser.getIdToken(/* forceRefresh */ true)
       // Send token to your backend via HTTPS
       // ...

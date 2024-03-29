@@ -23,3 +23,9 @@ h2{
   padding: 0;
 }
 
+.centerChildren{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
