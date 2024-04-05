@@ -19,10 +19,20 @@ function getUsers(){
         method: 'GET',
         url: '/v1/users'
     })
+    // TODO: thêm query
     // const response = axios.get('http://localhost:3000/v1/user/users')
     // console.log('getUsers123')
     // console.log(response)
     return response;
 }
 
-export {getUser, getUsers};
+function updateUser(uid, updateBody){
+    const response = axiosInstance({
+        method: 'PATCH',
+        url: '/v1/users/user/' + uid,
+        data: updateBody
+    })
+    return response
+}
+
+export {getUser, getUsers, updateUser};

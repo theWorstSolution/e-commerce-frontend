@@ -1,11 +1,25 @@
 import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
-import { getUser } from "../../services/userService";
+import { getUser, updateUser } from "../../services/userService";
 
 export default function UserDetail(){
     const {userId} = useParams()
     const {setCurrentTab} = useOutletContext()
     const [user,setUser] = useState()
+    const [inputs, setInputs] = useState({});
+
+  const handleChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setInputs(values => ({...values, [name]: value}))
+  }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    alert(inputs);
+    updateUser(userId, inputs).then((res)=>console.log(res))
+  }
+
+
     useEffect(()=>{
         setCurrentTab('User')
         getUser(userId).then((res)=>{
@@ -14,17 +28,17 @@ export default function UserDetail(){
         })
     },[])
     return(<div>{user?<article>
-        <form>
+        <form style={{display:'flex', flexDirection:'column'}} onSubmit={handleSubmit}>
             <label>Id</label>
-            <input type="text" readOnly value={user.id}/>
+            <input type="text" readOnly defaultValue={user.id}/>
             <label>name</label>
-            <input type="text" value={user.name}/>
+            <input type="text" name='name' defaultValue={user.name} onChange={handleChange}/>
             <label>Email</label>
-            <input type="email" value={user.email}/>
+            <input type="email" name='email' defaultValue={user.email} onChange={handleChange}/>
             <label>Role</label>
-            <select>
-                <option value='user' selected={user.role==='user'}>User</option>
-                <option value='admin' selected={user.role==='admin'}>Admin</option>
+            <select defaultValue={user.role} name="role" onChange={handleChange}>
+                <option value='user' >User</option>
+                <option value='admin' >Admin</option>
             </select>
             <input type="submit"/>
         </form>

@@ -1,0 +1,31 @@
+import axiosInstance from '../utils/axiosInstance'
+import axios from 'axios';
+
+function getChildrenCategory(id){
+    const response = axiosInstance({
+        method: 'GET',
+        url: '/v1/categories/category/'+id+'/children'
+    })
+    // console.log('getUser123')
+    return response;
+}
+
+// function updateProduct(id, updateBody){
+//     const response = axiosInstance({
+//         method: 'PATCH',
+//         url: '/v1/products/product/' + id,
+//         data: updateBody
+//     })
+//     return response
+// }
+
+function createCategory(body){
+    const response = axiosInstance({
+        method: 'POST',
+        url: '/v1/categories/category/',
+        data: body
+    })
+    return response
+}
+
+export {getChildrenCategory, createCategory};

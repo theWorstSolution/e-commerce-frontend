@@ -20,7 +20,7 @@ import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-i
 
 export default function AdminLayout1(){
     const [currentTab, setCurrentTab] = useState();
-    let tabNames = ['User', 'Item', 'Order'];
+    let tabNames = ['User', 'Product', 'Order'];
     return (<div>
         <header className='admin_header'>
                 <ul className='horizontalUl mock' style={{ justifyContent: 'flex-end' }}>

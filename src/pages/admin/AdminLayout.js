@@ -26,7 +26,7 @@ export default function AdminLayout() {
         onChange: null,
         page: 1, //current page
     });
-    let tabNames = ['User', 'Item', 'Order'];
+    let tabNames = ['User', 'Product', 'Order'];
     return (
         <div>
             <header className='admin_header'>
