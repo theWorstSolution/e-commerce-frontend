@@ -10,11 +10,15 @@ function getProduct(id){
     return response;
 }
 
-function getProducts(){
+/**
+ * @param {object} query: {name,...}
+ */
+function getProducts(query){
     // console.log('getUsers')
     const response = axiosInstance({
         method: 'GET',
-        url: '/v1/products'
+        url: '/v1/products',
+        params: query
     })
     // TODO: thêm query
     return response;
@@ -37,5 +41,5 @@ function createProduct(body){
     return response
 }
 
-console.log('nfklasdffffffffffffffffffffsdfsad');
 export {getProduct, getProducts, updateProduct, createProduct};
+export default {getProduct, getProducts, updateProduct, createProduct};

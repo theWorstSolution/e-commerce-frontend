@@ -4,7 +4,7 @@ import { getUsers } from "../../services/userService";
 import { AiOutlineEdit, AiOutlineDelete  } from "react-icons/ai";
 
 export default function UserTabContent() {
-    const { onDetailSearchSubmit, onGeneralSearchSubmit, onAdd, onBack, setDetailSearchForm, setPagiProps, setCurrentTab } = useOutletContext();
+    const { onDetailSearchSubmit, onGeneralSearchSubmit, setDetailSearchForm, setPagiProps, setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
     useEffect(() => {
         setCurrentTab('User')

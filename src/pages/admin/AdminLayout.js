@@ -17,7 +17,6 @@ export default function AdminLayout() {
     let onDetailSearchSubmit = useRef();
     let onGeneralSearchSubmit = useRef();
     let onAdd = useRef();
-    let onBack = useRef();
     const [pagiProps, setPagiProps] = useState({
         boundaryCount: 1, //Number of always visible pages at the beginning and end.
         count: 1, // total page
@@ -52,16 +51,15 @@ export default function AdminLayout() {
                 </section>
                 <section className='admin_main_content'>
                     <div>
-                        <button onClick={onBack} className='centerChildren' style={{ float: 'left' }}><BsArrowLeft /></button>
                         <form onSubmit={onGeneralSearchSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
                             <input />
                             <button type='submit' style={{ display: 'flex' }}><BsSearch /></button>
                         </form>
-                        <button onClick={onAdd} style={{ marginLeft: 'auto', marginRight: 0, display: 'flex' }}><BsPlusLg /></button>
+                        {currentTab!=='User' && <button onClick={onAdd} style={{ marginLeft: 'auto', marginRight: 0, display: 'flex' }}><BsPlusLg /></button>}
                     </div>
 
                     <div className='centerChildren'>
-                        <Outlet context={{ onDetailSearchSubmit, onGeneralSearchSubmit, onAdd, onBack, setDetailSearchForm, setPagiProps, setCurrentTab }} />
+                        <Outlet context={{ onDetailSearchSubmit, onGeneralSearchSubmit, onAdd, setDetailSearchForm, setPagiProps, setCurrentTab }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} style={{ marginRight: '5px' }} /></div>
 

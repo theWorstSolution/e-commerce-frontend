@@ -9,7 +9,7 @@ export default function CreateProduct() {
     const { setCurrentTab } = useOutletContext()
     const [inputs, setInputs] = useState({});
     const [categoriesAtLevel, setCategoriesAtLevel] = useState([])
-    const catsSelected = useRef([])
+    const [catsSelected, setCatsSelected] = useState([])    // có value và label
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -17,8 +17,12 @@ export default function CreateProduct() {
     }
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(inputs);
-        createProduct(inputs).then((res) => console.log(res))
+        const body = {
+            ...inputs,
+            categories: catsSelected.map((catSelected)=>catSelected.value)
+        }
+        console.log(body);
+        createProduct(body).then((res) => console.log(res))
     }
     useEffect(() => {
         async function foo() {
@@ -44,18 +48,34 @@ export default function CreateProduct() {
             <div>
                 {categoriesAtLevel && categoriesAtLevel.map((catsAtLevel, idx) => {
                     return (<Creatable
-                        key={catsAtLevel}
+                        key={catsSelected[idx]?.value}
                         isClearable
                         onChange={async (newSelected) => {
-                            // console.log('trigger');
-                            // console.log('new value: ' + JSON.stringify(newSelected));
+                            console.log('trigger onchange');
+                            console.log('new value: ' + JSON.stringify(newSelected));
+                            //if xóa lựa chọn
+                            if (!newSelected) {
+                                setCatsSelected((catsSelected)=>{
+                                    const newCatsSelected = [...catsSelected]
+                                    newCatsSelected.splice(idx);
+                                    return newCatsSelected
+                                })
+                               
+                                setCategoriesAtLevel((categoriesAtLevel) => {
+                                    const newCatsAtLevel = [...categoriesAtLevel]
+                                    newCatsAtLevel.splice(idx + 1)
+                                    return newCatsAtLevel
+                                })
+                                return
+                            }
                             if (newSelected.__isNew__) {
+                                console.log('is new');
                                 const newCategory = {
                                     name: newSelected.value,
-                                    ancestors: catsSelected.current.slice(0, idx)
+                                    ancestors: catsSelected.slice(0, idx).map((catSelected)=>catSelected.value)
                                 }
                                 const { data } = await createCategory(newCategory)
-                                console.log('createCategory: ' + data);
+                                console.log('createCategory: ' + JSON.stringify(data));
                                 setCategoriesAtLevel((categoriesAtLevel) => {
                                     const newCatsAtLevel = [...categoriesAtLevel]
                                     newCatsAtLevel.splice(idx + 1)
@@ -63,22 +83,25 @@ export default function CreateProduct() {
                                     newCatsAtLevel.push([])
                                     return newCatsAtLevel
                                 })
-                                catsSelected.current.splice(idx);
-                                catsSelected.current.push(data.id)
-                                return
-                            }
-                            //if xóa lựa chọn
-                            if (!newSelected) {
-                                catsSelected.current.splice(idx)
-                                setCategoriesAtLevel((categoriesAtLevel) => {
-                                    const newCatsAtLevel = [...categoriesAtLevel]
-                                    newCatsAtLevel.splice(idx + 1)
-                                    return newCatsAtLevel
+                                setCatsSelected((catsSelected)=>{
+                                    const newCatsSelected = [...catsSelected]
+                                    newCatsSelected.splice(idx);
+                                    newCatsSelected.push({value: data.id, label: data.name})
+                                    console.log('newCatsSelected: ' + JSON.stringify(newCatsSelected));
+                                    return newCatsSelected
                                 })
+                                console.log('catsSelected: ' + JSON.stringify(catsSelected));
                                 return
                             }
-                            catsSelected.current[idx] = newSelected.value
-                            catsSelected.current.splice(idx + 1)
+                            
+                            setCatsSelected((catsSelected)=>{
+                                const newCatsSelected = [...catsSelected]
+                                newCatsSelected[idx] = newSelected 
+                                newCatsSelected.splice(idx + 1)
+                                console.log('newCatsSelected: '+JSON.stringify(newCatsSelected));
+                                return newCatsSelected
+                            })
+                            
                             const { data: childrenCats } = await getChildrenCategory(newSelected.value)
                             // console.log(childrenCats);
                             setCategoriesAtLevel((categoriesAtLevel) => {
@@ -90,20 +113,7 @@ export default function CreateProduct() {
                             })
                         }}
                         options={catsAtLevel.map((cat) => ({ value: cat.id, label: cat.name }))}
-                    // onCreateOption={async (inputValue)=>{
-                    //     const newCategory = {
-                    //         name: inputValue,
-                    //         ancestors: catsSelected.current.slice(0,idx)
-                    //     }
-                    //     const {data} = await createCategory(newCategory)
-                    //     setCategoriesAtLevel((categoriesAtLevel) => {
-                    //         const newCatsAtLevel = [...categoriesAtLevel]
-                    //         newCatsAtLevel.splice(idx + 1)
-                    //         return newCatsAtLevel
-                    //     })
-                    //     catsSelected.current.splice(idx);
-                    //     catsSelected.current.push(data.id)
-                    // }}
+                        value={catsSelected[idx]}
                     />)
                 })}
             </div>
