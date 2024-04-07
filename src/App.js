@@ -13,6 +13,8 @@ import AdminLayout1 from './pages/admin/AdminLayout1';
 import CreateProduct from './pages/admin/CreateProduct';
 import ProductTabContent from './pages/admin/ProductTabContent';
 import EditProduct from './pages/admin/EditProduct';
+import OrderTabContent from './pages/admin/OrderTabContent';
+import OrderDetail from './pages/admin/OrderDetail';
 
 function App() {
   return (
@@ -23,11 +25,13 @@ function App() {
         <Route path='users/user/:userId' element={<UserDetail/>}/>
         <Route path='products/product/:productId' element={<EditProduct/>}/>
         <Route path='products/product' element={<CreateProduct/>}/>
+        <Route path='orders/order/:orderId' element={<OrderDetail/>}/>
       </Route> 
       <Route path='admin' element={<AdminLayout/>}>
         <Route path='' element={<UserTabContent/>}/>   
         <Route path='users' element={<UserTabContent/>}/>
         <Route path='products' element={<ProductTabContent/>}/>
+        <Route path='orders' element={<OrderTabContent/>}/>
       </Route> 
     </Routes>
   );

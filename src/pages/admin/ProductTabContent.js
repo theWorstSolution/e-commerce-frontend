@@ -9,7 +9,7 @@ export default function ProductTabContent() {
     const { setOnDetailSearchSubmit, setOnGeneralSearchSubmit, setOnAdd, setDetailSearchForm, setPagiProps, setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
     useEffect(() => {
-        setCurrentTab('Product')
+        setCurrentTab('Products')
         productService.getProducts().then((response) => {
             console.log(response)
             setRes(response.data.results)

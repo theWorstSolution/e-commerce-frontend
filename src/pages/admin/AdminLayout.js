@@ -55,7 +55,7 @@ export default function AdminLayout() {
                             <input />
                             <button type='submit' style={{ display: 'flex' }}><BsSearch /></button>
                         </form>
-                        {currentTab!=='User' && <button onClick={onAdd} style={{ marginLeft: 'auto', marginRight: 0, display: 'flex' }}><BsPlusLg /></button>}
+                        {currentTab=='Products' && <button onClick={onAdd} style={{ marginLeft: 'auto', marginRight: 0, display: 'flex' }}><BsPlusLg /></button>}
                     </div>
 
                     <div className='centerChildren'>
