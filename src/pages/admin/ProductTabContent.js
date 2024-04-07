@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import  productService from "../../services/productService";
 import { AiOutlineEdit, AiOutlineDelete  } from "react-icons/ai";
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductTabContent() {
-    const { onDetailSearchSubmit, onGeneralSearchSubmit, onAdd, setDetailSearchForm, setPagiProps, setCurrentTab } = useOutletContext();
+    const navigate = useNavigate()
+    const { setOnDetailSearchSubmit, setOnGeneralSearchSubmit, setOnAdd, setDetailSearchForm, setPagiProps, setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
     useEffect(() => {
         setCurrentTab('Product')
@@ -21,10 +23,10 @@ export default function ProductTabContent() {
         //TODO: xem cấu trúc res để làm bảng
         setDetailSearchForm(<div><label>Tên</label>
             <input /></div>)
+            setOnAdd(()=>{
+                return ()=>{navigate('/admin/products/product')};
+            })
     }, [])
-    function deleteUser(user){
-
-    }
 
     return(<div style={{width:'100%'}}>{res && 
     <table style={{width:'100%'}}>
@@ -34,9 +36,8 @@ export default function ProductTabContent() {
             </tr>
         </thead>
         <tbody>
-            {res.map((product)=>(<tr><td>{product.id}</td><td>{product.name}</td><td>{product.categories[product.categories.length-1].name}</td>
-            <td className="centerChildren"><button className="centerChildren"><AiOutlineEdit /></button><button onClick={deleteUser} className="centerChildren"><AiOutlineDelete /></button></td></tr>))}
-            {/* TODO: on edit -> navigate ra trang xem detail user */}
+            {res.map((product)=>(<tr key={product.id}><td>{product.id}</td><td>{product.name}</td><td>{product.categories[product.categories.length-1].name}</td>
+            <td className="centerChildren"><button className="centerChildren" onClick={()=>{navigate('/admin/products/product/'+product.id)}}><AiOutlineEdit /></button></td></tr>))}
         </tbody>
     </table>}
     </div>)

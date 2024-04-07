@@ -14,9 +14,9 @@ export default function AdminLayout() {
 
     const [currentTab, setCurrentTab] = useState();
     const [detailSearchForm, setDetailSearchForm] = useState();
-    let onDetailSearchSubmit = useRef();
-    let onGeneralSearchSubmit = useRef();
-    let onAdd = useRef();
+    let [onDetailSearchSubmit, setOnDetailSearchSubmit] = useState();
+    let [onGeneralSearchSubmit, setOnGeneralSearchSubmit] = useState();
+    let [onAdd,setOnAdd] = useState();
     const [pagiProps, setPagiProps] = useState({
         boundaryCount: 1, //Number of always visible pages at the beginning and end.
         count: 1, // total page
@@ -25,7 +25,7 @@ export default function AdminLayout() {
         onChange: null,
         page: 1, //current page
     });
-    let tabNames = ['User', 'Product', 'Order'];
+    let tabNames = ['Users', 'Products', 'Orders'];
     return (
         <div>
             <header className='admin_header'>
@@ -59,7 +59,7 @@ export default function AdminLayout() {
                     </div>
 
                     <div className='centerChildren'>
-                        <Outlet context={{ onDetailSearchSubmit, onGeneralSearchSubmit, onAdd, setDetailSearchForm, setPagiProps, setCurrentTab }} />
+                        <Outlet context={{ setOnDetailSearchSubmit, setOnGeneralSearchSubmit, setOnAdd, setDetailSearchForm, setPagiProps, setCurrentTab }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} style={{ marginRight: '5px' }} /></div>
 

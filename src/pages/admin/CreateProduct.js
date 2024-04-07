@@ -2,14 +2,15 @@ import { useEffect, useState, useRef } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { createProduct } from "../../services/productService";
 import { getChildrenCategory, createCategory } from "../../services/categoryService";
+import categoryService from "../../services/categoryService";
 import Creatable from 'react-select/creatable';
 
 
 export default function CreateProduct() {
     const { setCurrentTab } = useOutletContext()
     const [inputs, setInputs] = useState({});
-    const [categoriesAtLevel, setCategoriesAtLevel] = useState([])
-    const [catsSelected, setCatsSelected] = useState([])    // có value và label
+    const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{id: categoryService.rootCategoryId, name:'root'}]])  // có id, name
+    const [catsSelected, setCatsSelected] = useState([{value: categoryService.rootCategoryId, label:'root'}])    // có value và label
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -19,20 +20,18 @@ export default function CreateProduct() {
         event.preventDefault();
         const body = {
             ...inputs,
-            categories: catsSelected.map((catSelected)=>catSelected.value)
+            categories: catsSelected.map((catSelected) => catSelected.value)
         }
         console.log(body);
         createProduct(body).then((res) => console.log(res))
     }
     useEffect(() => {
-        async function foo() {
-            setCurrentTab('Product')
-            const { data: rootChildren } = await getChildrenCategory('root')
+        setCurrentTab('Product')
+        getChildrenCategory(categoryService.rootCategoryId).then(({data: rootChildren}) => {
             setCategoriesAtLevel((categoriesAtLevel) => {
                 return [...categoriesAtLevel, rootChildren]
             })
-        }
-        foo();
+        })
     }, [])
     return (<article>
         <form style={{ display: 'flex', flexDirection: 'column' }} onSubmit={handleSubmit}>
@@ -55,12 +54,12 @@ export default function CreateProduct() {
                             console.log('new value: ' + JSON.stringify(newSelected));
                             //if xóa lựa chọn
                             if (!newSelected) {
-                                setCatsSelected((catsSelected)=>{
+                                setCatsSelected((catsSelected) => {
                                     const newCatsSelected = [...catsSelected]
                                     newCatsSelected.splice(idx);
                                     return newCatsSelected
                                 })
-                               
+
                                 setCategoriesAtLevel((categoriesAtLevel) => {
                                     const newCatsAtLevel = [...categoriesAtLevel]
                                     newCatsAtLevel.splice(idx + 1)
@@ -72,7 +71,7 @@ export default function CreateProduct() {
                                 console.log('is new');
                                 const newCategory = {
                                     name: newSelected.value,
-                                    ancestors: catsSelected.slice(0, idx).map((catSelected)=>catSelected.value)
+                                    ancestors: catsSelected.slice(0, idx).map((catSelected) => catSelected.value)
                                 }
                                 const { data } = await createCategory(newCategory)
                                 console.log('createCategory: ' + JSON.stringify(data));
@@ -83,25 +82,25 @@ export default function CreateProduct() {
                                     newCatsAtLevel.push([])
                                     return newCatsAtLevel
                                 })
-                                setCatsSelected((catsSelected)=>{
+                                setCatsSelected((catsSelected) => {
                                     const newCatsSelected = [...catsSelected]
                                     newCatsSelected.splice(idx);
-                                    newCatsSelected.push({value: data.id, label: data.name})
+                                    newCatsSelected.push({ value: data.id, label: data.name })
                                     console.log('newCatsSelected: ' + JSON.stringify(newCatsSelected));
                                     return newCatsSelected
                                 })
                                 console.log('catsSelected: ' + JSON.stringify(catsSelected));
                                 return
                             }
-                            
-                            setCatsSelected((catsSelected)=>{
+
+                            setCatsSelected((catsSelected) => {
                                 const newCatsSelected = [...catsSelected]
-                                newCatsSelected[idx] = newSelected 
+                                newCatsSelected[idx] = newSelected
                                 newCatsSelected.splice(idx + 1)
-                                console.log('newCatsSelected: '+JSON.stringify(newCatsSelected));
+                                console.log('newCatsSelected: ' + JSON.stringify(newCatsSelected));
                                 return newCatsSelected
                             })
-                            
+
                             const { data: childrenCats } = await getChildrenCategory(newSelected.value)
                             // console.log(childrenCats);
                             setCategoriesAtLevel((categoriesAtLevel) => {

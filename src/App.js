@@ -12,6 +12,7 @@ import UserDetail from './pages/admin/UserDetail';
 import AdminLayout1 from './pages/admin/AdminLayout1';
 import CreateProduct from './pages/admin/CreateProduct';
 import ProductTabContent from './pages/admin/ProductTabContent';
+import EditProduct from './pages/admin/EditProduct';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path=''  element={<Home/>}/>
       <Route path='admin' element={<AdminLayout1/>}>
         <Route path='users/user/:userId' element={<UserDetail/>}/>
+        <Route path='products/product/:productId' element={<EditProduct/>}/>
         <Route path='products/product' element={<CreateProduct/>}/>
       </Route> 
       <Route path='admin' element={<AdminLayout/>}>

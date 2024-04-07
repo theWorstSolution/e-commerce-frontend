@@ -1,6 +1,6 @@
 import axiosInstance from '../utils/axiosInstance'
 import axios from 'axios';
-
+const rootCategoryId = '660b2b2353065020b4909007';
 function getChildrenCategory(id){
     const response = axiosInstance({
         method: 'GET',
@@ -29,3 +29,4 @@ function createCategory(body){
 }
 
 export {getChildrenCategory, createCategory};
+export default {getChildrenCategory, createCategory, rootCategoryId};

@@ -21,7 +21,7 @@ export default function UserDetail(){
 
 
     useEffect(()=>{
-        setCurrentTab('User')
+        setCurrentTab('Users')
         getUser(userId).then((res)=>{
             setUser(res.data)
             console.log(res.data);
