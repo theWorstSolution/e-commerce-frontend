@@ -32,11 +32,11 @@ export default function ProductTabContent() {
     <table style={{width:'100%'}}>
         <thead>
             <tr>
-                <th style={{width:'30%'}}>Id</th><th>Name</th><th>Category</th><th>Price</th>
+                <th style={{width:'30%'}}>Id</th><th>Name</th><th>Category</th><th>Price</th><th>Sold amount</th><th>Option</th>
             </tr>
         </thead>
         <tbody>
-            {res.map((product)=>(<tr key={product.id}><td>{product.id}</td><td>{product.name}</td><td>{product.categories[product.categories.length-1].name}</td>
+            {res.map((product)=>(<tr key={product.id}><td>{product.id}</td><td>{product.name}</td><td>{product.categories[product.categories.length-1].name}</td><td>{product.price}</td><td>{product.soldAmount}</td>
             <td className="centerChildren"><button className="centerChildren" onClick={()=>{navigate('/admin/products/product/'+product.id)}}><AiOutlineEdit /></button></td></tr>))}
         </tbody>
     </table>}

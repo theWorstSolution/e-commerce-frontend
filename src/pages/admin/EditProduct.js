@@ -53,6 +53,8 @@ export default function EditProduct() {
             <input type="text" name='description' onChange={handleChange} defaultValue={product.description} />
             <label>Picture</label>
             <input type="url" name='picture' onChange={handleChange} defaultValue={product.picture} />
+            <label>Sold amount</label>
+            <input type="number" readOnly defaultValue={product.soldAmount} />
             <label>Category</label>
             <div>
                 {categoriesAtLevel && categoriesAtLevel.map((catsAtLevel, idx) => {
