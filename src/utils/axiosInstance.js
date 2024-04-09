@@ -1,12 +1,17 @@
+import { HOST_API } from '../config';
 import axios from 'axios';
 import firebase from 'firebase/compat/app';
-// config
-import { HOST_API } from '../config';
+const qs = require('qs')
+
+
 
 // ----------------------------------------------------------------------
-
+// DEPLOY: bỏ encode = false
 const axiosInstance = axios.create({
   baseURL: HOST_API,
+  paramsSerializer: function (params) {
+    return qs.stringify(params, { encode:false})
+  },
 });
 
 axiosInstance.interceptors.request.use(async function (config) {

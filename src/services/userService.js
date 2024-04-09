@@ -13,16 +13,13 @@ function getUser(userId){
     return response;
 }
 
-function getUsers(){
-    // console.log('getUsers')
+function getUsers(filter, options){
     const response = axiosInstance({
         method: 'GET',
-        url: '/v1/users'
+        url: '/v1/users',
+        params: {filter, options},
     })
-    // TODO: thêm query
-    // const response = axios.get('http://localhost:3000/v1/user/users')
-    // console.log('getUsers123')
-    // console.log(response)
+    
     return response;
 }
 
@@ -36,3 +33,4 @@ function updateUser(uid, updateBody){
 }
 
 export {getUser, getUsers, updateUser};
+export default {getUser, getUsers, updateUser};

@@ -13,14 +13,14 @@ function getProduct(id){
 /**
  * @param {object} query: {name,...}
  */
-function getProducts(query){
+function getProducts(filter, options){
     // console.log('getUsers')
     const response = axiosInstance({
         method: 'GET',
         url: '/v1/products',
-        params: query
+        params: {filter, options},
     })
-    // TODO: thêm query
+    
     return response;
 }
 

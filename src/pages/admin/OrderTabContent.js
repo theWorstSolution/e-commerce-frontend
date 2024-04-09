@@ -1,14 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import  productService from "../../services/productService";
 import { AiOutlineEdit, AiOutlineDelete  } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
 import orderService from "../../services/orderService";
+import { Pagination } from '@mui/material';
+import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
 
 export default function OrderTabContent() {
     const navigate = useNavigate()
-    const { setOnDetailSearchSubmit, setOnGeneralSearchSubmit, setDetailSearchForm, setPagiProps, setCurrentTab } = useOutletContext();
+    const {setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
+    const [pagiProps, setPagiProps] = useState({
+        boundaryCount: 1, //Number of always visible pages at the beginning and end.
+        count: 1, // total page
+        hideNextButton: false,
+        hidePrevButton: false,
+        onChange: null,
+        page: 1, //current page
+    });
     useEffect(() => {
         setCurrentTab('Orders')
         orderService.getOrders().then((response) => {
@@ -21,11 +31,28 @@ export default function OrderTabContent() {
             }))
         })
         
-        //TODO: xem cấu trúc res để làm bảng
-        setDetailSearchForm(<div><label>Tên</label>
-            <input /></div>)
     }, [])
-    return(<div style={{width:'100%'}}>{res && 
+    const onGeneralSearchSubmit = useCallback(()=>{},[])
+    const onDetailSearchSubmit = useCallback(()=>{},[])
+    return(
+    <article className='admin_main'>
+    <section>
+        <h3 style={{ textAlign: 'center' }}>DETAIL SEARCH</h3>
+        <form onSubmit={onDetailSearchSubmit}>
+            
+            <button type='submit' style={{ display: 'flex' }}>Submit</button>
+        </form>
+    </section>
+    <section className='admin_main_content'>
+        <div>
+            <form onSubmit={onGeneralSearchSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
+                <input />
+                <button type='submit' style={{ display: 'flex' }}><BsSearch /></button>
+            </form>
+        </div>
+
+        <div className='centerChildren'>
+        {res && 
     <table style={{width:'100%'}}>
         <thead>
             <tr>
@@ -37,5 +64,9 @@ export default function OrderTabContent() {
             <td className="centerChildren"><button className="centerChildren" onClick={()=>{navigate('/admin/orders/order/'+order.id)}}><AiOutlineEdit /></button></td></tr>))}
         </tbody>
     </table>}
-    </div>)
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} style={{ marginRight: '5px' }} /></div>
+
+    </section>
+</article>)
 }
