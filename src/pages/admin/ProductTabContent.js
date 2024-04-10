@@ -42,11 +42,12 @@ export default function ProductTabContent() {
         const filter = {
             $or:[
                 {name: { $regex: generalSearchInput, $options: 'i' }},
-                {email: { $regex: generalSearchInput, $options: 'i' }},
+                {'categories.name': { $regex: generalSearchInput, $options: 'i' }},
             ]
         }
         console.log('generalSearchInput: '+generalSearchInput);
-        const {data} = await productService.getProducts(filter)
+        const options = {}
+        const {data} = await productService.getProducts(filter, options)
         console.log(data);
         setRes(data.results)
         setPagiProps((pagiProps)=>({
@@ -54,7 +55,7 @@ export default function ProductTabContent() {
             count: data.totalPages,
             page: data.page
         }))
-        lastRequest.current = {...lastRequest.current, filter}
+        lastRequest.current = {...lastRequest.current, filter,options }
     },[generalSearchInput])
     const onChangePage = useCallback(async (event, page)=>{
         lastRequest.current.options = {...lastRequest.current.options,page}
@@ -79,7 +80,7 @@ export default function ProductTabContent() {
             <section className='admin_main_content'>
                 <div>
                     <form onSubmit={onGeneralSearchSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
-                        <input />
+                        <input type='search' name="generalSearchInput" onChange={onGeneralSearchInputChange} />
                         <button type='submit' style={{ display: 'flex' }}><BsSearch /></button>
                     </form>
                     <button onClick={onAdd} style={{ marginLeft: 'auto', marginRight: 0, display: 'flex' }}><BsPlusLg /></button>
