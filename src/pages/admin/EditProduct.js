@@ -22,7 +22,7 @@ export default function EditProduct() {
         event.preventDefault();
         const body = {
             ...inputs,
-            categories: catsSelected.map((catSelected) => catSelected.value)
+            categories: catsSelected.map((catSelected) => ({id:catSelected.value, name:catSelected.label}))
         }
         console.log(body);
         updateProduct(productId, body).then((res) => console.log(res))

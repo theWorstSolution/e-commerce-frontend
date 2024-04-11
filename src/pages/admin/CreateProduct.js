@@ -20,7 +20,7 @@ export default function CreateProduct() {
         event.preventDefault();
         const body = {
             ...inputs,
-            categories: catsSelected.map((catSelected) => catSelected.value)
+            categories: catsSelected.map((catSelected) => ({id:catSelected.value, name:catSelected.label}))
         }
         console.log(body);
         createProduct(body).then((res) => console.log(res))
