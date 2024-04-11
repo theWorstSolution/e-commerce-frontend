@@ -38,7 +38,7 @@ export default function UserTabContent() {
         e.preventDefault()
         const filter = {
             $or:[
-                {id: { $regex: generalSearchInput, $options: 'i' }},
+                {_id: { $regex: generalSearchInput, $options: 'i' }},
                 {name: { $regex: generalSearchInput, $options: 'i' }},
                 {email: { $regex: generalSearchInput, $options: 'i' }},
                 {role: { $regex: generalSearchInput, $options: 'i' }},

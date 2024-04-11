@@ -22,6 +22,7 @@ export default function ProductTabContent() {
     const onGeneralSearchInputChange = useCallback((event)=>{
         setGeneralSearchInput(event.target.value)
     },[])
+
     const lastRequest = useRef({filter:null,options:null})
     useEffect(() => {
         setCurrentTab('Products')
@@ -67,13 +68,23 @@ export default function ProductTabContent() {
             page: data.page
         }))
     },[])
+    const [detailSearchInput,setDetailSearchInput] = useState()
+    const onDetailSearchInputChange = useCallback((event)=>{
+        const name = event.target.name;
+        const value = event.target.value;
+        setDetailSearchInput(values => ({ ...values, [name]: value }))
+    },[])
     const onDetailSearchSubmit = useCallback(()=>{},[])
     return (
         <article className='admin_main'>
             <section>
                 <h3 style={{ textAlign: 'center' }}>DETAIL SEARCH</h3>
-                <form onSubmit={onDetailSearchSubmit}>
-                    
+                <form onSubmit={onDetailSearchSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label>Id</label>
+                    <input type='search' name="id" onChange={onDetailSearchInputChange} />
+                    <label>Price</label>
+                    <input type='number' name="minPrice" onChange={onDetailSearchInputChange} />
+                    <input type='number' name="maxPrice" onChange={onDetailSearchInputChange} />
                     <button type='submit' style={{ display: 'flex' }}>Submit</button>
                 </form>
             </section>
