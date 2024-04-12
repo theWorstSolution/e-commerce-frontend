@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
 import userService, { getUsers } from "../../services/userService";
 import { AiOutlineEdit, AiOutlineDelete  } from "react-icons/ai";
 import { Pagination } from '@mui/material';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
+const qs = require('qs')
 
 export default function UserTabContent() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
     const { setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
@@ -20,50 +22,43 @@ export default function UserTabContent() {
     const onGeneralSearchInputChange = useCallback((event)=>{
         setGeneralSearchInput(event.target.value)
     },[])
-    const lastRequest = useRef({filter:null,options:null})
     useEffect(() => {
+        console.log('run use effect');
         setCurrentTab('Users')
-        getUsers().then((response) => {
-            console.log(response)
-            setRes(response.data.results)
-            setPagiProps((pagiProps)=>({
-                ...pagiProps,
-                count: response.data.totalPages,
-                page: response.data.page
-            }))
-        })
-        lastRequest.current = {filter:null,options:null}
-    }, [])
-    const onGeneralSearchSubmit = useCallback(async (e)=>{
-        e.preventDefault()
+        const initialQuery = searchParams.get('generalSearchInput')
+        const initialPage = searchParams.get('page')
+        console.log('initialQuery');console.log(initialQuery);
         const filter = {
             $or:[
-                {_id: { $regex: generalSearchInput, $options: 'i' }},
-                {name: { $regex: generalSearchInput, $options: 'i' }},
-                {email: { $regex: generalSearchInput, $options: 'i' }},
-                {role: { $regex: generalSearchInput, $options: 'i' }},
+                {_id: { $regex: initialQuery, $options: 'i' }},
+                {name: { $regex: initialQuery, $options: 'i' }},
+                {email: { $regex: initialQuery, $options: 'i' }},
+                {role: { $regex: initialQuery, $options: 'i' }},
             ]
         }
-        console.log('generalSearchInput: '+generalSearchInput);
-        const {data} = await userService.getUsers(filter)
-        console.log(data);
+        const options = {page:initialPage}
+        userService.getUsers(filter,options).then(({data})=>{
+            console.log(data);
         setRes(data.results)
         setPagiProps((pagiProps)=>({
             ...pagiProps,
             count: data.totalPages,
             page: data.page
         }))
-        lastRequest.current = {...lastRequest.current, filter}
+        })
+    }, [searchParams])
+    const onGeneralSearchSubmit = useCallback(async (e)=>{
+        e.preventDefault()
+        const queryString = qs.stringify({generalSearchInput}, { encode:false})
+        console.log('queryString');console.log(queryString);
+        navigate('/admin/users?'+queryString)
+        
     },[generalSearchInput])
     const onChangePage = useCallback(async (event, page)=>{
-        lastRequest.current.options = {...lastRequest.current.options,page}
-        const {data} = await userService.getUsers(lastRequest.current.filter, lastRequest.current.options)
-        setRes(data.results)
-        setPagiProps((pagiProps)=>({
-            ...pagiProps,
-            count: data.totalPages,
-            page: data.page
-        }))
+        const initialQuery = searchParams.get('generalSearchInput')
+        const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
+        console.log('queryString');console.log(queryString);
+        navigate('/admin/users?'+queryString)
     },[])
     return(
     <article className='admin_main'>
