@@ -23,7 +23,6 @@ export default function UserTabContent() {
         setGeneralSearchInput(event.target.value)
     },[])
     useEffect(() => {
-        console.log('run use effect');
         setCurrentTab('Users')
         const initialQuery = searchParams.get('generalSearchInput')
         const initialPage = searchParams.get('page')
@@ -50,14 +49,12 @@ export default function UserTabContent() {
     const onGeneralSearchSubmit = useCallback(async (e)=>{
         e.preventDefault()
         const queryString = qs.stringify({generalSearchInput}, { encode:false})
-        console.log('queryString');console.log(queryString);
         navigate('/admin/users?'+queryString)
         
     },[generalSearchInput])
     const onChangePage = useCallback(async (event, page)=>{
         const initialQuery = searchParams.get('generalSearchInput')
         const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
-        console.log('queryString');console.log(queryString);
         navigate('/admin/users?'+queryString)
     },[])
     return(

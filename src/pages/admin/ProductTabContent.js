@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import productService from "../../services/productService";
 import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useSearchParams } from 'react-router-dom';
 import { Pagination } from '@mui/material';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
 import { Category } from "@mui/icons-material";
+const qs = require('qs')
 
 export default function ProductTabContent() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
     const { setCurrentTab } = useOutletContext();
     const [res, setRes] = useState()
@@ -26,48 +28,71 @@ export default function ProductTabContent() {
     const lastRequest = useRef({ filter: null, options: null })
     useEffect(() => {
         setCurrentTab('Products')
-        productService.getProducts().then((response) => {
-            console.log(response)
-            setRes(response.data.results)
-            setPagiProps((pagiProps) => ({
-                ...pagiProps,
-                count: response.data.totalPages,
-                page: response.data.page
-            }))
-        })
-        lastRequest.current = { filter: null, options: null }
-    }, [])
+        const initialGeneralSearchInput = searchParams.get('generalSearchInput')
+        const initialPage = searchParams.get('page')
+        if(initialGeneralSearchInput || searchParams.size==0){
+            const filter = {
+                $or: [
+                    { name: { $regex: initialGeneralSearchInput, $options: 'i' } },
+                    { 'categories.name': { $regex: initialGeneralSearchInput, $options: 'i' } },
+                    { description: { $regex: initialGeneralSearchInput, $options: 'i' } },
+                ]
+            }
+            const options = {page: initialPage}
+            productService.getProducts(filter, options).then(({data})=>{
+                console.log(data);
+                setRes(data.results)
+                setPagiProps((pagiProps) => ({
+                    ...pagiProps,
+                    count: data.totalPages,
+                    page: data.page
+                }))
+            })
+        }else{
+            const filter = {
+                _id:{}, price:{}, soldAmount:{}
+            }
+            if(searchParams.get('id')!=''){
+                filter._id = searchParams.get('id')
+            }
+            if(searchParams.get('minPrice')!=''){
+                filter.price.$gte = searchParams.get('minPrice')
+            }
+            if(searchParams.get('maxPrice')!=''){
+                filter.price.$lte = searchParams.get('maxPrice')
+            }
+            if(searchParams.get('minSoldAmount')!=''){
+                filter.soldAmount.$gte = searchParams.get('minSoldAmount')
+            }
+            if(searchParams.get('maxSoldAmount')!=''){
+                filter.soldAmount.$lte = searchParams.get('maxSoldAmount')
+            }
+            
+            const options = {sortBy: searchParams.get('sortField')+':'+searchParams.get('sortOrder'), page:initialPage}
+            productService.getProducts(filter, options).then(({data})=>{
+                console.log(data);
+                setRes(data.results)
+                setPagiProps((pagiProps) => ({
+                    ...pagiProps,
+                    count: data.totalPages,
+                    page: data.page
+                }))
+            })
+        }
+
+    
+    }, [searchParams])
     const onAdd = useCallback(() => { navigate('/admin/products/product') }, []);
     const onGeneralSearchSubmit = useCallback(async (e) => {
         e.preventDefault()
-        const filter = {
-            $or: [
-                { name: { $regex: generalSearchInput, $options: 'i' } },
-                { 'categories.name': { $regex: generalSearchInput, $options: 'i' } },
-                { description: { $regex: generalSearchInput, $options: 'i' } },
-            ]
-        }
-        console.log('generalSearchInput: ' + generalSearchInput);
-        const options = {}
-        const { data } = await productService.getProducts(filter, options)
-        console.log(data);
-        setRes(data.results)
-        setPagiProps((pagiProps) => ({
-            ...pagiProps,
-            count: data.totalPages,
-            page: data.page
-        }))
-        lastRequest.current = { ...lastRequest.current, filter, options }
+        const queryString = qs.stringify({generalSearchInput}, { encode:false})
+        navigate('/admin/products?'+queryString)
     }, [generalSearchInput])
     const onChangePage = useCallback(async (event, page) => {
-        lastRequest.current.options = { ...lastRequest.current.options, page }
-        const { data } = await productService.getProducts(lastRequest.current.filter, lastRequest.current.options)
-        setRes(data.results)
-        setPagiProps((pagiProps) => ({
-            ...pagiProps,
-            count: data.totalPages,
-            page: data.page
-        }))
+        //TODO: thay đổi page trong search params
+        const initialQuery = searchParams.get('generalSearchInput')
+        const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
+        navigate('/admin/users?'+queryString)
     }, [])
     const [detailSearchInput, setDetailSearchInput] = useState()
     const onDetailSearchInputChange = useCallback((event) => {
@@ -76,6 +101,7 @@ export default function ProductTabContent() {
         setDetailSearchInput(values => ({ ...values, [name]: value }))
     }, [])
     const onDetailSearchSubmit = useCallback(() => { }, [])
+    console.log(searchParams);
     return (
         <article className='admin_main'>
             <section>
@@ -99,7 +125,7 @@ export default function ProductTabContent() {
                     </select>
                     <div>
                         <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="asc" defaultChecked/><label>Ascending </label>
-                        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="decs"/><label>Descending </label>
+                        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="desc"/><label>Descending </label>
                     </div>
                     <button type='submit' style={{ display: 'flex' }}>Submit</button>
                 </form>
