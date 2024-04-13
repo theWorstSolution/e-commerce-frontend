@@ -48,14 +48,17 @@ export default function UserTabContent() {
     }, [searchParams])
     const onGeneralSearchSubmit = useCallback(async (e)=>{
         e.preventDefault()
-        const queryString = qs.stringify({generalSearchInput}, { encode:false})
-        navigate('/admin/users?'+queryString)
-        
+        // const queryString = qs.stringify({generalSearchInput}, { encode:false})
+        // navigate('/admin/users?'+queryString)
+        setSearchParams((params) => params.set("generalSearchInput", generalSearchInput).delete('page'));
+        navigate(searchParams.toString)
     },[generalSearchInput])
     const onChangePage = useCallback(async (event, page)=>{
-        const initialQuery = searchParams.get('generalSearchInput')
-        const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
-        navigate('/admin/users?'+queryString)
+        // const initialQuery = searchParams.get('generalSearchInput')
+        // const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
+        // setSearchParams((prev)=>{console.log(prev)})
+        setSearchParams((params) => params.set("page", page));
+        // navigate('/admin/users?'+queryString)
     },[])
     return(
     <article className='admin_main'>

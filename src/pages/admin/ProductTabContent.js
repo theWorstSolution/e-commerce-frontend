@@ -90,9 +90,11 @@ export default function ProductTabContent() {
     }, [generalSearchInput])
     const onChangePage = useCallback(async (event, page) => {
         //TODO: thay đổi page trong search params
-        const initialQuery = searchParams.get('generalSearchInput')
-        const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
-        navigate('/admin/users?'+queryString)
+        // set old param
+        setSearchParams()
+        // const initialQuery = searchParams.get('generalSearchInput')
+        // const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
+        // navigate('/admin/users?'+queryString)
     }, [])
     const [detailSearchInput, setDetailSearchInput] = useState()
     const onDetailSearchInputChange = useCallback((event) => {
