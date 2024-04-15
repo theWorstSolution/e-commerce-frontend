@@ -38,8 +38,8 @@ export default function OrderDetail(){
             <a href={"/admin/products/product/"+order.product.id}>{order.product.id + ' - ' + order.product.name}</a>
             <label>Amount</label>
             <input type="number" readOnly defaultValue={order.amount}/>
-            <label>Product price</label>
-            <input type="number" readOnly defaultValue={order.productPrice}/>
+            <label>Total price</label>
+            <input type="number" readOnly defaultValue={order.totalPrice}/>
             <label>Delivery fee</label>
             <input type="number" readOnly defaultValue={order.deliveryFee}/>
             <label>Status</label>

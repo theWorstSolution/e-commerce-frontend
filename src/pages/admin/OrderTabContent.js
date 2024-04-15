@@ -2,12 +2,13 @@ import { useEffect, useState,useCallback } from "react";
 import { useOutletContext } from "react-router-dom";
 import  productService from "../../services/productService";
 import { AiOutlineEdit, AiOutlineDelete  } from "react-icons/ai";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useSearchParams } from 'react-router-dom';
 import orderService from "../../services/orderService";
 import { Pagination } from '@mui/material';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
 
 export default function OrderTabContent() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
     const {setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
@@ -19,34 +20,122 @@ export default function OrderTabContent() {
         onChange: null,
         page: 1, //current page
     });
+    // useEffect(() => {
+    //     setCurrentTab('Orders')
+    //     orderService.getOrders().then((response) => {
+    //         console.log(response)
+    //         setRes(response.data.results)
+    //         setPagiProps((pagiProps)=>({
+    //             ...pagiProps,
+    //             count: response.data.totalPages,
+    //             page: response.data.page
+    //         }))
+    //     })
+        
+    // }, [])
     useEffect(() => {
-        setCurrentTab('Orders')
-        orderService.getOrders().then((response) => {
-            console.log(response)
-            setRes(response.data.results)
-            setPagiProps((pagiProps)=>({
+        setCurrentTab('Products')
+        const initialGeneralSearchInput = searchParams.get('generalSearchInput')
+        console.log(initialGeneralSearchInput);
+        const initialPage = searchParams.get('page')
+        let filter, options;
+        if(searchParams.size==0 || initialGeneralSearchInput==''){
+            filter = {}
+            options = {page: initialPage}
+        }else if(initialGeneralSearchInput){
+            filter = {
+                _id: initialGeneralSearchInput
+            }
+            options = {page: initialPage}
+        }else{
+            filter = {
+                amount:{}, totalPrice:{}, $and:[]
+            }
+            if(searchParams.get('userId')!=''){
+                filter.user = searchParams.get('userId')
+            }
+            if(searchParams.get('productId')!=''){
+                filter.product = searchParams.get('productId')
+            }
+            if(searchParams.get('minAmount')!=''){
+                filter.amount.$gte = searchParams.get('minAmount')
+            }
+            if(searchParams.get('maxAmount')!=''){
+                filter.amount.$lte = searchParams.get('maxAmount')
+            }
+            if(searchParams.get('minTotalCost')!=''){
+                let $expr = { $gte: [{ $add: ["$deliveryFee", "$totalPrice"] }, {$toInt: searchParams.get('minTotalCost')}] }
+                filter.$and.push({$expr})
+            }
+            if(searchParams.get('maxTotalCost')!=''){
+                let $expr = { $lte: [{ $add: ["$deliveryFee", "$totalPrice"] }, {$toInt: searchParams.get('maxTotalCost')}] }
+                filter.$and.push({$expr})
+            }
+            
+            filter.status = searchParams.get('status')
+            filter.hasPaid = searchParams.get('hasPaid')
+            
+            options = {sortBy: searchParams.get('sortField')+':'+searchParams.get('sortOrder'), page:initialPage}
+        }
+        console.log(filter);
+        orderService.getOrders(filter, options).then(({data})=>{
+            console.log(data);
+            setRes(data.results)
+            setPagiProps((pagiProps) => ({
                 ...pagiProps,
-                count: response.data.totalPages,
-                page: response.data.page
+                count: data.totalPages,
+                page: data.page
             }))
         })
-        
+    }, [searchParams])
+    const onChangePage = useCallback(async (event, page) => {
+        setSearchParams((params) => {
+            params.set("page", page)
+            return params
+        } );
     }, [])
-    const onGeneralSearchSubmit = useCallback(()=>{},[])
-    const onDetailSearchSubmit = useCallback(()=>{},[])
     return(
     <article className='admin_main'>
     <section>
         <h3 style={{ textAlign: 'center' }}>DETAIL SEARCH</h3>
-        <form onSubmit={onDetailSearchSubmit}>
-            
-            <button type='submit' style={{ display: 'flex' }}>Submit</button>
-        </form>
+        <form style={{ display: 'flex', flexDirection: 'column' }}>
+                    <label>User id</label>
+                    <input type='search' name="userId"  />
+                    <label>Product id</label>
+                    <input type='search' name="productId"  />
+                    <label>Amount</label>
+                    <input type='number' name="minAmount"  />
+                    <input type='number' name="maxAmount"  />
+                    <label>Total cost</label>
+                    <input type='number' name="minTotalCost"  />
+                    <input type='number' name="maxTotalCost"  />
+                    <label>Status</label>
+                    <select defaultValue={'delivered'} name="status" >
+                        <option value='delivered' >delivered</option>
+                        <option value='onGoing' >on going</option>
+                        <option value='canceled' >canceled</option>
+                    </select>
+                    <label>Has paid</label>
+                    <select defaultValue={1} name="hasPaid" >
+                        <option value={1} >Yes</option>
+                        <option value={0} >No</option>
+                    </select>
+                    <label>Sort by</label>
+                    <select defaultValue={'totalCost'} name="sortField" >
+                        <option value='totalCost' >total cost</option>
+                        <option value='amount' >amount</option>
+                    </select>
+                    <div>
+                        <input type="radio"  name="sortOrder" value="asc" defaultChecked/><label>Ascending </label>
+                        <input type="radio"  name="sortOrder" value="desc"/><label>Descending </label>
+                    </div>
+                    <button type='submit' style={{ display: 'flex' }}>Submit</button>
+                </form>
     </section>
     <section className='admin_main_content'>
         <div>
-            <form onSubmit={onGeneralSearchSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
-                <input />
+            <form style={{ display: 'flex', justifyContent: 'center' }}>
+                <input type="search" placeholder="order id" name="generalSearchInput"/>
                 <button type='submit' style={{ display: 'flex' }}><BsSearch /></button>
             </form>
         </div>
@@ -56,16 +145,17 @@ export default function OrderTabContent() {
     <table style={{width:'100%'}}>
         <thead>
             <tr>
-                <th style={{width:'30%'}}>Id</th><th>User</th><th>Product</th><th>Total Cost</th><th>Status</th><th>Has Paid?</th><th>Option</th>
+                <th style={{width:'30%'}}>Id</th><th>User</th><th>Product</th><th>Amount</th><th>Total Cost</th><th>Status</th><th>Has Paid?</th><th>Option</th>
             </tr>
         </thead>
         <tbody>
-            {res.map((order)=>(<tr key={order.id}><td>{order.id}</td><td><a href={"/admin/users/user/"+order.user.id}>{order.user.name}</a></td><td><a href={'/admin/products/product/'+order.product.id}>{order.product.name}</a></td><td>{order.deliveryFee + order.productPrice*order.amount}</td><td>{order.status}</td><td>{order.hasPaid}</td>
+            {res.map((order)=>(<tr key={order.id}><td>{order.id}</td><td><a href={"/admin/users/user/"+order.user.id}>{order.user.name}</a></td><td><a href={'/admin/products/product/'+order.product.id}>{order.product.name}</a></td>
+            <td>{order.amount}</td><td>{order.deliveryFee + order.totalPrice}</td><td>{order.status}</td><td>{order.hasPaid}</td>
             <td className="centerChildren"><button className="centerChildren" onClick={()=>{navigate('/admin/orders/order/'+order.id)}}><AiOutlineEdit /></button></td></tr>))}
         </tbody>
     </table>}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} style={{ marginRight: '5px' }} /></div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
 
     </section>
 </article>)

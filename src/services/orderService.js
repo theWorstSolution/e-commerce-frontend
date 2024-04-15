@@ -10,15 +10,13 @@ function getOrder(id){
     return response;
 }
 
-/**
- * @param {object} query: {name,...}
- */
-function getOrders(query){
+
+function getOrders(filter, options){
     // console.log('getUsers')
     const response = axiosInstance({
         method: 'GET',
         url: '/v1/orders',
-        params: query
+        params: {filter, options}
     })
     // TODO: thêm query
     return response;

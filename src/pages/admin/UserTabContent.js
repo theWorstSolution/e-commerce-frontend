@@ -45,27 +45,29 @@ export default function UserTabContent() {
             page: data.page
         }))
         })
+        
     }, [searchParams])
     const onGeneralSearchSubmit = useCallback(async (e)=>{
         e.preventDefault()
-        // const queryString = qs.stringify({generalSearchInput}, { encode:false})
-        // navigate('/admin/users?'+queryString)
-        setSearchParams((params) => params.set("generalSearchInput", generalSearchInput).delete('page'));
-        navigate(searchParams.toString)
+       setSearchParams((params) => {
+        params.set("generalSearchInput", generalSearchInput?generalSearchInput:'')
+        params.delete('page')
+        console.log(params);
+        return params
+    } );
     },[generalSearchInput])
     const onChangePage = useCallback(async (event, page)=>{
-        // const initialQuery = searchParams.get('generalSearchInput')
-        // const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
-        // setSearchParams((prev)=>{console.log(prev)})
-        setSearchParams((params) => params.set("page", page));
-        // navigate('/admin/users?'+queryString)
+        setSearchParams((params) => {
+            params.set("page", page)
+            return params
+        } );
     },[])
     return(
     <article className='admin_main'>
     <section className='admin_main_content'>
         <div>
             <form onSubmit={onGeneralSearchSubmit} style={{ display: 'flex', justifyContent: 'center' }}>
-                <input type='search' name="generalSearchInput" onChange={onGeneralSearchInputChange} />
+                <input type='search' name="generalSearchInput" onChange={onGeneralSearchInputChange}  defaultValue={searchParams.get('generalSearchInput')}/>
                 <button type='submit' style={{ display: 'flex' }}><BsSearch /></button>
             </form>
         </div>

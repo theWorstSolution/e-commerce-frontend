@@ -25,12 +25,11 @@ export default function ProductTabContent() {
         setGeneralSearchInput(event.target.value)
     }, [])
 
-    const lastRequest = useRef({ filter: null, options: null })
     useEffect(() => {
         setCurrentTab('Products')
         const initialGeneralSearchInput = searchParams.get('generalSearchInput')
         const initialPage = searchParams.get('page')
-        if(initialGeneralSearchInput || searchParams.size==0){
+        if(initialGeneralSearchInput || initialGeneralSearchInput=='' || searchParams.size==0){
             const filter = {
                 $or: [
                     { name: { $regex: initialGeneralSearchInput, $options: 'i' } },
@@ -89,12 +88,10 @@ export default function ProductTabContent() {
         navigate('/admin/products?'+queryString)
     }, [generalSearchInput])
     const onChangePage = useCallback(async (event, page) => {
-        //TODO: thay đổi page trong search params
-        // set old param
-        setSearchParams()
-        // const initialQuery = searchParams.get('generalSearchInput')
-        // const queryString = qs.stringify({generalSearchInput: initialQuery, page}, { encode:false})
-        // navigate('/admin/users?'+queryString)
+        setSearchParams((params) => {
+            params.set("page", page)
+            return params
+        } );
     }, [])
     const [detailSearchInput, setDetailSearchInput] = useState()
     const onDetailSearchInputChange = useCallback((event) => {
@@ -103,7 +100,6 @@ export default function ProductTabContent() {
         setDetailSearchInput(values => ({ ...values, [name]: value }))
     }, [])
     const onDetailSearchSubmit = useCallback(() => { }, [])
-    console.log(searchParams);
     return (
         <article className='admin_main'>
             <section>
@@ -117,8 +113,6 @@ export default function ProductTabContent() {
                     <label>Sold amount</label>
                     <input type='number' name="minSoldAmount" onChange={onDetailSearchInputChange} />
                     <input type='number' name="maxSoldAmount" onChange={onDetailSearchInputChange} />
-                    {/* sort field: thẻ select;
-                    chiều sort: thẻ radio*/}
                     <label>Sort by</label>
                     <select defaultValue={'name'} name="sortField" onChange={onDetailSearchInputChange}>
                         <option value='name' >Name</option>
