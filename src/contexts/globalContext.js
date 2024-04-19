@@ -21,6 +21,7 @@ firebase.initializeApp(config);
 export function UserProvider({children}){
     const [user, setUser] = useState(); // Local signed-in state.
   const [isInit, setIsInit] = useState(false)
+  
   // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
     const unregisterAuthObserver = firebase.auth().onAuthStateChanged(async authUser => {

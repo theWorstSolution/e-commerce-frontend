@@ -1,8 +1,8 @@
-.headbar {
-    left: 0;
+.homeHeader {
+    /* left: 0;
     position: fixed;
     right: 0;
-    top: 0;
+    top: 0; */
     /* transform: translateZ(0); */
     /* z-index: 100; */
     background: #f53d2d;
@@ -13,7 +13,7 @@
 
 .center-child {}
 
-.headbar_row1 {
+.header_row1 {
     /* margin-top: auto;
     margin-bottom: auto; */
     display: flex;
@@ -41,7 +41,7 @@
 
 }
 
-.headbar_row2 {
+.header_row2 {
     max-width: 1200px;
     margin-left: 50px;
     margin-right: 100px;
@@ -54,7 +54,7 @@
 
 }
 
-.headbar_logo {
+.header_logo {
     font-family: 'Pacifico', cursive;
     /* font-style: italic; */
     transform: skew(-5deg);
@@ -78,13 +78,13 @@
     /* Thêm hiệu ứng bóng đổ */
 }
 
-.headbar_logo:hover {
+.header_logo:hover {
     transform: scale(1.05) skew(-10deg);
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
     /* Hiệu ứng bóng đổ khi hover */
 }
 
-.headbar_searchbar {
+.header_searchbar {
     width: 800px;
     /* --focus-indicator-spacing: 3px; */
     /* align-items: stretch; */
@@ -97,7 +97,7 @@
     padding: 0.1875rem;
 }
 
-.headbar_searchbar_input {
+.header_searchbar_input {
     /* align-items: stretch; */
     border: 0;
     display: flex;
@@ -107,7 +107,7 @@
     /* padding: 0; */
 }
 
-.headbar_searchbar_button {
+.header_searchbar_button {
     background: #fb5533;
     outline: 0;
     overflow: visible;

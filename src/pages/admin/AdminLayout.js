@@ -8,7 +8,7 @@ import { Outlet } from 'react-router-dom';
 
 export default function AdminLayout() {
     const [currentTab, setCurrentTab] = useState(); 
-    const tabNames = ['Users', 'Products', 'Orders'];
+    const tabNames = ['Users', 'Products', 'Categories', 'Orders'];
     return (
         <div>
             <header className='admin_header'>

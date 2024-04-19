@@ -13,6 +13,33 @@ function getChildrenCategory(id){
     // console.log('getUser123')
     return response;
 }
+function updateCategory(id, updateBody){
+    const response = axiosInstance({
+        method: 'PATCH',
+        url: '/v1/categories/category/' + id,
+        data: updateBody
+    })
+    return response
+}
+
+function getCategories(filter,options){
+    const response = axiosInstance({
+        method: 'GET',
+        url: '/v1/categories',
+        params: {filter, options},
+    })
+    
+    return response;
+}
+
+function getCategory(id){
+    const response = axiosInstance({
+        method: 'GET',
+        url: '/v1/categories/category/'+id,
+    })
+    
+    return response;
+}
 
 // function updateProduct(id, updateBody){
 //     const response = axiosInstance({
@@ -32,5 +59,13 @@ function createCategory(body){
     return response
 }
 
+function deleteCategory(id){
+    const response = axiosInstance({
+        method: 'DELETE',
+        url: '/v1/categories/category/'+id
+    })
+    return response
+}
+
 export {getChildrenCategory, createCategory};
-export default {getChildrenCategory, createCategory, rootCategoryId};
+export default {getChildrenCategory, createCategory, rootCategoryId, getCategories, deleteCategory, getCategory,updateCategory};

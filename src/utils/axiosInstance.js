@@ -15,7 +15,8 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(async function (config) {
-    const idToken = await firebase.auth().currentUser.getIdToken(/* forceRefresh */ true)
+    const idToken = await firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true) 
+
       // Send token to your backend via HTTPS
       // ...
       config.headers['x-access-token'] = idToken;

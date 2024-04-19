@@ -5,3 +5,8 @@
 .long-mock{
   height: 9999px;
 }
+
+.largeIcon{
+  width:32px;
+  height:32px;
+}
