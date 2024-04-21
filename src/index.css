@@ -1,3 +1,13 @@
+:root {
+  --categoryCardWidth: 100px;
+  --categoryCardHeight: 100px;
+  --categoryImgHeight: 50px;
+  --categoryImgWidth: 50px;
+  --productThumbnailWidth: 100px;
+  --productThumbnailHeight: 100px;
+
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

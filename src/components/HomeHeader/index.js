@@ -4,8 +4,12 @@ import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft, BsCart3  } from "react-icons/bs";
-function HomeHeader(){
-  // const onSubmit1 = function
+import { useNavigate,useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useState, useRef } from "react";
+const qs = require('qs')
+
+function HomeHeader({navigateLink}){
+  const navigate = useNavigate()
   const [searchInput, setSearchInput] = useState()
   const onSearchInputChange = useCallback((event) => {
     setSearchInput(event.target.value)
@@ -13,7 +17,7 @@ function HomeHeader(){
   const onSearchSubmit = useCallback(async (e) => {
     e.preventDefault()
     const queryString = qs.stringify({ searchInput }, { encode: false })
-    navigate('/products?' + queryString)
+    navigate(navigateLink + queryString)
   }, [searchInput])
   
     return (
@@ -24,7 +28,10 @@ function HomeHeader(){
                 </ul>
         <div className='header_row2'>
           <a href='/' className='header_logo'>Shopee</a>
-          <form className='header_searchbar'><input onChange={onSearchInputChange} className='header_searchbar_input' placeholder='searchbar'/><button type='submit' className='header_searchbar_button'><BsSearch /></button></form>
+          <form onSubmit={onSearchSubmit} className='header_searchbar'>
+            <input name='generalSearchInput' onChange={onSearchInputChange} className='header_searchbar_input' placeholder='searchbar'/>
+            <button type='submit' className='header_searchbar_button'><BsSearch /></button>
+          </form>
           <div><BsCart3 className='largeIcon'/></div>
         </div>
       </header>

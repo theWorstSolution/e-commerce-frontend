@@ -2,7 +2,7 @@ import { globalContext } from '../contexts/globalContext';
 import { useContext, useEffect, useState } from 'react';
 import firebase from 'firebase/compat/app';
 import HomeHeader from '../components/HomeHeader';
-import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle } from "react-icons/bs";
+import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle,BsStar } from "react-icons/bs";
 import { useCallback } from 'react';
 import categoryService from '../services/categoryService'
 import { constant } from '../config';
@@ -23,7 +23,17 @@ export default function Home() {
     hidePrevButton: false,
     page: 1, //current page
   });
-  
+
+  // display categories row to choose
+  const [mainCategories, setMainCategories] = useState()
+  useEffect(() => {
+    categoryService.getChildrenCategory(categoryService.rootCategoryId).then(({ data }) => {
+      console.log(data);
+      setMainCategories(data)
+    })
+  }, [])
+
+  // logic display search result
   useEffect(() => {
     const initialGeneralSearchInput = searchParams.get('generalSearchInput')
     const initialPage = searchParams.get('page')
@@ -76,19 +86,15 @@ export default function Home() {
         }))
       })
     }
-    //TODO: implement search on category
   }, [searchParams])
-  const onGeneralSearchSubmit = useCallback(async (e) => {
-    e.preventDefault()
-    const queryString = qs.stringify({ generalSearchInput }, { encode: false })
-    navigate('/products?' + queryString)
-  }, [generalSearchInput])
+
   const onChangePage = useCallback(async (event, page) => {
     setSearchParams((params) => {
       params.set("page", page)
       return params
     });
   }, [])
+
   const [detailSearchInput, setDetailSearchInput] = useState()
   const onDetailSearchInputChange = useCallback((event) => {
     const name = event.target.name;
@@ -96,13 +102,9 @@ export default function Home() {
     setDetailSearchInput(values => ({ ...values, [name]: value }))
   }, [])
   const onDetailSearchSubmit = useCallback(() => { }, [])
-  const [mainCategories, setMainCategories] = useState()
-  useEffect(() => {
-    categoryService.getChildrenCategory(categoryService.rootCategoryId).then(({ data }) => {
-      console.log(data);
-      setMainCategories(data)
-    })
-  }, [])
+  
+
+
   const [accordionState, setAccordionState] = useState({
     state: 0, // 0: hidden, 1: show
     arrowStyle: {},
@@ -132,20 +134,35 @@ export default function Home() {
       })
     }
   }, [accordionState])
-  const [slickerStyle, setSlickerStyle] = useState({ translate: 0, transitionValue: 0 })
+
+  const [slickerStyle, setSlickerStyle] = useState({ translate: '0px' })
   const onSlideSlicker = function (e) {
-    console.log(e.target.name);
+    console.log(e)
+    console.log(e.currentTarget.name);
     const newSlickerStyle = { ...slickerStyle }
-    if (e.target.name == 'slideForward') {
-      newSlickerStyle.transitionValue -= constant.css.categoryCardWidth.value
+    if (e.currentTarget.name == 'slideForward') {
+      newSlickerStyle.translate = 'calc('+newSlickerStyle.translate+' - '+'var(--categoryCardWidth)'+')'
     } else {
-      newSlickerStyle.transitionValue += constant.css.categoryCardWidth.value
+      newSlickerStyle.translate = 'calc('+newSlickerStyle.translate+' + '+'var(--categoryCardWidth)'+')'
     }
-    newSlickerStyle.translate = newSlickerStyle.transitionValue + constant.css.categoryCardWidth.unit
     setSlickerStyle(newSlickerStyle)
   }
+
+  const [productLists, setProductLists] = useState([])
+  useEffect(()=>{
+    if (res) {
+      const newProductLists = []
+      for(let i=0;i<res.length;i++){
+        if(!newProductLists[i%10]){
+          newProductLists[i%10] = []
+        }
+        newProductLists[i%10].push(res[i]) 
+      }
+      setProductLists(newProductLists)
+    }
+  },[res])
   return (<div>
-    <HomeHeader onSearchSubmit={onGeneralSearchSubmit}/>
+    <HomeHeader navigateLink='/products?'/>
     <h2 onClick={onClickAccordion} style={{ display: 'flex', alignItems: 'center' }}><BsCaretRightFill style={{ transition: 'transform 1s ease-in-out', ...accordionState.arrowStyle }} />Detail search</h2>
     <form style={{ transition: 'max-height 1s ease-in-out', border: 'solid', overflow: 'hidden', ...accordionState.contentStyle }}>
       <label>Name, description:</label>
@@ -157,13 +174,26 @@ export default function Home() {
       <button name='slideBack' onClick={onSlideSlicker}><BsArrowLeftCircle /></button>
       <div style={{ overflow: 'hidden' }}>
         {mainCategories && <ul className='horizontalUl' style={{ listStyleType: 'none', transition: 'translate 1s ease-in-out', ...slickerStyle }}>
-          {mainCategories.map((cat) => (<li key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: constant.css.categoryCardWidth.string, height: constant.css.categoryCardHeight.string }}>
-            <img src={cat.picture} width={constant.css.categoryImgWidth.string} height={constant.css.categoryImgHeight.string}></img>
+          {mainCategories.map((cat) => (<li key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'var(--categoryCardWidth)', height: 'var(--categoryCardHeight)' }}>
+            <img src={cat.picture} style={{width:'var(--categoryImgWidth)', height:'var(--categoryImgHeight)'}}></img>
             {cat.name}
           </li>))}
         </ul>}
       </div>
       <button name='slideForward' onClick={onSlideSlicker}><BsArrowRightCircle /></button>
+    </section>
+    <section>
+      {productLists.map((productList)=><ul style={{listStyleType: 'none', display: 'flex', flexDirection:'row', justifyContent:'flex-start'}}>
+        {productList.map((product)=><li key={product.id}>
+          <div><img src={product.picture[0]}></img></div>
+          <div>
+            <div>{product.name}</div>
+            <div>{product.rating} <BsStar /></div>
+            <div>{product.price}$</div>
+            <div>{product.soldAmount} sold</div>
+          </div>
+        </li>)}
+      </ul>)}
     </section>
     {/* Hoe Logined
          <div>
