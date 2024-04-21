@@ -16,7 +16,7 @@ function HomeHeader({navigateLink}){
   }, [])
   const onSearchSubmit = useCallback(async (e) => {
     e.preventDefault()
-    const queryString = qs.stringify({ searchInput }, { encode: false })
+    const queryString = qs.stringify({ generalSearchInput: searchInput }, { encode: false })
     navigate(navigateLink + queryString)
   }, [searchInput])
   

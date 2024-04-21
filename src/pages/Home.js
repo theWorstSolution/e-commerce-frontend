@@ -153,10 +153,10 @@ export default function Home() {
     if (res) {
       const newProductLists = []
       for(let i=0;i<res.length;i++){
-        if(!newProductLists[i%10]){
-          newProductLists[i%10] = []
+        if(!newProductLists[Math.floor(i/2)]){
+          newProductLists[Math.floor(i/2)] = []
         }
-        newProductLists[i%10].push(res[i]) 
+        newProductLists[Math.floor(i/2)].push(res[i]) 
       }
       setProductLists(newProductLists)
     }
@@ -185,7 +185,7 @@ export default function Home() {
     <section>
       {productLists.map((productList)=><ul style={{listStyleType: 'none', display: 'flex', flexDirection:'row', justifyContent:'flex-start'}}>
         {productList.map((product)=><li key={product.id}>
-          <div><img src={product.picture[0]}></img></div>
+          <div><img src={product.picture[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img></div>
           <div>
             <div>{product.name}</div>
             <div>{product.rating} <BsStar /></div>
