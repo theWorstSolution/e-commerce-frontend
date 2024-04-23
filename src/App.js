@@ -17,13 +17,17 @@ import OrderDetail from './pages/admin/OrderDetail';
 import CategoryTabContent from './pages/admin/CategoryTabContent';
 import EditCategory from './pages/admin/EditCategory';
 import CreateCategory from './pages/admin/CreateCategory';
+import ProductDetail from './pages/ProductDetail';
 
 function App() {
   return (
     <Routes>
       <Route path='auth' element={<AuthGuard/>} />
       <Route index element={<Home/>}/>
-      <Route path='products' element={<Home/>} />
+      <Route path='products'>
+        <Route index element={<Home/>}/>
+        <Route path='product/:productId' element={<ProductDetail/>}/>
+      </Route>
       <Route path='admin' element={<AdminLayout/>}>
         <Route index element={<UserTabContent/>}/>   
         <Route path='users'>

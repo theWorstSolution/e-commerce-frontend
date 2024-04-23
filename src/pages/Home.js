@@ -6,7 +6,7 @@ import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle,BsStar } from "
 import { useCallback } from 'react';
 import categoryService from '../services/categoryService'
 import { constant } from '../config';
-import { useOutletContext } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import productService from '../services/productService';
 const qs = require('qs')
@@ -33,30 +33,31 @@ export default function Home() {
     })
   }, [])
 
+  const [resultsTitle, setResultsTitle] = useState()
   // logic display search result
   useEffect(() => {
     const initialGeneralSearchInput = searchParams.get('generalSearchInput')
     const initialPage = searchParams.get('page')
+    const categoryId = searchParams.get('categoryId')
+    let filter, options;
     if (initialGeneralSearchInput || initialGeneralSearchInput == '' || searchParams.size == 0) {
-      const filter = {
+      filter = {
         $or: [
           { name: { $regex: initialGeneralSearchInput, $options: 'i' } },
           { 'categories.name': { $regex: initialGeneralSearchInput, $options: 'i' } },
           { description: { $regex: initialGeneralSearchInput, $options: 'i' } },
         ]
       }
-      const options = { page: initialPage }
-      productService.getProducts(filter, options).then(({ data }) => {
-        console.log(data);
-        setRes(data.results)
-        setPagiProps((pagiProps) => ({
-          ...pagiProps,
-          count: data.totalPages,
-          page: data.page
-        }))
-      })
-    } else {
-      const filter = {
+      options = { page: initialPage }
+      setResultsTitle('Search results:')
+    }else if(searchParams.size == 1 && categoryId){
+      filter = {
+        'categories.id': categoryId
+      }
+      options = { page: initialPage }
+      categoryService.getCategory(categoryId).then(({data: category})=>{setResultsTitle(category.name)})
+    }else{
+      filter = {
         _id: {}, price: {}, soldAmount: {}
       }
       if (searchParams.get('id') != '') {
@@ -75,17 +76,18 @@ export default function Home() {
         filter.soldAmount.$lte = searchParams.get('maxSoldAmount')
       }
 
-      const options = { sortBy: searchParams.get('sortField') + ':' + searchParams.get('sortOrder'), page: initialPage }
-      productService.getProducts(filter, options).then(({ data }) => {
-        console.log(data);
-        setRes(data.results)
-        setPagiProps((pagiProps) => ({
-          ...pagiProps,
-          count: data.totalPages,
-          page: data.page
-        }))
-      })
+      options = { sortBy: searchParams.get('sortField') + ':' + searchParams.get('sortOrder'), page: initialPage }
+      setResultsTitle('Search results:')
     }
+    productService.getProducts(filter, options).then(({ data }) => {
+      console.log(data);
+      setRes(data.results)
+      setPagiProps((pagiProps) => ({
+        ...pagiProps,
+        count: data.totalPages,
+        page: data.page
+      }))
+    })
   }, [searchParams])
 
   const onChangePage = useCallback(async (event, page) => {
@@ -182,16 +184,19 @@ export default function Home() {
       </div>
       <button name='slideForward' onClick={onSlideSlicker}><BsArrowRightCircle /></button>
     </section>
+    <h2>{resultsTitle}</h2>
     <section>
       {productLists.map((productList)=><ul style={{listStyleType: 'none', display: 'flex', flexDirection:'row', justifyContent:'flex-start'}}>
         {productList.map((product)=><li key={product.id}>
-          <div><img src={product.picture[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img></div>
-          <div>
-            <div>{product.name}</div>
-            <div>{product.rating} <BsStar /></div>
-            <div>{product.price}$</div>
-            <div>{product.soldAmount} sold</div>
-          </div>
+          <Link to={'/products/product/'+product.id}>
+            <div><img src={product.picture[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img></div>
+            <div>
+              <div>{product.name}</div>
+              <div>{product.rating} <BsStar /></div>
+              <div>{product.price}$</div>
+              <div>{product.soldAmount} sold</div>
+            </div>
+          </Link>
         </li>)}
       </ul>)}
     </section>
