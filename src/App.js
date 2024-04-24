@@ -18,12 +18,20 @@ import CategoryTabContent from './pages/admin/CategoryTabContent';
 import EditCategory from './pages/admin/EditCategory';
 import CreateCategory from './pages/admin/CreateCategory';
 import ProductDetail from './pages/ProductDetail';
+import UserProfileLayout from './pages/UserProfileLayout';
+import UserProfile from './pages/UserProfile'
+import BuyHistory from './pages/BuyHistory';
 
 function App() {
   return (
     <Routes>
-      <Route path='auth' element={<AuthGuard/>} />
       <Route index element={<Home/>}/>
+      <Route path='auth' element={<AuthGuard/>} />
+      <Route path='user' element={<UserProfileLayout/>}>
+        <Route index element={<UserProfile/>} />
+        <Route path='profile' element={<UserProfile/>} />
+        <Route path='buy-history' element={<BuyHistory/>} />
+      </Route>
       <Route path='products'>
         <Route index element={<Home/>}/>
         <Route path='product/:productId' element={<ProductDetail/>}/>

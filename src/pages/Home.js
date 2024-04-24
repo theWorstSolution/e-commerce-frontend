@@ -2,7 +2,7 @@ import { globalContext } from '../contexts/globalContext';
 import { useContext, useEffect, useState } from 'react';
 import firebase from 'firebase/compat/app';
 import HomeHeader from '../components/HomeHeader';
-import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle,BsStar } from "react-icons/bs";
+import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle, BsStar } from "react-icons/bs";
 import { useCallback } from 'react';
 import categoryService from '../services/categoryService'
 import { constant } from '../config';
@@ -50,13 +50,13 @@ export default function Home() {
       }
       options = { page: initialPage }
       setResultsTitle('Search results:')
-    }else if(searchParams.size == 1 && categoryId){
+    } else if (searchParams.size == 1 && categoryId) {
       filter = {
         'categories.id': categoryId
       }
       options = { page: initialPage }
-      categoryService.getCategory(categoryId).then(({data: category})=>{setResultsTitle(category.name)})
-    }else{
+      categoryService.getCategory(categoryId).then(({ data: category }) => { setResultsTitle(category.name) })
+    } else {
       filter = {
         _id: {}, price: {}, soldAmount: {}
       }
@@ -104,7 +104,7 @@ export default function Home() {
     setDetailSearchInput(values => ({ ...values, [name]: value }))
   }, [])
   const onDetailSearchSubmit = useCallback(() => { }, [])
-  
+
 
 
   const [accordionState, setAccordionState] = useState({
@@ -143,28 +143,28 @@ export default function Home() {
     console.log(e.currentTarget.name);
     const newSlickerStyle = { ...slickerStyle }
     if (e.currentTarget.name == 'slideForward') {
-      newSlickerStyle.translate = 'calc('+newSlickerStyle.translate+' - '+'var(--categoryCardWidth)'+')'
+      newSlickerStyle.translate = 'calc(' + newSlickerStyle.translate + ' - ' + 'var(--categoryCardWidth)' + ')'
     } else {
-      newSlickerStyle.translate = 'calc('+newSlickerStyle.translate+' + '+'var(--categoryCardWidth)'+')'
+      newSlickerStyle.translate = 'calc(' + newSlickerStyle.translate + ' + ' + 'var(--categoryCardWidth)' + ')'
     }
     setSlickerStyle(newSlickerStyle)
   }
 
   const [productLists, setProductLists] = useState([])
-  useEffect(()=>{
+  useEffect(() => {
     if (res) {
       const newProductLists = []
-      for(let i=0;i<res.length;i++){
-        if(!newProductLists[Math.floor(i/2)]){
-          newProductLists[Math.floor(i/2)] = []
+      for (let i = 0; i < res.length; i++) {
+        if (!newProductLists[Math.floor(i / 2)]) {
+          newProductLists[Math.floor(i / 2)] = []
         }
-        newProductLists[Math.floor(i/2)].push(res[i]) 
+        newProductLists[Math.floor(i / 2)].push(res[i])
       }
       setProductLists(newProductLists)
     }
-  },[res])
+  }, [res])
   return (<div>
-    <HomeHeader navigateLink='/products?'/>
+    <HomeHeader navigateLink='/products?' />
     <h2 onClick={onClickAccordion} style={{ display: 'flex', alignItems: 'center' }}><BsCaretRightFill style={{ transition: 'transform 1s ease-in-out', ...accordionState.arrowStyle }} />Detail search</h2>
     <form style={{ transition: 'max-height 1s ease-in-out', border: 'solid', overflow: 'hidden', ...accordionState.contentStyle }}>
       <label>Name, description:</label>
@@ -176,8 +176,12 @@ export default function Home() {
       <button name='slideBack' onClick={onSlideSlicker}><BsArrowLeftCircle /></button>
       <div style={{ overflow: 'hidden' }}>
         {mainCategories && <ul className='horizontalUl' style={{ listStyleType: 'none', transition: 'translate 1s ease-in-out', ...slickerStyle }}>
-          {mainCategories.map((cat) => (<li key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'var(--categoryCardWidth)', height: 'var(--categoryCardHeight)' }}>
-            <img src={cat.picture} style={{width:'var(--categoryImgWidth)', height:'var(--categoryImgHeight)'}}></img>
+          {mainCategories.map((cat) => (<li onClick={() => {
+            const newSearchParams = new URLSearchParams();
+            newSearchParams.set("categoryId", cat.id);
+            setSearchParams(newSearchParams);
+          }} key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'var(--categoryCardWidth)', height: 'var(--categoryCardHeight)' }}>
+            <img src={cat.picture} style={{ width: 'var(--categoryImgWidth)', height: 'var(--categoryImgHeight)' }}></img>
             {cat.name}
           </li>))}
         </ul>}
@@ -186,10 +190,10 @@ export default function Home() {
     </section>
     <h2>{resultsTitle}</h2>
     <section>
-      {productLists.map((productList)=><ul style={{listStyleType: 'none', display: 'flex', flexDirection:'row', justifyContent:'flex-start'}}>
-        {productList.map((product)=><li key={product.id}>
-          <Link to={'/products/product/'+product.id}>
-            <div><img src={product.picture[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img></div>
+      {productLists.map((productList) => <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
+        {productList.map((product) => <li key={product.id}>
+          <Link to={'/products/product/' + product.id}>
+            <div><img src={product.picture[0]} style={{ width: 'var(--productThumbnailWidth)', height: 'var(--productThumbnailHeight)' }}></img></div>
             <div>
               <div>{product.name}</div>
               <div>{product.rating} <BsStar /></div>

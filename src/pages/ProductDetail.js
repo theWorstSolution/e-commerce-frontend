@@ -1,11 +1,14 @@
 import { Link, useOutletContext, useParams } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import productService from "../services/productService";
 import Creatable from 'react-select/creatable';
 import HomeHeader from "../components/HomeHeader";
 import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle,BsStar } from "react-icons/bs";
+import orderService from "../services/orderService";
+import { globalContext } from '../contexts/globalContext';
 
 export default function ProductDetail() {
+    const { user } = useContext(globalContext);
     const { productId } = useParams()
     const [product, setProduct] = useState()
     const [amount, setAmount] = useState(1)
@@ -15,6 +18,17 @@ export default function ProductDetail() {
             setProduct(product)
         })
     }, [])
+    function onBuy(){
+        const isConfirmed = window.confirm('Buy '+ amount + ' x ' + product.name + '? That will be ' + amount*product.price + '$')
+        if(isConfirmed){
+            orderService.createOrder({user: user.id, product: productId, amount}).then(({data})=>{
+                console.log(data)
+                if(data){
+                    alert('Buy successfully')
+                }
+            })
+        }
+    }
     return (<div>
         <HomeHeader navigateLinkOnSearch='/'></HomeHeader>
         {product && <article>
@@ -32,7 +46,7 @@ export default function ProductDetail() {
                     <p><label>Rating:</label> {product.rating}<BsStar /></p>
                     <p><label>Sold amount:</label> {product.soldAmount}</p>
                     <form><label>Amount</label><input onChange={(e)=>{setAmount(e.target.value)}} type="number" defaultValue={amount} min={1}/></form>
-                    <button type="submit">Put in cart</button><button type="submit">Buy</button>
+                    <button type="submit">Put in cart</button><button type="submit" onClick={onBuy}>Buy</button>
                 </div>
             </div>
             <div>

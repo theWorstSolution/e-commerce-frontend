@@ -4,9 +4,10 @@ import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft, BsCart3  } from "react-icons/bs";
-import { useNavigate,useSearchParams } from 'react-router-dom';
+import { Link, useNavigate,useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useState, useRef, useContext } from "react";
 import { globalContext } from '../../contexts/globalContext';
+import firebase from 'firebase/compat/app';
 const qs = require('qs')
 
 
@@ -29,14 +30,16 @@ function HomeHeader({navigateLinkOnSearch}){
                     <li className='centerChildren'><BsBell />Thông báo</li>
                     <li className='centerChildren header_account' style={{position:'relative'}}>
                       <BsPersonCircle />{user?user.name:<p>Account</p>}
-                      {<nav className='header_account_nav arrow_box'>
-                        {user?<ul style={{listStyleType:'none'}}>
-                          <li>Account detail</li>
-                          <li>Sign out</li>
-                        </ul>:<ul style={{listStyleType:'none'}}>
-                          <li>Login</li>
-                        </ul>}
-                      </nav>}
+                      <div style={{position:'absolute', top:'100%'}} className='header_account_dropdown'>
+                        {<nav className='header_account_nav'>
+                          {user?<ul style={{listStyleType:'none', padding:0}}>
+                            <li><Link to='/user'>Account detail</Link></li>
+                            <li onClick={() => firebase.auth().signOut()}>Sign-out</li>
+                          </ul>:<ul style={{listStyleType:'none'}}>
+                            <li><Link to='/auth'>Login</Link></li>
+                          </ul>}
+                        </nav>}
+                      </div>
                     </li>
 
                 </ul>
