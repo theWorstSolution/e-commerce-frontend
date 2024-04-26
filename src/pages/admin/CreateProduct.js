@@ -4,20 +4,33 @@ import { createProduct } from "../../services/productService";
 import { getChildrenCategory, createCategory } from "../../services/categoryService";
 import categoryService from "../../services/categoryService";
 import Creatable from 'react-select/creatable';
+import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
 
 
 export default function CreateProduct() {
     const { setCurrentTab } = useOutletContext()
-    const [inputs, setInputs] = useState({});
+    const [inputs, setInputs] = useState({pictures:['']});
     const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{id: categoryService.rootCategoryId, name:'root'}]])  // có id, name
     const [catsSelected, setCatsSelected] = useState([{value: categoryService.rootCategoryId, label:'root'}])    // có value và label
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
-        setInputs(values => ({ ...values, [name]: value }))
+        if(name.slice(0,7)=='picture'){
+            inputs.pictures[parseInt(name.slice(7,undefined))] = value
+        }else{
+            setInputs(values => ({ ...values, [name]: value }))
+        }
     }
+    const [morePicturesField, setMorePicturesField] = useState([<input type="url" name={'picture0'} onChange={handleChange}/>])
+    
     const handleSubmit = (event) => {
         event.preventDefault();
+        const temp = inputs.pictures.filter((picture)=>picture!='')
+        if(temp.length==0){
+            alert('must have at least 1 picture')
+            return
+        }
+        inputs.pictures = temp
         const body = {
             ...inputs,
             categories: catsSelected.map((catSelected) => ({id:catSelected.value, name:catSelected.label}))
@@ -41,8 +54,13 @@ export default function CreateProduct() {
             <input type="number" name='price' onChange={handleChange} />
             <label>Description</label>
             <input type="text" name='description' onChange={handleChange} />
-            <label>Picture</label>
-            <input type="url" name='picture' onChange={handleChange} />
+            <label>Pictures</label>
+            {morePicturesField}
+            <button onClick={(e)=>{
+                e.preventDefault()
+                inputs.pictures.push('')
+                setMorePicturesField([...morePicturesField,<input type="url" name={'picture'+(inputs.pictures.length-1)} onChange={handleChange}/>])
+            }}><BsPlusLg/></button>
             <label>Category</label>
             <div>
                 {categoriesAtLevel && categoriesAtLevel.map((catsAtLevel, idx) => {
