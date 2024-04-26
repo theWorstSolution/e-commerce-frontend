@@ -39,7 +39,7 @@ export default function ProductDetail() {
                 return <Link to={'/products?categoryId='+cat.id}>{cat.name + ' > '}</Link>
             })}</div>
             <div style={{display:'flex'}}>
-                <img src={product.picture[0]}></img>
+                <img src={product.pictures[0]}></img>
                 <div>
                     <h3>{product.name}</h3>
                     <p><label>Price:</label> {product.price+'$'}</p>

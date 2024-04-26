@@ -43,9 +43,9 @@ export default function BuyHistory(){
         })
     },[searchParams])
     
-    return (<div>{res &&  <div><ul style={{display:'flex'}}>
+    return (<div>{res &&  <div><ul >
         {res.map((order)=><li key={order.id} style={{display:'flex', flexDirection:'row'}}>
-            <img src={order.product.picture[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img>
+            <img src={order.product.pictures[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img>
             <div>
                 <h3><Link to={'/products/product/'+order.product.id}>{order.product.name}</Link></h3>
                 <p><label>Bought amount:</label>{order.amount}</p>

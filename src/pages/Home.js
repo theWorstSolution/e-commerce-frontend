@@ -9,10 +9,15 @@ import { constant } from '../config';
 import { Link, useOutletContext } from "react-router-dom";
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import productService from '../services/productService';
+import Select from 'react-select';
+import { Pagination } from '@mui/material';
 const qs = require('qs')
 
 export default function Home() {
   const { user } = useContext(globalContext);
+  const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{id: categoryService.rootCategoryId, name:'root'}]])  // có id, name
+    const [catsSelected, setCatsSelected] = useState([{value: categoryService.rootCategoryId, label:'root'}])    // có value và label
+
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate()
   const [res, setRes] = useState()
@@ -30,6 +35,9 @@ export default function Home() {
     categoryService.getChildrenCategory(categoryService.rootCategoryId).then(({ data }) => {
       console.log(data);
       setMainCategories(data)
+      setCategoriesAtLevel((categoriesAtLevel) => {
+        return [...categoriesAtLevel, data]
+    })
     })
   }, [])
 
@@ -38,7 +46,6 @@ export default function Home() {
   useEffect(() => {
     const initialGeneralSearchInput = searchParams.get('generalSearchInput')
     const initialPage = searchParams.get('page')
-    const categoryId = searchParams.get('categoryId')
     let filter, options;
     if (initialGeneralSearchInput || initialGeneralSearchInput == '' || searchParams.size == 0) {
       filter = {
@@ -50,35 +57,41 @@ export default function Home() {
       }
       options = { page: initialPage }
       setResultsTitle('Search results:')
-    } else if (searchParams.size == 1 && categoryId) {
+    } else if (searchParams.size == 1 && searchParams.get('categoryId') && searchParams.get('categoryId')!='') {
       filter = {
-        'categories.id': categoryId
+        'categories.id': searchParams.get('categoryId')
       }
       options = { page: initialPage }
-      categoryService.getCategory(categoryId).then(({ data: category }) => { setResultsTitle(category.name) })
+      categoryService.getCategory(searchParams.get('categoryId')).then(({ data: category }) => { setResultsTitle(category.name) })
     } else {
       filter = {
-        _id: {}, price: {}, soldAmount: {}
+        price: {}, soldAmount: {}
       }
-      if (searchParams.get('id') != '') {
-        filter._id = searchParams.get('id')
+      if (searchParams.get('name_description_category') != '' && searchParams.get('name_description_category')) {
+        filter.$or = [];
+        filter.$or.push({ name: { $regex: searchParams.get('name_description_category'), $options: 'i' } })
+        filter.$or.push({ description: { $regex: searchParams.get('name_description_category'), $options: 'i' } })
+        filter.$or.push({ 'categories.name': { $regex: searchParams.get('name_description_category'), $options: 'i' } })
       }
-      if (searchParams.get('minPrice') != '') {
+      if (searchParams.get('minPrice') != '' && searchParams.get('minPrice')) {
         filter.price.$gte = searchParams.get('minPrice')
       }
-      if (searchParams.get('maxPrice') != '') {
+      if (searchParams.get('maxPrice') != '' && searchParams.get('maxPrice')) {
         filter.price.$lte = searchParams.get('maxPrice')
       }
-      if (searchParams.get('minSoldAmount') != '') {
+      if (searchParams.get('minSoldAmount') != '' && searchParams.get('minSoldAmount')) {
         filter.soldAmount.$gte = searchParams.get('minSoldAmount')
       }
-      if (searchParams.get('maxSoldAmount') != '') {
+      if (searchParams.get('maxSoldAmount') != '' && searchParams.get('maxSoldAmount')) {
         filter.soldAmount.$lte = searchParams.get('maxSoldAmount')
       }
+      filter['categories.id'] = searchParams.get('categoryId')
 
       options = { sortBy: searchParams.get('sortField') + ':' + searchParams.get('sortOrder'), page: initialPage }
       setResultsTitle('Search results:')
     }
+    console.log(filter);
+    console.log(options);
     productService.getProducts(filter, options).then(({ data }) => {
       console.log(data);
       setRes(data.results)
@@ -97,13 +110,23 @@ export default function Home() {
     });
   }, [])
 
-  const [detailSearchInput, setDetailSearchInput] = useState()
+  const [detailSearchInput, setDetailSearchInput] = useState({ sortField: 'name', sortOrder: 'asc' })
   const onDetailSearchInputChange = useCallback((event) => {
     const name = event.target.name;
     const value = event.target.value;
     setDetailSearchInput(values => ({ ...values, [name]: value }))
   }, [])
-  const onDetailSearchSubmit = useCallback(() => { }, [])
+  const onDetailSearchSubmit = useCallback((e) => {
+    e.preventDefault()
+    const newSearchParams = new URLSearchParams();
+    for (let param in detailSearchInput) {
+      newSearchParams.set(param, detailSearchInput[param]);
+    }
+    newSearchParams.set('categoryId',catsSelected[catsSelected.length-1].value)
+    setSearchParams(newSearchParams);
+    // const queryString = qs.stringify(detailSearchInput, { encode:false})
+    // navigate('/products?'+queryString)
+  }, [detailSearchInput, catsSelected])
 
 
 
@@ -121,7 +144,7 @@ export default function Home() {
       newAccordionState.arrowStyle = {
         transform: 'rotate(90deg)'
       }
-      newAccordionState.contentStyle = { maxHeight: '50px' }
+      newAccordionState.contentStyle = { maxHeight: '300px' }
       console.log(newAccordionState);
       setAccordionState(newAccordionState)
     } else {
@@ -163,12 +186,84 @@ export default function Home() {
       setProductLists(newProductLists)
     }
   }, [res])
+
+
   return (<div>
-    <HomeHeader navigateLink='/products?' />
+    <HomeHeader navigateLinkOnSearch='/products?' />
     <h2 onClick={onClickAccordion} style={{ display: 'flex', alignItems: 'center' }}><BsCaretRightFill style={{ transition: 'transform 1s ease-in-out', ...accordionState.arrowStyle }} />Detail search</h2>
-    <form style={{ transition: 'max-height 1s ease-in-out', border: 'solid', overflow: 'hidden', ...accordionState.contentStyle }}>
-      <label>Name, description:</label>
-      <input type='search' />
+    <form onSubmit={onDetailSearchSubmit} style={{ transition: 'max-height 1s ease-in-out', border: 'solid', overflow: 'auto', ...accordionState.contentStyle }}>
+      <label>Name/description/category:</label>
+      <input type='search' name='name_description_category' onChange={onDetailSearchInputChange} />
+      <p>
+        <label>Price</label>
+        <input type='number' name="minPrice" onChange={onDetailSearchInputChange} />
+        <input type='number' name="maxPrice" onChange={onDetailSearchInputChange} />
+      </p>
+      <p>
+        <label>Sold amount</label>
+        <input type='number' name="minSoldAmount" onChange={onDetailSearchInputChange} />
+        <input type='number' name="maxSoldAmount" onChange={onDetailSearchInputChange} />
+      </p>
+      <div>
+        {categoriesAtLevel && categoriesAtLevel.map((catsAtLevel, idx) => {
+          return (<Select
+            key={catsSelected[idx]?.value}
+            isClearable
+            onChange={async (newSelected) => {
+              console.log('trigger onchange');
+              console.log('new value: ' + JSON.stringify(newSelected));
+              //if xóa lựa chọn
+              if (!newSelected) {
+                setCatsSelected((catsSelected) => {
+                  const newCatsSelected = [...catsSelected]
+                  newCatsSelected.splice(idx);
+                  return newCatsSelected
+                })
+
+                setCategoriesAtLevel((categoriesAtLevel) => {
+                  const newCatsAtLevel = [...categoriesAtLevel]
+                  newCatsAtLevel.splice(idx + 1)
+                  return newCatsAtLevel
+                })
+                return
+              }
+
+
+              setCatsSelected((catsSelected) => {
+                const newCatsSelected = [...catsSelected]
+                newCatsSelected[idx] = newSelected
+                newCatsSelected.splice(idx + 1)
+                console.log('newCatsSelected: ' + JSON.stringify(newCatsSelected));
+                return newCatsSelected
+              })
+
+              const { data: childrenCats } = await categoryService.getChildrenCategory(newSelected.value)
+              // console.log(childrenCats);
+              setCategoriesAtLevel((categoriesAtLevel) => {
+                const newCatsAtLevel = [...categoriesAtLevel]
+                newCatsAtLevel[idx + 1] = childrenCats;
+                newCatsAtLevel.splice(idx + 2)
+                console.log('categoriesAtLevel: ' + JSON.stringify(newCatsAtLevel));
+                return newCatsAtLevel
+              })
+            }}
+            options={catsAtLevel.map((cat) => ({ value: cat.id, label: cat.name }))}
+            value={catsSelected[idx]}
+          />)
+        })}
+      </div>
+      <p>
+        <label>Sort by</label>
+        <select value={detailSearchInput.sortField} name="sortField" onChange={onDetailSearchInputChange}>
+          <option value='name' >Name</option>
+          <option value='price' >Price</option>
+          <option value='soldAmount' >Sold amount</option>
+        </select>
+      </p>
+      <div>
+        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="asc" defaultChecked={detailSearchInput.sortOrder == 'asc'} /><label>Ascending </label>
+        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="desc" defaultChecked={detailSearchInput.sortOrder == 'desc'} /><label>Descending </label>
+      </div>
       <button type='submit'>Submit</button>
     </form>
     <h2>Categories</h2>
@@ -193,7 +288,7 @@ export default function Home() {
       {productLists.map((productList) => <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
         {productList.map((product) => <li key={product.id}>
           <Link to={'/products/product/' + product.id}>
-            <div><img src={product.picture[0]} style={{ width: 'var(--productThumbnailWidth)', height: 'var(--productThumbnailHeight)' }}></img></div>
+            <div><img src={product.pictures[0]} style={{ width: 'var(--productThumbnailWidth)', height: 'var(--productThumbnailHeight)' }}></img></div>
             <div>
               <div>{product.name}</div>
               <div>{product.rating} <BsStar /></div>
@@ -203,6 +298,7 @@ export default function Home() {
           </Link>
         </li>)}
       </ul>)}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
     </section>
     {/* Hoe Logined
          <div>

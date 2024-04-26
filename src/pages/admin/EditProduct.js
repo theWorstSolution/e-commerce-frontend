@@ -4,6 +4,7 @@ import { createProduct, updateProduct } from "../../services/productService";
 import categoryService, { getChildrenCategory, createCategory } from "../../services/categoryService";
 import productService from "../../services/productService";
 import Creatable from 'react-select/creatable';
+import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
 
 
 export default function EditProduct() {
@@ -13,17 +14,25 @@ export default function EditProduct() {
     const [categoriesAtLevel, setCategoriesAtLevel] = useState([]) // element = mảng các object cat có id, name
     const [catsSelected, setCatsSelected] = useState([])    // có value và label
     const [product, setProduct] = useState()
+    const [morePicturesField, setMorePicturesField] = useState()
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
-        setInputs(values => ({ ...values, [name]: value }))
+        if(name.slice(0,7)=='picture'){
+            inputs.pictures[parseInt(name.slice(7,undefined))] = value
+            // setInputs(values => ({ ...values, pictures: [value] }))
+        }else{
+            setInputs(values => ({ ...values, [name]: value }))
+        }
     }
     const handleSubmit = (event) => {
         event.preventDefault();
+        inputs.pictures = inputs.pictures.filter((picture)=>picture!='')
         const body = {
             ...inputs,
             categories: catsSelected.map((catSelected) => ({id:catSelected.value, name:catSelected.label}))
         }
+        console.log('patch data');
         console.log(body);
         updateProduct(productId, body).then((res) => console.log(res))
     }
@@ -39,6 +48,7 @@ export default function EditProduct() {
             }));
             childrenCategories.unshift([{ id: categoryService.rootCategoryId, name: 'root' }]);
             setCategoriesAtLevel(childrenCategories);
+            setInputs({pictures: [...product.pictures]})
         })
     }, [])
     return (<article>
@@ -51,8 +61,18 @@ export default function EditProduct() {
             <input type="number" name='price' onChange={handleChange} defaultValue={product.price} />
             <label>Description</label>
             <input type="text" name='description' onChange={handleChange} defaultValue={product.description} />
-            <label>Picture</label>
-            <input type="url" name='picture' onChange={handleChange} defaultValue={product.picture} />
+            <label>Pictures</label>
+            {product.pictures.map((picture, idx)=><input key={picture} type="url" name={'picture'+idx} onChange={handleChange} defaultValue={picture} />)}
+            {morePicturesField}
+            <button onClick={(e)=>{
+                e.preventDefault()
+                inputs.pictures.push('')
+                if(!morePicturesField){
+                    setMorePicturesField([<input type="url" name={'picture'+(inputs.pictures.length-1)} onChange={handleChange}/>])
+                }else{
+                    setMorePicturesField([...morePicturesField,<input type="url" name={'picture'+(inputs.pictures.length-1)} onChange={handleChange}/>])
+                }
+            }}><BsPlusLg/></button>
             <label>Sold amount</label>
             <input type="number" readOnly defaultValue={product.soldAmount} />
             <label>Category</label>

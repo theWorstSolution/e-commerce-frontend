@@ -49,24 +49,24 @@ export default function ProductTabContent() {
             })
         }else{
             const filter = {
-                _id:{}, price:{}, soldAmount:{}
+                price:{}, soldAmount:{}
             }
-            if(searchParams.get('id')!=''){
+            if(searchParams.get('id')!='' && searchParams.get('id')){
                 filter._id = searchParams.get('id')
             }
-            if(searchParams.get('minPrice')!=''){
+            if(searchParams.get('minPrice')!='' && searchParams.get('minPrice')){
                 filter.price.$gte = searchParams.get('minPrice')
             }
-            if(searchParams.get('maxPrice')!=''){
+            if(searchParams.get('maxPrice')!='' && searchParams.get('maxPrice')){
                 filter.price.$lte = searchParams.get('maxPrice')
             }
-            if(searchParams.get('minSoldAmount')!=''){
+            if(searchParams.get('minSoldAmount')!='' && searchParams.get('minSoldAmount')){
                 filter.soldAmount.$gte = searchParams.get('minSoldAmount')
             }
-            if(searchParams.get('maxSoldAmount')!=''){
+            if(searchParams.get('maxSoldAmount')!='' && searchParams.get('maxSoldAmount')){
                 filter.soldAmount.$lte = searchParams.get('maxSoldAmount')
             }
-            
+            console.log(filter);
             const options = {sortBy: searchParams.get('sortField')+':'+searchParams.get('sortOrder'), page:initialPage}
             productService.getProducts(filter, options).then(({data})=>{
                 console.log(data);
@@ -93,13 +93,20 @@ export default function ProductTabContent() {
             return params
         } );
     }, [])
-    const [detailSearchInput, setDetailSearchInput] = useState()
+    const [detailSearchInput, setDetailSearchInput] = useState({sortField:'name', sortOrder:'asc'})
     const onDetailSearchInputChange = useCallback((event) => {
         const name = event.target.name;
         const value = event.target.value;
         setDetailSearchInput(values => ({ ...values, [name]: value }))
     }, [])
-    const onDetailSearchSubmit = useCallback(() => { }, [])
+    const onDetailSearchSubmit = useCallback((e) => { 
+        e.preventDefault()
+        const queryString = qs.stringify(detailSearchInput, { encode:false})
+        navigate('/admin/products?'+queryString)
+    }, [detailSearchInput])
+
+
+
     return (
         <article className='admin_main'>
             <section>
@@ -114,14 +121,14 @@ export default function ProductTabContent() {
                     <input type='number' name="minSoldAmount" onChange={onDetailSearchInputChange} />
                     <input type='number' name="maxSoldAmount" onChange={onDetailSearchInputChange} />
                     <label>Sort by</label>
-                    <select defaultValue={'name'} name="sortField" onChange={onDetailSearchInputChange}>
+                    <select value={detailSearchInput.sortField} name="sortField" onChange={onDetailSearchInputChange}>
                         <option value='name' >Name</option>
                         <option value='price' >Price</option>
                         <option value='soldAmount' >Sold amount</option>
                     </select>
                     <div>
-                        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="asc" defaultChecked/><label>Ascending </label>
-                        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="desc"/><label>Descending </label>
+                        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="asc" defaultChecked={detailSearchInput.sortOrder=='asc'}/><label>Ascending </label>
+                        <br/><input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="desc" defaultChecked={detailSearchInput.sortOrder=='desc'}/><label>Descending </label>
                     </div>
                     <button type='submit' style={{ display: 'flex' }}>Submit</button>
                 </form>
