@@ -7,22 +7,43 @@ export default function TestPage() {
     let { user, setUser } = useContext(globalContext);
     const onClick = function () {
     }
+
+    // test websocket
+    // useEffect(() => {
+    //     const ws = new WebSocket('ws://localhost:3000');
+
+    //     ws.onopen = () => {
+    //         console.log('Connected to WebSocket server');
+    //         // To send a message
+    //     ws.send('Hello from client');
+    //     };
+
+    //     ws.onmessage = (event) => {
+    //         console.log('Received:', event.data);
+    //     };
+
+    // })
+
     useEffect(() => {
-        const ws = new WebSocket('ws://localhost:3000');
+        if(typeof(EventSource) !== "undefined") {
+            console.log( 'Yes! Server-sent events support!');
+            // Some code.....
+          }
+        const eventSource = new EventSource('http://localhost:3000/v1/test/subcribe-notifications');
 
-        ws.onopen = () => {
-            console.log('Connected to WebSocket server');
-            // To send a message
-        ws.send('Hello from client');
+        eventSource.onmessage = (event) => {
+            console.log('aaa');
+            console.log(event);
+            // const notificationData = JSON.parse(event.data);
+            // Handle notification data, e.g., display notification to user
+            // console.log(notificationData);
         };
 
-        ws.onmessage = (event) => {
-            console.log('Received:', event.data);
+        return () => {
+            eventSource.close();
         };
+    }, []);
 
-        
-
-    })
     const [state, setState] = useState('x')
     return (
         <div>
