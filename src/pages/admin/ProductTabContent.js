@@ -51,7 +51,7 @@ export default function ProductTabContent() {
             const filter = {
                 price:{}, soldAmount:{}
             }
-            if(searchParams.get('id')!='' && searchParams.get('id')){
+            if(searchParams.get('id')){
                 filter._id = searchParams.get('id')
             }
             if(searchParams.get('minPrice')!='' && searchParams.get('minPrice')){

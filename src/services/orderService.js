@@ -39,6 +39,21 @@ function createOrder(body){
     return response
 }
 
+/**
+ * @param{String} body.userId
+ * @param{Array<Object>} body.buyList
+ * @param{String} body.buyList[].productId
+ * @param{Number} body.buyList[].amount
+ */
+function createOrders(body){
+    const response = axiosInstance({
+        method: 'POST',
+        url: '/v1/orders',
+        data: body
+    })
+    return response
+}
+
 function getOrderByUser(id){
     return getOrders({user:id})
 }
@@ -47,4 +62,4 @@ function getOrderByProduct(id){
     return getOrders({product:id})
 }
 
-export default {getOrder, getOrders, updateOrder, createOrder,getOrderByProduct, getOrderByUser};
+export default {getOrder, getOrders, updateOrder, createOrder,createOrders, getOrderByProduct, getOrderByUser};

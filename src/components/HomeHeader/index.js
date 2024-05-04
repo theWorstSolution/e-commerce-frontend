@@ -35,7 +35,7 @@ function HomeHeader({navigateLinkOnSearch}){
                           {user?<ul style={{listStyleType:'none', padding:0}}>
                             <li><Link to='/user'>Account detail</Link></li>
                             <li onClick={() => firebase.auth().signOut()}>Sign-out</li>
-                          </ul>:<ul style={{listStyleType:'none'}}>
+                          </ul>:<ul style={{listStyleType:'none', padding:0}}>
                             <li><Link to='/auth'>Login</Link></li>
                           </ul>}
                         </nav>}
@@ -44,12 +44,26 @@ function HomeHeader({navigateLinkOnSearch}){
 
                 </ul>
         <div className='header_row2'>
-          <a href='/' className='header_logo'>Shopee</a>
+          <Link to='/' className='header_logo'>Shopee</Link>
           <form onSubmit={onSearchSubmit} className='header_searchbar'>
             <input name='generalSearchInput' onChange={onSearchInputChange} className='header_searchbar_input' placeholder='searchbar'/>
             <button type='submit' className='header_searchbar_button'><BsSearch /></button>
           </form>
-          <div><BsCart3 className='largeIcon'/></div>
+          <div style={{position:'relative'}} className='cartIcon'>
+            <Link to='/cart'><BsCart3 className='largeIcon'/></Link>
+            <div style={{position:'absolute', zIndex:'1', top:'100%', right:'-15px'}} className='cartDropdown'>
+              <ul style={{listStyleType:'none', padding:0}} className='cartList'>
+                {user?.cart.slice(0,3).map((product)=><Link to={'/products/product/'+product.id}><li key={product.id} style={{display:'flex'}}>
+                  <img src={product.pictures[0]} className='productSmallThumbnail'></img>
+                  <div>
+                    <h3>{product.name}</h3>
+                    <p>{product.price}$</p>
+                  </div>
+                </li></Link>)}
+                {user?.cart.length>3 && <li>{user.cart.length-3} more products</li>}
+              </ul>
+            </div>
+          </div>
         </div>
       </header>
     )

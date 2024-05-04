@@ -6,9 +6,10 @@ import HomeHeader from "../components/HomeHeader";
 import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle,BsStar } from "react-icons/bs";
 import orderService from "../services/orderService";
 import { globalContext } from '../contexts/globalContext';
+import userService from "../services/userService";
 
 export default function ProductDetail() {
-    const { user } = useContext(globalContext);
+    const { user, setUser } = useContext(globalContext);
     const { productId } = useParams()
     const [product, setProduct] = useState()
     const [amount, setAmount] = useState(1)
@@ -29,6 +30,19 @@ export default function ProductDetail() {
             })
         }
     }
+    function putInCart(){
+        if(user.cart.filter((product)=>product.id==productId).length != 0){
+            alert('Already existed in cart')
+        }else{
+            userService.updateUser(user.uid, {cart:[...user.cart.map((product)=>product.id), productId]}).then(({data})=>{
+                console.log(data);
+                const newUser = {...user}
+                newUser.cart.push(product)
+                setUser(newUser)
+                alert('Put in cart successfully')
+            })
+        }
+    }
     return (<div>
         <HomeHeader navigateLinkOnSearch='/'></HomeHeader>
         {product && <article>
@@ -46,7 +60,7 @@ export default function ProductDetail() {
                     <p><label>Rating:</label> {product.rating}<BsStar /></p>
                     <p><label>Sold amount:</label> {product.soldAmount}</p>
                     <form><label>Amount</label><input onChange={(e)=>{setAmount(e.target.value)}} type="number" defaultValue={amount} min={1}/></form>
-                    <button type="submit">Put in cart</button><button type="submit" onClick={onBuy}>Buy</button>
+                    <button type="submit" onClick={putInCart}>Put in cart</button><button type="submit" onClick={onBuy}>Buy</button>
                 </div>
             </div>
             <div>

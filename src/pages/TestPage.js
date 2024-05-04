@@ -1,40 +1,35 @@
 import { globalContext } from '../contexts/globalContext';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import axios from 'axios';
 
-const dataSend = {
-    name: 'Bard',
-    language: 'JavaScript',
-    framework: 'NodeJS',
-};
 export default function TestPage() {
-    const {user} = useContext(globalContext);
-    const onClick = async function () {
-        // axios.post('http://localhost:3000/v1/test', dataSend)
-        //     .then((response) => {
-        //         // In ra response data
-        //         console.log(response.data);
-        //     })
-        //     .catch((error) => {
-        //         // Xử lý lỗi
-        //         console.error(error);
-        //     });
-
-            
-
-        const a = await axiosInstance({
-            method: 'POST',
-            url: '/v1/test',
-            data: dataSend
-        })
-        console.log(a)
+    let { user, setUser } = useContext(globalContext);
+    const onClick = function () {
     }
+    useEffect(() => {
+        const ws = new WebSocket('ws://localhost:3000');
+
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
+            // To send a message
+        ws.send('Hello from client');
+        };
+
+        ws.onmessage = (event) => {
+            console.log('Received:', event.data);
+        };
+
+        
+
+    })
+    const [state, setState] = useState('x')
     return (
         <div>
             {/* <Headbar /> */}
             <div className='mock long-mock'>
                 TEST PAGE
+                <input value={state} onChange={(e) => { setState(e.target.value) }} />
                 <button onClick={onClick}>test</button>
             </div>
 

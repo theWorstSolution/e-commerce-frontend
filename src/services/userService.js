@@ -32,5 +32,22 @@ function updateUser(uid, updateBody){
     return response
 }
 
+function genRecommendedProducts(){
+    const response = axiosInstance({
+        method: 'POST',
+        url: '/v1/users/user/recommended-products',
+    })
+    return response
+}
+
+function getRecommendedProducts(options){
+    const response = axiosInstance({
+        method: 'GET',
+        url: '/v1/users/user/recommended-products',
+        params: options
+    })
+    return response
+}
+
 export {getUser, getUsers, updateUser};
-export default {getUser, getUsers, updateUser};
+export default {getUser, getUsers, updateUser, genRecommendedProducts, getRecommendedProducts};

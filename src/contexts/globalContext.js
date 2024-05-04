@@ -44,7 +44,7 @@ export function UserProvider({children}){
 
   return (
     
-    <globalContext.Provider value={{user}}>
+    <globalContext.Provider value={{user, setUser}}>
       {isInit?children:<div>Is Loading</div>}
     </globalContext.Provider>
   )

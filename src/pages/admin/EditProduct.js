@@ -34,7 +34,7 @@ export default function EditProduct() {
         }
         console.log('patch data');
         console.log(body);
-        updateProduct(productId, body).then((res) => console.log(res))
+        updateProduct(productId, body).then((res) => {console.log(res); alert('updated')})
     }
     useEffect(() => {
         setCurrentTab('Products')

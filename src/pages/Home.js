@@ -11,12 +11,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import productService from '../services/productService';
 import Select from 'react-select';
 import { Pagination } from '@mui/material';
+import userService from '../services/userService';
 const qs = require('qs')
 
 export default function Home() {
   const { user } = useContext(globalContext);
-  const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{id: categoryService.rootCategoryId, name:'root'}]])  // có id, name
-    const [catsSelected, setCatsSelected] = useState([{value: categoryService.rootCategoryId, label:'root'}])    // có value và label
+  const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{ id: categoryService.rootCategoryId, name: 'root' }]])  // có id, name
+  const [catsSelected, setCatsSelected] = useState([{ value: categoryService.rootCategoryId, label: 'root' }])    // có value và label
 
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate()
@@ -37,17 +38,19 @@ export default function Home() {
       setMainCategories(data)
       setCategoriesAtLevel((categoriesAtLevel) => {
         return [...categoriesAtLevel, data]
-    })
+      })
     })
   }, [])
 
+  //
   const [resultsTitle, setResultsTitle] = useState()
+
   // logic display search result
   useEffect(() => {
     const initialGeneralSearchInput = searchParams.get('generalSearchInput')
     const initialPage = searchParams.get('page')
     let filter, options;
-    if (initialGeneralSearchInput || initialGeneralSearchInput == '' || searchParams.size == 0) {
+    if (initialGeneralSearchInput || initialGeneralSearchInput == '' || searchParams.size == 0 || (searchParams.size == 1 && searchParams.get('page'))) {
       filter = {
         $or: [
           { name: { $regex: initialGeneralSearchInput, $options: 'i' } },
@@ -57,7 +60,19 @@ export default function Home() {
       }
       options = { page: initialPage }
       setResultsTitle('Search results:')
-    } else if (searchParams.size == 1 && searchParams.get('categoryId') && searchParams.get('categoryId')!='') {
+    } else if (searchParams.get('recommended-products')) {
+      options = { page: initialPage }
+      userService.getRecommendedProducts(options).then(({ data }) => {
+        console.log(data);
+        setRes(data.results)
+        setPagiProps((pagiProps) => ({
+          ...pagiProps,
+          count: data.totalPages,
+          page: data.page
+        }))
+      })
+      return;
+    } else if ((searchParams.size == 1 || (searchParams.size == 2 && searchParams.get('page'))) && searchParams.get('categoryId') && searchParams.get('categoryId') != '') {
       filter = {
         'categories.id': searchParams.get('categoryId')
       }
@@ -122,7 +137,7 @@ export default function Home() {
     for (let param in detailSearchInput) {
       newSearchParams.set(param, detailSearchInput[param]);
     }
-    newSearchParams.set('categoryId',catsSelected[catsSelected.length-1].value)
+    newSearchParams.set('categoryId', catsSelected[catsSelected.length - 1].value)
     setSearchParams(newSearchParams);
     // const queryString = qs.stringify(detailSearchInput, { encode:false})
     // navigate('/products?'+queryString)
@@ -174,14 +189,15 @@ export default function Home() {
   }
 
   const [productLists, setProductLists] = useState([])
+  const maxProductsPerRow = 5
   useEffect(() => {
     if (res) {
       const newProductLists = []
       for (let i = 0; i < res.length; i++) {
-        if (!newProductLists[Math.floor(i / 2)]) {
-          newProductLists[Math.floor(i / 2)] = []
+        if (!newProductLists[Math.floor(i / maxProductsPerRow)]) {
+          newProductLists[Math.floor(i / maxProductsPerRow)] = []
         }
-        newProductLists[Math.floor(i / 2)].push(res[i])
+        newProductLists[Math.floor(i / maxProductsPerRow)].push(res[i])
       }
       setProductLists(newProductLists)
     }
@@ -190,6 +206,7 @@ export default function Home() {
 
   return (<div>
     <HomeHeader navigateLinkOnSearch='/products?' />
+
     <h2 onClick={onClickAccordion} style={{ display: 'flex', alignItems: 'center' }}><BsCaretRightFill style={{ transition: 'transform 1s ease-in-out', ...accordionState.arrowStyle }} />Detail search</h2>
     <form onSubmit={onDetailSearchSubmit} style={{ transition: 'max-height 1s ease-in-out', border: 'solid', overflow: 'auto', ...accordionState.contentStyle }}>
       <label>Name/description/category:</label>
@@ -266,11 +283,19 @@ export default function Home() {
       </div>
       <button type='submit'>Submit</button>
     </form>
+
+
     <h2>Categories</h2>
     <section style={{ display: 'flex' }}>
       <button name='slideBack' onClick={onSlideSlicker}><BsArrowLeftCircle /></button>
       <div style={{ overflow: 'hidden' }}>
         {mainCategories && <ul className='horizontalUl' style={{ listStyleType: 'none', transition: 'translate 1s ease-in-out', ...slickerStyle }}>
+          <li onClick={async () => {
+            await userService.genRecommendedProducts()
+            const newSearchParams = new URLSearchParams();
+            newSearchParams.set("recommended-products", true);
+            setSearchParams(newSearchParams);
+          }}>Recommended Products</li>
           {mainCategories.map((cat) => (<li onClick={() => {
             const newSearchParams = new URLSearchParams();
             newSearchParams.set("categoryId", cat.id);
@@ -283,10 +308,12 @@ export default function Home() {
       </div>
       <button name='slideForward' onClick={onSlideSlicker}><BsArrowRightCircle /></button>
     </section>
+
+
     <h2>{resultsTitle}</h2>
     <section>
       {productLists.map((productList) => <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
-        {productList.map((product) => <li key={product.id}>
+        {productList.map((product) => <li key={product.id} style={{ width: '200px' }}>
           <Link to={'/products/product/' + product.id}>
             <div><img src={product.pictures[0]} style={{ width: 'var(--productThumbnailWidth)', height: 'var(--productThumbnailHeight)' }}></img></div>
             <div>

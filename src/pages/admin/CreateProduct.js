@@ -36,7 +36,7 @@ export default function CreateProduct() {
             categories: catsSelected.map((catSelected) => ({id:catSelected.value, name:catSelected.label}))
         }
         console.log(body);
-        createProduct(body).then((res) => console.log(res))
+        createProduct(body).then((res) => {console.log(res); alert('Created')})
     }
     useEffect(() => {
         setCurrentTab('Product')

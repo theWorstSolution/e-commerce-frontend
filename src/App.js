@@ -21,12 +21,15 @@ import ProductDetail from './pages/ProductDetail';
 import UserProfileLayout from './pages/UserProfileLayout';
 import UserProfile from './pages/UserProfile'
 import BuyHistory from './pages/BuyHistory';
+import TestPage from './pages/TestPage';
+import Cart from './pages/Cart';
 
 function App() {
   return (
     <Routes>
       <Route index element={<Home/>}/>
       <Route path='auth' element={<AuthGuard/>} />
+      <Route path='cart' element={<Cart/>} />
       <Route path='user' element={<UserProfileLayout/>}>
         <Route index element={<UserProfile/>} />
         <Route path='profile' element={<UserProfile/>} />
@@ -57,6 +60,7 @@ function App() {
           <Route path='category' element={<CreateCategory/>}/>
         </Route>
       </Route> 
+      <Route path='test' element={<TestPage/>} />
     </Routes>
   );
 }
