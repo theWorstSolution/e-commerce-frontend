@@ -47,6 +47,8 @@ export default function OrderDetail(){
                 <option value='onGoing' >On going</option>
                 <option value='canceled' >Canceled</option>
                 <option value='delivered' >Delivered</option>
+                <option value='waitToConfirm' >Wait to confirm</option>
+                <option value='confirmed' >Confirm</option>
             </select>
             <label>Has Paid?</label>
             <select defaultValue={order.hasPaid} name="hasPaid" onChange={handleChange}>

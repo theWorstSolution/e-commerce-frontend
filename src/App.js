@@ -34,6 +34,7 @@ function App() {
         <Route index element={<UserProfile/>} />
         <Route path='profile' element={<UserProfile/>} />
         <Route path='buy-history' element={<BuyHistory/>} />
+
       </Route>
       <Route path='products'>
         <Route index element={<Home/>}/>

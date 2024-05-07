@@ -8,6 +8,7 @@ import { Link, useNavigate,useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useState, useRef, useContext } from "react";
 import { globalContext } from '../contexts/globalContext';
 import firebase from 'firebase/compat/app';
+import NotificationBell from './NotificationBell';
 const qs = require('qs')
 
 
@@ -18,7 +19,7 @@ function AdminHeader(){
     return (
       <header className='mock homeHeader'>
       <ul className='horizontalUl mock' style={{ justifyContent: 'flex-end' }}>
-                    <li className='centerChildren'><BsBell />Thông báo</li>
+                    <li style={{listStyleType:'none'}}><NotificationBell/></li>
                     <li className='centerChildren header_account' style={{position:'relative'}}>
                       <BsPersonCircle />{user?user.name:<p>Account</p>}
                       <div style={{position:'absolute', top:'100%'}} className='header_account_dropdown'>
