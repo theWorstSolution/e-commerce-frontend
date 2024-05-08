@@ -54,14 +54,14 @@ function HomeHeader({navigateLinkOnSearch}){
             <Link to='/cart'><BsCart3 className='largeIcon'/></Link>
             <div style={{position:'absolute', zIndex:'1', top:'100%', right:'-15px'}} className='cartDropdown'>
               <ul style={{listStyleType:'none', padding:0}} className='cartList'>
-                {user?.cart.slice(0,3).map((product)=><Link to={'/products/product/'+product.id}><li key={product.id} style={{display:'flex'}}>
+                {user?.cart?.slice(0,3).map((product)=><Link to={'/products/product/'+product.id}><li key={product.id} style={{display:'flex'}}>
                   <img src={product.pictures[0]} className='productSmallThumbnail'></img>
                   <div>
                     <h3>{product.name}</h3>
                     <p>{product.price}$</p>
                   </div>
                 </li></Link>)}
-                {user?.cart.length>3 && <li>{user.cart.length-3} more products</li>}
+                {user?.cart?.length>3 && <li>{user.cart.length-3} more products</li>}
               </ul>
             </div>
           </div>

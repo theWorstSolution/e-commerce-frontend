@@ -13,11 +13,23 @@ export default class User {
         this.id = uid
     }
     async refresh() {
-        console.log('id: ' + this.uid);
+        // console.log('id: ' + this.uid);
         const filter = { _id: this.uid }
         const options = { populate: 'cart' }
         const { data } = await userService.getUsers(filter, options)
-        console.log(data);
-        Object.assign(this, data.results[0]);
+        // console.log('first data about user');
+        // console.log(data);
+        if(data.results[0]){
+            Object.assign(this, data.results[0]);
+        }else{
+            // console.log('create new user');
+            await userService.createUser()
+            const { data: newData } = await userService.getUsers(filter, options)
+            // console.log('second data about user');
+            // console.log(newData);
+            Object.assign(this, newData.results[0]);
+        }
+        
+        
     }
 }

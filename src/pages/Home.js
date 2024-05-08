@@ -34,7 +34,7 @@ export default function Home() {
   const [mainCategories, setMainCategories] = useState()
   useEffect(() => {
     categoryService.getChildrenCategory(categoryService.rootCategoryId).then(({ data }) => {
-      console.log(data);
+      // console.log(data);
       setMainCategories(data)
       setCategoriesAtLevel((categoriesAtLevel) => {
         return [...categoriesAtLevel, data]
@@ -63,7 +63,7 @@ export default function Home() {
     } else if (searchParams.get('recommended-products')) {
       options = { page: initialPage }
       userService.getRecommendedProducts(options).then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         setRes(data.results)
         setPagiProps((pagiProps) => ({
           ...pagiProps,
@@ -105,10 +105,10 @@ export default function Home() {
       options = { sortBy: searchParams.get('sortField') + ':' + searchParams.get('sortOrder'), page: initialPage }
       setResultsTitle('Search results:')
     }
-    console.log(filter);
-    console.log(options);
+    // console.log(filter);
+    // console.log(options);
     productService.getProducts(filter, options).then(({ data }) => {
-      console.log(data);
+      // console.log(data);
       setRes(data.results)
       setPagiProps((pagiProps) => ({
         ...pagiProps,
@@ -123,7 +123,7 @@ export default function Home() {
       params.set("page", page)
       return params
     });
-  }, [])
+  }, [setSearchParams])
 
   const [detailSearchInput, setDetailSearchInput] = useState({ sortField: 'name', sortOrder: 'asc' })
   const onDetailSearchInputChange = useCallback((event) => {
@@ -151,25 +151,25 @@ export default function Home() {
     contentStyle: { maxHeight: 0 }
   })
   const onClickAccordion = useCallback(() => {
-    console.log(accordionState);
+    // console.log(accordionState);
     if (accordionState.state == 0) {
-      console.log('activate accordion');
+      // console.log('activate accordion');
       const newAccordionState = { ...accordionState }
       newAccordionState.state = 1;
       newAccordionState.arrowStyle = {
         transform: 'rotate(90deg)'
       }
       newAccordionState.contentStyle = { maxHeight: '300px' }
-      console.log(newAccordionState);
+      // console.log(newAccordionState);
       setAccordionState(newAccordionState)
     } else {
-      console.log('deactivate accordion');
+      // console.log('deactivate accordion');
       setAccordionState((a) => {
         const newAccordionState = { ...a }
         newAccordionState.state = 0;
         newAccordionState.arrowStyle = null
         newAccordionState.contentStyle = { maxHeight: 0 }
-        console.log(newAccordionState);
+        // console.log(newAccordionState);
         return newAccordionState
       })
     }
@@ -177,8 +177,8 @@ export default function Home() {
 
   const [slickerStyle, setSlickerStyle] = useState({ translate: '0px' })
   const onSlideSlicker = function (e) {
-    console.log(e)
-    console.log(e.currentTarget.name);
+    // console.log(e)
+    // console.log(e.currentTarget.name);
     const newSlickerStyle = { ...slickerStyle }
     if (e.currentTarget.name == 'slideForward') {
       newSlickerStyle.translate = 'calc(' + newSlickerStyle.translate + ' - ' + 'var(--categoryCardWidth)' + ')'
@@ -227,8 +227,8 @@ export default function Home() {
             key={catsSelected[idx]?.value}
             isClearable
             onChange={async (newSelected) => {
-              console.log('trigger onchange');
-              console.log('new value: ' + JSON.stringify(newSelected));
+              // console.log('trigger onchange');
+              // console.log('new value: ' + JSON.stringify(newSelected));
               //if xóa lựa chọn
               if (!newSelected) {
                 setCatsSelected((catsSelected) => {
@@ -250,7 +250,7 @@ export default function Home() {
                 const newCatsSelected = [...catsSelected]
                 newCatsSelected[idx] = newSelected
                 newCatsSelected.splice(idx + 1)
-                console.log('newCatsSelected: ' + JSON.stringify(newCatsSelected));
+                // console.log('newCatsSelected: ' + JSON.stringify(newCatsSelected));
                 return newCatsSelected
               })
 
@@ -260,7 +260,7 @@ export default function Home() {
                 const newCatsAtLevel = [...categoriesAtLevel]
                 newCatsAtLevel[idx + 1] = childrenCats;
                 newCatsAtLevel.splice(idx + 2)
-                console.log('categoriesAtLevel: ' + JSON.stringify(newCatsAtLevel));
+                // console.log('categoriesAtLevel: ' + JSON.stringify(newCatsAtLevel));
                 return newCatsAtLevel
               })
             }}
@@ -295,10 +295,11 @@ export default function Home() {
             const newSearchParams = new URLSearchParams();
             newSearchParams.set("recommended-products", true);
             setSearchParams(newSearchParams);
-          }}>Recommended Products</li>
+          }}><Link>Recommended Products</Link></li>
           {mainCategories.map((cat) => (<li onClick={() => {
             const newSearchParams = new URLSearchParams();
             newSearchParams.set("categoryId", cat.id);
+            
             setSearchParams(newSearchParams);
           }} key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'var(--categoryCardWidth)', height: 'var(--categoryCardHeight)' }}>
             <img src={cat.picture} style={{ width: 'var(--categoryImgWidth)', height: 'var(--categoryImgHeight)' }}></img>

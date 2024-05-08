@@ -1,6 +1,14 @@
 import axiosInstance from '../utils/axiosInstance'
 import axios from 'axios';
 
+function createUser(){
+    const response = axiosInstance({
+        method: 'POST',
+        url: '/v1/users/user'
+    })
+    return response;
+}
+
 function getUser(userId){
     // console.log('getUser')
     console.log('in get user service');
@@ -50,4 +58,4 @@ function getRecommendedProducts(options){
 }
 
 export {getUser, getUsers, updateUser};
-export default {getUser, getUsers, updateUser, genRecommendedProducts, getRecommendedProducts};
+export default {getUser, getUsers, updateUser, genRecommendedProducts, getRecommendedProducts, createUser};

@@ -36,7 +36,7 @@ function AdminHeader(){
 
                 </ul>
         <div className='header_row2' style={{display:'flex', justifyContent:'center', marginLeft:'auto', marginRight:'auto'}}>
-          <a href='/' className='header_logo' style={{textAlign:'center'}}>Shopee</a>
+          <Link to='/' className='header_logo' style={{textAlign:'center'}}>Shopee</Link>
         </div>
       </header>
     )

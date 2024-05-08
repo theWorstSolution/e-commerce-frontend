@@ -4,29 +4,46 @@ import { globalContext } from '../contexts/globalContext';
 
 export default function NotificationBell() {
     const { user } = useContext(globalContext);
-
+    const [notifications, setNotifications] = useState([])
     useEffect(() => {
-        const eventSource = new EventSource('http://localhost:3000/v1/users/user/subcribe-notifications');
+        if (user) {
+            const eventSource = new EventSource('http://localhost:3000/v1/users/user/' + user.id + '/subcribe-notifications');
 
-        eventSource.onmessage = (event) => {
-            console.log(event);
-            // const notificationData = JSON.parse(event.data);
-            // Handle notification data, e.g., display notification to user
-            // console.log(notificationData);
-        };
+            eventSource.onmessage = (event) => {
+                console.log(event);
+                const notificationData = JSON.parse(event.data);
+                if (notificationData.type == 'allNotis') {
+                    setNotifications(notificationData.allNotis)
+                } else {
+                    const newNotifications = [...notifications]
+                    newNotifications.push(notificationData)
+                    setNotifications(newNotifications)
+                }
+                // Handle notification data, e.g., display notification to user
+                // console.log(notificationData);
+            };
 
-        return () => {
-            eventSource.close();
-        };
-    }, []);
+            return () => {
+                eventSource.close();
+            };
+        }
+    }, [user]);
 
-    const [notifications, setNotifications] = useState('abcd')
+    function renderNoti(noti) {
+        switch (noti.type) {
+            case 'newOrder':
+                return (<div>New order: {noti.orderId}</div>)
+                break;
+
+        }
+    }
+
     return (<div className='centerChildren header_noti' style={{ position: 'relative' }}><BsBell />Thông báo
         <div style={{ position: 'absolute', top: '100%' }} className='header_noti_dropdown'>
-                {notifications && <ul style={{ listStyleType: 'none', padding: 0 }} className="header_noti_ul">
-                    <li>{notifications}</li>
-                    
-                </ul>}
+            {notifications && <ul style={{ listStyleType: 'none', padding: 0 }} className="header_noti_ul">
+                {notifications.map((noti) => <li key={noti._id}>{renderNoti(noti)}</li>)}
+
+            </ul>}
         </div>
     </div>)
 }
