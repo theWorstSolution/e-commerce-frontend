@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft, BsCart3 } from "react-icons/bs";
 import { globalContext } from '../contexts/globalContext';
+import { Link } from "react-router-dom";
 
 export default function NotificationBell() {
     const { user } = useContext(globalContext);
@@ -41,7 +42,9 @@ export default function NotificationBell() {
     return (<div className='centerChildren header_noti' style={{ position: 'relative' }}><BsBell />Thông báo
         <div style={{ position: 'absolute', top: '100%' }} className='header_noti_dropdown'>
             {notifications && <ul style={{ listStyleType: 'none', padding: 0 }} className="header_noti_ul">
-                {notifications.map((noti) => <li key={noti._id}>{renderNoti(noti)}</li>)}
+                {notifications.map((noti) => <li key={noti._id}>
+                    <Link to={'/admin/orders/order/'+noti.orderId}>User {noti.username} has bought {noti.amount} x {noti.productName}</Link>
+                </li>)}
 
             </ul>}
         </div>
