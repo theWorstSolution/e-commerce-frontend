@@ -53,6 +53,7 @@ export default function TestPage() {
                 <input value={state} onChange={(e) => { setState(e.target.value) }} />
                 <button onClick={onClick}>test</button>
             </div>
+            <div style={{display:'none'}}>{console.log('heylo')}</div>
 
         </div>
     )

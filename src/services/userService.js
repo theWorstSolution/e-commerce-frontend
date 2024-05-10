@@ -57,5 +57,21 @@ function getRecommendedProducts(options){
     return response
 }
 
+function fetchNotis(){
+    const response = axiosInstance({
+        method: 'GET',
+        url: '/v1/users/user/notifications',
+    })
+    return response
+}
+function setHasSeenAllNotis(){
+    const response = axiosInstance({
+        method: 'POST',
+        url: '/v1/users/user/has-read-all-notifications',
+    })
+    return response
+}
+
 export {getUser, getUsers, updateUser};
-export default {getUser, getUsers, updateUser, genRecommendedProducts, getRecommendedProducts, createUser};
+export default {getUser, getUsers, updateUser, genRecommendedProducts, getRecommendedProducts, 
+    createUser, fetchNotis, setHasSeenAllNotis};
