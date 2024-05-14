@@ -31,7 +31,7 @@ export default function CategoryTabContent() {
         const filter = {
             name: { $regex: initialQuery, $options: 'i'},
         }
-        const options = {page:initialPage, populate:'ancestors,children'}
+        const options = {page:initialPage, populate:'ancestors,children', sortBy: 'name'}
         categoryService.getCategories(filter,options).then(({data})=>{
             console.log(data);
         setRes(data.results)

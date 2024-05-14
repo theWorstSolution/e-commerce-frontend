@@ -57,10 +57,11 @@ function getRecommendedProducts(options){
     return response
 }
 
-function fetchNotis(){
+function fetchNotis(beforeNoti){
     const response = axiosInstance({
         method: 'GET',
         url: '/v1/users/user/notifications',
+        params: {beforeNoti}
     })
     return response
 }

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useCallback, useRef } from "react";
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft, BsCart3 } from "react-icons/bs";
 import { globalContext } from '../contexts/globalContext';
 import { Link } from "react-router-dom";
@@ -10,83 +10,111 @@ export default function NotificationBell() {
     const [notifications, setNotifications] = useState([])
     const [hasMoreNotis, setHasMoreNotis] = useState()
     const [noOfNotSeenNoti, setNoOfNotSeenNoti] = useState(0)
+    console.log('[[[[');
+    console.log(notifications);
+    let eventSource = useRef({})
     useEffect(() => {
         if (user) {
-            const eventSource = new EventSource('http://localhost:3000/v1/users/user/' + user.id + '/subcribe-notifications');
-
-            eventSource.onmessage = (event) => {
-                console.log(event);
+            eventSource.current = new EventSource('http://localhost:3000/v1/users/user/' + user.id + '/subcribe-notifications');
+            // console.log('on message');
+            // console.log(eventSource.current.onmessage);
+            eventSource.current.onmessage = (event) => {
                 const notificationData = JSON.parse(event.data);
+                console.log(notificationData);
                 if (notificationData.type == 'fetchNotis') {
                     // case has no noti
-                    if(!notificationData.resNotis){setHasMoreNotis(false); return}
+                    if (!notificationData.resNotis) { setHasMoreNotis(false); return }
                     const newNotis = [...notifications, ...notificationData.resNotis]
                     setNotifications(newNotis)
                     if (notificationData.hasMore) { setHasMoreNotis(true) } else { setHasMoreNotis(false) }
-                }else if(notificationData.type == 'noOfNotSeenNoti'){
+                } else if (notificationData.type == 'noOfNotSeenNoti') {
                     setNoOfNotSeenNoti(notificationData.noOfNotSeenNoti)
-                }else {
+                } else {
                     const newNotifications = [notificationData, ...notifications]
                     setNotifications(newNotifications)
-
-                    setNoOfNotSeenNoti(noOfNotSeenNoti+1)
+        
+                    setNoOfNotSeenNoti(noOfNotSeenNoti + 1)
                 }
-                // Handle notification data, e.g., display notification to user
-                // console.log(notificationData);
-            };
-
+            }
             return () => {
-                eventSource.close();
+                eventSource.current.close();
             };
         }
     }, [user]);
+    // console.log('current');
+    // console.log(eventSource.current);
+    eventSource.current.onmessage = useCallback((event) => {
+        const notificationData = JSON.parse(event.data);
+        console.log(notificationData);
+        if (notificationData.type == 'fetchNotis') {
+            // case has no noti
+            if (!notificationData.resNotis) { setHasMoreNotis(false); return }
+            const newNotis = [...notifications, ...notificationData.resNotis]
+            setNotifications(newNotis)
+            if (notificationData.hasMore) { setHasMoreNotis(true) } else { setHasMoreNotis(false) }
+        } else if (notificationData.type == 'noOfNotSeenNoti') {
+            setNoOfNotSeenNoti(notificationData.noOfNotSeenNoti)
+        } else {
+            const newNotifications = [notificationData, ...notifications]
+            setNotifications(newNotifications)
 
+            setNoOfNotSeenNoti(noOfNotSeenNoti + 1)
+        }
+    }, [notifications])
+    
     function renderNoti(noti) {
         switch (noti.type) {
             case 'newOrder':
-                return (<div style={{backgroundColor:!noti.hasSeen&&'red'}}>New order: <Link to={'/admin/orders/order/' + noti.orderId}>User {noti.username} has bought {noti.amount} x {noti.productName}</Link></div>)
-                break;
-
+                return (<div style={{ backgroundColor: !noti.hasSeen && 'red' }}>New order: <Link to={'/admin/orders/order/' + noti.orderId}>User {noti.username} has bought {noti.amount} x {noti.productName}</Link></div>)
+            case 'ChangeOrderStatusNoti':
+                return (<div style={{ backgroundColor: !noti.hasSeen && 'red' }}>
+                    Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</div>)
+            default:
+                return (<div>OK</div>)
         }
     }
 
-    return (<div onMouseLeave={()=>{
-        if(noOfNotSeenNoti!=0){
+    return (<div onMouseLeave={() => {
+        if (noOfNotSeenNoti != 0) {
             userService.setHasSeenAllNotis()
 
             setNoOfNotSeenNoti(0)
 
             const newNotis = [...notifications]
-            for(let noti of newNotis){
-                if(noti.hasSeen){break}
-                else{noti.hasSeen=true}
+            for (let noti of newNotis) {
+                if (noti.hasSeen) { break }
+                else { noti.hasSeen = true }
             }
             setNotifications(newNotis)
         }
     }} className='centerChildren header_noti' style={{ position: 'relative' }}>
-        <span style={{position:'relative', display:'inline-block'}}>
+        <span style={{ position: 'relative', display: 'inline-block' }}>
             <BsBell />
-            {noOfNotSeenNoti>0 && <span style={{display:'flex', justifyContent:'center',alignItems:'center' ,position:'absolute', top:'-5px', right:'-4px', fontSize:'12px', borderRadius:'50%', backgroundColor:'white',height:'12px',width:'12px'}}>
+            {noOfNotSeenNoti > 0 && <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '-5px', right: '-4px', fontSize: '12px', borderRadius: '50%', backgroundColor: 'white', height: '12px', width: '12px' }}>
                 {noOfNotSeenNoti}
             </span>}
         </span>
         Thông báo
         <div style={{ position: 'absolute', top: '100%' }} className='header_noti_dropdown'>
-            {notifications && <ul style={{ listStyleType: 'none', padding: 0 }} className="header_noti_ul">
-                {notifications.map((noti) => <li key={noti._id}>
-                    {renderNoti(noti)}
-                    
-                </li>)}
+            <div className="header_noti_ul">
+                {notifications && <ul style={{ listStyleType: 'none', padding: 0, width: '350px', maxHeight: '350px', overflow: 'auto' }} >
+                    {notifications.map((noti) => <li key={noti._id}>
+                        {renderNoti(noti)}
 
-            </ul>}
-            {hasMoreNotis && <Link onClick={() => {
-                const { data: notificationData } = userService.fetchNotis();
+                    </li>)}
+
+                </ul>}
+                {hasMoreNotis && <button onClick={async() => {
+                    console.log(notifications);
+                const { data: notificationData } = await userService.fetchNotis(notifications[notifications.length-1].id);
                 // case has no noti
-                if(!notificationData.resNotis){setHasMoreNotis(false); return}
+                if (!notificationData.resNotis) { setHasMoreNotis(false); return }
                 const newNotis = [...notifications, ...notificationData.resNotis]
                 setNotifications(newNotis)
                 if (notificationData.hasMore) { setHasMoreNotis(true) } else { setHasMoreNotis(false) }
-            }}>More</Link>}
+            }}>More</button>}
+            </div>
+            
         </div>
     </div>)
 }
