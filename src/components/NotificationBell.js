@@ -10,8 +10,6 @@ export default function NotificationBell() {
     const [notifications, setNotifications] = useState([])
     const [hasMoreNotis, setHasMoreNotis] = useState()
     const [noOfNotSeenNoti, setNoOfNotSeenNoti] = useState(0)
-    console.log('[[[[');
-    console.log(notifications);
     let eventSource = useRef({})
     useEffect(() => {
         if (user) {
@@ -37,10 +35,12 @@ export default function NotificationBell() {
                 }
             }
             return () => {
-                eventSource.current.close();
+                eventSource.current.close(); 
             };
+        }else{
+            setNotifications([]); setNoOfNotSeenNoti(0); setHasMoreNotis(false)
         }
-    }, [user]);
+    }, [user?.uid]);
     // console.log('current');
     // console.log(eventSource.current);
     eventSource.current.onmessage = useCallback((event) => {
@@ -105,7 +105,6 @@ export default function NotificationBell() {
 
                 </ul>}
                 {hasMoreNotis && <button onClick={async() => {
-                    console.log(notifications);
                 const { data: notificationData } = await userService.fetchNotis(notifications[notifications.length-1].id);
                 // case has no noti
                 if (!notificationData.resNotis) { setHasMoreNotis(false); return }

@@ -15,7 +15,7 @@ export default function ProductDetail() {
     const [amount, setAmount] = useState(1)
     useEffect(() => {
         productService.getProduct(productId).then(async ({ data: product }) => {
-            console.log('product: ' + JSON.stringify(product));
+            // console.log('product: ' + JSON.stringify(product));
             setProduct(product)
         })
     }, [])
