@@ -17,8 +17,8 @@ export default class User {
         const filter = { _id: this.uid }
         const options = { populate: 'cart' }
         const { data } = await userService.getUsers(filter, options)
-        // console.log('first data about user');
-        // console.log(data);
+        console.log('first data about user');
+        console.log(data.results[0]);
         if(data.results[0]){
             Object.assign(this, data.results[0]);
         }else{
