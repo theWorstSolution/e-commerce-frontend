@@ -44,6 +44,7 @@ export default function ProductDetail() {
     }, [])
 
     useEffect(() => {
+        console.log('user change');
         if (product) {
             for (let boughtProduct of user.boughtProducts) {
                 if (boughtProduct.toString() == product.id) {
@@ -53,7 +54,7 @@ export default function ProductDetail() {
             }
             setHasBought(false)
         }
-    }, user)
+    }, [user])
     function onBuy() {
         const isConfirmed = window.confirm('Buy ' + amount + ' x ' + product.name + '? That will be ' + amount * product.price + '$')
         if (isConfirmed) {
@@ -62,11 +63,12 @@ export default function ProductDetail() {
                 if (data) {
                     alert('Buy successfully')
                 }
+                // await user.refresh()
                 const newUser = new User()
-                Object.assign(newUser, user);
+                Object.assign(newUser, user)
+                newUser.foo = 'foo'
                 await newUser.refresh()
                 setUser(newUser)
-
             })
         }
     }
@@ -76,7 +78,8 @@ export default function ProductDetail() {
         } else {
             userService.updateUser(user.uid, { cart: [...user.cart.map((product) => product.id), productId] }).then(({ data }) => {
                 console.log(data);
-                const newUser = { ...user }
+                const newUser = new User()
+                Object.assign(newUser, user)
                 newUser.cart.push(product)
                 setUser(newUser)
                 alert('Put in cart successfully')
