@@ -246,6 +246,15 @@ export default function ProductDetail() {
                                 <input type="text" value={reviewContent} onChange={(e) => {
                                     setReviewContent(e.target.value)
                                 }} />
+                                <button onClick={()=>{
+                                    reviewService.deleteReview(review.id).then(({data})=>{
+                                        console.log(data);
+                                        setHasReviewed(false);
+                                        setRating(0)
+                                        setReviewContent('')
+                                        onChangePage(null,pagiProps.page)
+                                    })
+                                }}>Delete</button>
                                 <button type="submit">Update</button>
                             </form>
                         </li>)

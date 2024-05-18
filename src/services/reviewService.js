@@ -30,5 +30,13 @@ function  updateReview(reviewId, rating, content){
     return response;
 }
 
+function  deleteReview(reviewId){
+    const response = axiosInstance({
+        method: 'DELETE',
+        url: '/v1/reviews/review/'+reviewId,
+    })
+    
+    return response;
+}
 
-export default {createReview, getReviews, updateReview};
+export default {createReview, getReviews, updateReview, deleteReview};
