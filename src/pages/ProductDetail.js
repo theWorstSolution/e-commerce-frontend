@@ -5,17 +5,59 @@ import Creatable from 'react-select/creatable';
 import HomeHeader from "../components/HomeHeader";
 import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle, BsStar, BsFillStarFill } from "react-icons/bs";
 import orderService from "../services/orderService";
+import reviewService from "../services/reviewService";
 import { globalContext } from '../contexts/globalContext';
 import userService from "../services/userService";
 import User from "../models/User";
+import { Pagination } from '@mui/material';
 
 export default function ProductDetail() {
     const { user, setUser } = useContext(globalContext);
     const { productId } = useParams()
     const [product, setProduct] = useState()
     const [amount, setAmount] = useState(1)
-    const [rating, setRating] = useState(0)
     const [hasBought, setHasBought] = useState()
+    const [hasReviewed, setHasReviewed] = useState()
+
+    // user review input
+    const [rating, setRating] = useState(0)
+    const [reviewContent, setReviewContent] = useState('')
+
+    const [reviews, setReviews] = useState()
+    const [pagiProps, setPagiProps] = useState({
+        boundaryCount: 1, //Number of always visible pages at the beginning and end.
+        count: 1, // total page
+        hideNextButton: false,
+        hidePrevButton: false,
+        page: 1, //current page
+    });
+
+    const onChangePage = async (event, page) => {
+        const filter = { product: product.id }
+        const options = { sortBy: 'timeCreated', populate: 'user.name,user.picture', page }
+        const { data } = await reviewService.getReviews(filter, options)
+        console.log('aaaaa');
+        console.log(data);
+        setReviews(data.results)
+        setPagiProps((pagiProps) => ({
+            ...pagiProps,
+            count: data.totalPages,
+            page: data.page
+        }))
+        if(hasBought && hasReviewed){
+            for(let review of data.results){
+                if (review.user.id.toString() == user.uid.toString()){
+                    setRating(review.rating)
+                    setReviewContent(review.content)
+                    break;
+                }
+            }
+            
+        }
+    }
+
+
+
     function renderRatingInput(rating) {
         const res = []
         for (let i = 1; i <= 5; i++) {
@@ -29,36 +71,96 @@ export default function ProductDetail() {
         }
         return res
     }
+
+    function renderRating(rating) {
+        const res = []
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                res.push(<BsFillStarFill />)
+            } else {
+                res.push(<BsStar />)
+            }
+        }
+        return res
+    }
+
+    // set product, hasBought, hasReviewed, reviews, pagiProps
     useEffect(() => {
+
         productService.getProduct(productId).then(async ({ data: product }) => {
             // console.log('product: ' + JSON.stringify(product));
             setProduct(product)
-            for (let boughtProduct of user.boughtProducts) {
-                if (boughtProduct.toString() == product.id) {
-                    setHasBought(true)
-                    return
+
+            // set hasBought
+            if (user) {
+                for (let boughtProduct of user.boughtProducts) {
+                    if (boughtProduct.toString() == product.id) {
+                        setHasBought(true)
+                        const filter = { user: user.uid, product: product.id }
+                        const { data } = await reviewService.getReviews(filter)
+                        if (data.results.length > 0) {
+                            setHasReviewed(true)
+                        } else { setHasReviewed(false) }
+                        break
+                    }
                 }
+            } else {
+                setHasBought(false)
             }
-            setHasBought(false)
+
+
+            
+            const filter = { product: product.id }
+            const options = { sortBy: 'timeCreated', populate: 'user.name,user.picture', page: 1 }
+            const { data } = await reviewService.getReviews(filter, options)
+            setReviews(data.results)
+            console.log('set reviews');
+            console.log(data.results);
+            setPagiProps((pagiProps) => ({
+                ...pagiProps,
+                count: data.totalPages,
+                page: data.page
+            }))
+            
+            
         })
     }, [])
 
-    useEffect(() => {
-        console.log('user change');
-        if (product) {
-            for (let boughtProduct of user.boughtProducts) {
-                if (boughtProduct.toString() == product.id) {
-                    setHasBought(true)
-                    return
+    // case hasBought and hasReviewed, change rating and reviewContent to reviewed data so that we can update them
+    useEffect(()=>{
+        if(hasBought && hasReviewed && reviews?.length>0){
+            for(let review of reviews){
+                if (review.user.id.toString() == user.uid.toString()){
+                    setRating(review.rating)
+                    setReviewContent(review.content)
+                    break;
                 }
             }
-            setHasBought(false)
+            
         }
-    }, [user])
+    },[hasBought, hasReviewed, reviews])
+
+    // set hasBought
+    // useEffect(async () => {
+    //     if (product) {
+    //         for (let boughtProduct of user.boughtProducts) {
+    //             if (boughtProduct.toString() == product.id) {
+    //                 setHasBought(true)
+    //                 const filter = { user: user.uid, product: product.id }
+    //                 const { data } = await reviewService.getReviews(filter)
+    //                 if (data.results.length > 0) {
+    //                     setHasReviewed(true)
+    //                 } else { setHasReviewed(false) }
+    //                 return
+    //             }
+    //         }
+    //         setHasBought(false)
+    //     }
+    // }, [user])
     function onBuy() {
         const isConfirmed = window.confirm('Buy ' + amount + ' x ' + product.name + '? That will be ' + amount * product.price + '$')
         if (isConfirmed) {
-            orderService.createOrder({ user: user.id, product: productId, amount }).then(async({ data }) => {
+            orderService.createOrder({ user: user.id, product: productId, amount }).then(async ({ data }) => {
                 console.log(data)
                 if (data) {
                     alert('Buy successfully')
@@ -69,6 +171,7 @@ export default function ProductDetail() {
                 newUser.foo = 'foo'
                 await newUser.refresh()
                 setUser(newUser)
+                setHasBought(true)
             })
         }
     }
@@ -112,8 +215,51 @@ export default function ProductDetail() {
             </div>
             <section>
                 <h2>Review</h2>
-                {hasBought && <div><img src={user.picture}></img>{user.name} abcdae</div>}
+                {hasBought && !hasReviewed && <div><img src={user.picture}></img>{user.name}
+                    <form onSubmit={async (e) => {
+                        e.preventDefault()
+                        const { data } = await reviewService.createReview(product.id, rating, reviewContent)
+                        alert('posted review')
+                        console.log(data);
+                        setHasReviewed(true)
+                        onChangePage(null,1)
+                    }}>
+                        <div>{renderRatingInput(rating)}</div>
+                        <input type="text" placeholder='How do you feel about this product?' value={reviewContent} onChange={(e) => {
+                            setReviewContent(e.target.value)
+                        }} />
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>}
 
+                <ul style={{ listStyleType: 'none', padding: 0 }}>{reviews && reviews.map((review) => {
+                    if (user && (review.user.id.toString() == user.uid.toString())) {
+                        return (<li key={review.id}>
+                            <img src={review.user.picture}></img>{review.user.name}
+                            <form onSubmit={async (e) => {
+                                e.preventDefault()
+                                const { data } = await reviewService.updateReview(review.id, rating, reviewContent)
+                                alert('posted review')
+                                console.log(data);
+                            }}>
+                                <div>{renderRatingInput(rating)}</div>
+                                <input type="text" value={reviewContent} onChange={(e) => {
+                                    setReviewContent(e.target.value)
+                                }} />
+                                <button type="submit">Update</button>
+                            </form>
+                        </li>)
+                    } else {
+                        return (
+                            <li key={review.id}>
+                                <img src={review.user.picture}></img>{review.user.name}
+                                <div>{renderRating(review.rating)}</div>
+                                <p>{review.content}</p>
+                            </li>)
+                    }
+                })}</ul>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
+                <button onClick={()=>{console.log(rating);}}>clgt</button>
             </section>
         </article>}
     </div>)

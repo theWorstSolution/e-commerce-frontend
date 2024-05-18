@@ -5,42 +5,17 @@ import axios from 'axios';
 
 export default function TestPage() {
     let { user, setUser } = useContext(globalContext);
-    const [person, setPerson] = useState({
-        name: 'Niki de Saint Phalle',
-        artwork: {
-          title: 'Blue Nana',
-          city: 'Hamburg',
-          image: 'https://i.imgur.com/Sd1AgUOm.jpg',
-        }
-      });
-    const [state, setState] = useState({a:[1,2,3], b:{x:'y'}})
-    const onClick = function () {
-        console.log('click');
-        const state1 = {...state}
-        state1.a.push(4)
-        setState(state1) 
-        
-        // state.a.push(4)
-        // state.c = 2
-        // setState(state)
-    }
-    const onClick1 = function () {
-        console.log('click1');
-        const nextPer = {...person}
-        nextPer.artwork.city = 'hanoi'
-        setPerson(nextPer)
-    }
+    const [x, setX] = useState(null);
+  const [y, setY] = useState(null);
 
-    useEffect(()=>{
-        console.log('state change');
-        console.log(state);
-    },[state])
+  useEffect(() => {
+    console.log('useEffect 1 - dependent on x:', x);
+  }, [x]);
 
-    useEffect(()=>{
-        console.log('person change');
-        console.log(person);
-    },[person])
-
+  useEffect(() => {
+    console.log('useEffect 2 - dependent on y:', y);
+  }, [y]);
+let onClick, onClick1
     console.log('rerender');
     return (
         <div>

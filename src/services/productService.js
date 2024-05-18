@@ -14,7 +14,6 @@ function getProduct(id){
  * @param {object} query: {name,...}
  */
 function getProducts(filter, options){
-    // console.log('getUsers')
     const response = axiosInstance({
         method: 'GET',
         url: '/v1/products',
