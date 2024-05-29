@@ -112,6 +112,7 @@ export default function NotificationBell() {
                 setNotifications(newNotis)
                 if (notificationData.hasMore) { setHasMoreNotis(true) } else { setHasMoreNotis(false) }
             }}>More</button>}
+            <div style={{height:'10px', backgroundColor:'transparent'}}></div>
             </div>
             
         </div>
