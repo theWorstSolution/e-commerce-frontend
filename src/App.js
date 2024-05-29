@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
 
-import Router from './routes';
 import { Route, Routes } from 'react-router-dom';
 import AuthGuard from './guards/AuthGuard';
 import Home from './pages/Home';
