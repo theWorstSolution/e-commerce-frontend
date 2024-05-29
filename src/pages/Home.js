@@ -19,6 +19,7 @@ export default function Home() {
   const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{ id: categoryService.rootCategoryId, name: 'root' }]])  // có id, name
   const [catsSelected, setCatsSelected] = useState([{ value: categoryService.rootCategoryId, label: 'root' }])    // có value và label
 
+  const [recommendInfo, setRecommendInfo] = useState()
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate()
   const [res, setRes] = useState()
@@ -203,6 +204,7 @@ export default function Home() {
     }
   }, [res])
 
+  useEffect(()=>{console.log(recommendInfo);},[recommendInfo])
 
   return (<div>
     <HomeHeader navigateLinkOnSearch='/products?' />
@@ -291,7 +293,8 @@ export default function Home() {
       <div style={{ overflow: 'hidden' }}>
         {mainCategories && <ul className='horizontalUl' style={{ listStyleType: 'none', transition: 'translate 1s ease-in-out', ...slickerStyle }}>
           <li onClick={async () => {
-            await userService.genRecommendedProducts()
+            const {data} = await userService.genRecommendedProducts()
+            setRecommendInfo(data)
             const newSearchParams = new URLSearchParams();
             newSearchParams.set("recommended-products", true);
             setSearchParams(newSearchParams);
@@ -327,6 +330,49 @@ export default function Home() {
         </li>)}
       </ul>)}
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
+    </section>
+    <section>
+        <ul>
+          {recommendInfo && recommendInfo.clustersList.map((cluster, idx)=><li>
+          <h2>Cluster {idx}</h2>
+          <h3>Center</h3>
+          <table>
+            <thead><tr><th>Price</th><th>Rating</th><th>Sold amount</th><th>Category value</th></tr></thead>
+            <tbody><tr><td>{cluster.center.price}</td><td>{cluster.center.rating}</td><td>{cluster.center.soldAmount}</td><td>{cluster.center.categoryValue}</td></tr></tbody>
+          </table>
+          <h3>Member</h3>
+          <table>
+            <thead><tr><th>Name</th><th>Price</th><th>Rating</th><th>Sold amount</th>
+              <th>Category</th><th>Category value</th><th>initMembership</th>
+              <th>membership</th><th>distanceToCenter</th><th>hasBeenBought</th>
+              <th>isRecommended</th>
+            </tr></thead>
+            <tbody>
+              {cluster.productsId.map((productId)=>(<tr style={{
+                backgroundColor:recommendInfo.productsList[productId].isRecommended?'blue':(recommendInfo.productsList[productId].hasBeenBought?'orange':null)}}>
+                <td>{recommendInfo.productsList[productId].name}</td>
+                <td>{recommendInfo.productsList[productId].price}</td>
+                <td>{recommendInfo.productsList[productId].rating}</td>
+                <td>{recommendInfo.productsList[productId].soldAmount}</td>
+                <td>{recommendInfo.productsList[productId].categories.map((cat, idx) => {
+                    if (idx == recommendInfo.productsList[productId].categories.length - 1) {
+                        return cat.name
+                    }
+                    return cat.name + ' > '
+                })}</td>
+                <td>{recommendInfo.productsList[productId].categoryValue}</td>
+                <td>{recommendInfo.productsList[productId].initMembership}</td>
+                <td>{recommendInfo.productsList[productId].membership}</td>
+                <td>{recommendInfo.productsList[productId].distanceToCenter}</td>
+                <td>{recommendInfo.productsList[productId].hasBeenBought?'X':''}</td>
+                <td>{recommendInfo.productsList[productId].isRecommended?'X':''}</td>
+              </tr>))}
+            </tbody>
+          </table>
+          
+          </li>) 
+            }
+        </ul>
     </section>
     {/* Hoe Logined
          <div>
