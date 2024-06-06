@@ -56,12 +56,3 @@ export const defaultSettings = {
   themeLayout: 'horizontal',
   themeStretch: false,
 };
-
-export const constant = {
-  css:{
-    categoryCardWidth: {value:100, unit:'px', string:'100px'},
-    categoryCardHeight: {value:100, unit:'px', string:'100px'},
-    categoryImgHeight: {value:50, unit:'px', string:'50px'},
-    categoryImgWidth: {value:50, unit:'px', string:'50px'},
-  }
-}

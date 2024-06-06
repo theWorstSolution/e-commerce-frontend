@@ -5,7 +5,6 @@ import HomeHeader from '../components/HomeHeader';
 import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle, BsStar } from "react-icons/bs";
 import { useCallback } from 'react';
 import categoryService from '../services/categoryService'
-import { constant } from '../config';
 import { Link, useOutletContext } from "react-router-dom";
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import productService from '../services/productService';
@@ -331,41 +330,46 @@ export default function Home() {
       </ul>)}
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
     </section>
-    <section>
+    {recommendInfo && <section>
+        <p><em>Iterate: </em> {recommendInfo.iterate}</p>
+        <p><em>Error: </em> {recommendInfo.error.toFixed(5)}</p>
         <ul>
-          {recommendInfo && recommendInfo.clustersList.map((cluster, idx)=><li>
+          {recommendInfo.clustersList.map((cluster, idx)=><li>
           <h2>Cluster {idx}</h2>
           <h3>Center</h3>
           <table>
             <thead><tr><th>Price</th><th>Rating</th><th>Sold amount</th><th>Category value</th></tr></thead>
-            <tbody><tr><td>{cluster.center.price}</td><td>{cluster.center.rating}</td><td>{cluster.center.soldAmount}</td><td>{cluster.center.categoryValue}</td></tr></tbody>
+            <tbody><tr><td>{cluster.center.price.toFixed(5)}</td><td>{cluster.center.rating.toFixed(5)}</td><td>{cluster.center.soldAmount.toFixed(5)}</td><td>{cluster.center.categoryValue.toFixed(5)}</td></tr></tbody>
           </table>
           <h3>Member</h3>
-          <table>
-            <thead><tr><th>Name</th><th>Price</th><th>Rating</th><th>Sold amount</th>
-              <th>Category</th><th>Category value</th><th>initMembership</th>
-              <th>membership</th><th>distanceToCenter</th><th>hasBeenBought</th>
-              <th>isRecommended</th>
+          <table style={{width:'100%'}}>
+            <thead><tr><th style={{width:'50px'}}>Name</th><th >Price</th>
+              <th >Rating</th><th >Sold amount</th>
+              <th >Category</th><th >Category value</th>
+              <th >initMembership</th>
+              <th >membership</th><th >distanceToCenter</th>
+              <th >hasBeenBought</th>
+              <th >isRecommended</th>
             </tr></thead>
             <tbody>
               {cluster.productsId.map((productId)=>(<tr style={{
                 backgroundColor:recommendInfo.productsList[productId].isRecommended?'blue':(recommendInfo.productsList[productId].hasBeenBought?'orange':null)}}>
-                <td>{recommendInfo.productsList[productId].name}</td>
-                <td>{recommendInfo.productsList[productId].price}</td>
-                <td>{recommendInfo.productsList[productId].rating}</td>
-                <td>{recommendInfo.productsList[productId].soldAmount}</td>
-                <td>{recommendInfo.productsList[productId].categories.map((cat, idx) => {
+                <td >{recommendInfo.productsList[productId].name}</td>
+                <td >{recommendInfo.productsList[productId].price.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].rating.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].soldAmount.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].categories.map((cat, idx) => {
                     if (idx == recommendInfo.productsList[productId].categories.length - 1) {
                         return cat.name
                     }
                     return cat.name + ' > '
                 })}</td>
-                <td>{recommendInfo.productsList[productId].categoryValue}</td>
-                <td>{recommendInfo.productsList[productId].initMembership}</td>
-                <td>{recommendInfo.productsList[productId].membership}</td>
-                <td>{recommendInfo.productsList[productId].distanceToCenter}</td>
-                <td>{recommendInfo.productsList[productId].hasBeenBought?'X':''}</td>
-                <td>{recommendInfo.productsList[productId].isRecommended?'X':''}</td>
+                <td >{recommendInfo.productsList[productId].categoryValue.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].initMembership.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].membership.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].distanceToCenter.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].hasBeenBought?'X':''}</td>
+                <td >{recommendInfo.productsList[productId].isRecommended?'X':''}</td>
               </tr>))}
             </tbody>
           </table>
@@ -373,7 +377,7 @@ export default function Home() {
           </li>) 
             }
         </ul>
-    </section>
+    </section>}
     {/* Hoe Logined
          <div>
        <h1>My App</h1>
