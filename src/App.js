@@ -28,7 +28,7 @@ function App() {
     <Routes>
       <Route index element={<Home/>}/>
       <Route path='auth' element={<AuthGuard/>} />
-      <Route path='cart' element={<Cart/>} />
+      <Route path='cart' element={<AuthGuard><Cart/></AuthGuard>} />
       <Route path='user' element={<UserProfileLayout/>}>
         <Route index element={<UserProfile/>} />
         <Route path='profile' element={<UserProfile/>} />

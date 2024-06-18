@@ -331,29 +331,53 @@ export default function Home() {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
     </section>
     {recommendInfo && <section>
+    <h2>Supervised membership table</h2>
+    <table className='recommendedProductTable'><thead><tr>
+    <th style={{width:'200px'}}>Name</th><th >Price</th>
+              <th >Rating</th><th >Sold amount</th>
+              <th >Category</th><th >Category value</th>
+              {recommendInfo.clustersList.map((cluster, idx)=><th>Cluster {idx}</th>)}
+    </tr></thead>
+    <tbody>
+      {Object.entries(recommendInfo.productsList).map(([productId, product])=><tr>
+        <td >{product.name}</td>
+                <td >{product.price.toFixed(5)}</td>
+                <td >{product.rating.toFixed(5)}</td>
+                <td >{product.soldAmount.toFixed(5)}</td>
+                <td >{product.categories.map((cat, idx) => {
+                    if (idx == product.categories.length - 1) {
+                        return cat.name
+                    }
+                    return cat.name + ' > '
+                })}</td>
+                <td >{product.categoryValue.toFixed(5)}</td>
+                {recommendInfo.clustersList.map((cluster, idx)=><td style={{backgroundColor:(recommendInfo.u_[idx][productId]==0)?'transparent':'orange'}}>{recommendInfo.u_[idx][productId].toFixed(5)}</td>)}
+      </tr>)}
+    </tbody>
+    </table>
         <p><em>Iterate: </em> {recommendInfo.iterate}</p>
         <p><em>Error: </em> {recommendInfo.error.toFixed(5)}</p>
         <ul>
           {recommendInfo.clustersList.map((cluster, idx)=><li>
           <h2>Cluster {idx}</h2>
           <h3>Center</h3>
-          <table>
+          <table className='recommendedProductTable'>
             <thead><tr><th>Price</th><th>Rating</th><th>Sold amount</th><th>Category value</th></tr></thead>
             <tbody><tr><td>{cluster.center.price.toFixed(5)}</td><td>{cluster.center.rating.toFixed(5)}</td><td>{cluster.center.soldAmount.toFixed(5)}</td><td>{cluster.center.categoryValue.toFixed(5)}</td></tr></tbody>
           </table>
           <h3>Member</h3>
-          <table style={{width:'100%'}}>
-            <thead><tr><th style={{width:'50px'}}>Name</th><th >Price</th>
+          <table style={{width:'100%'}} className='recommendedProductTable'>
+            <thead><tr><th style={{width:'200px'}}>Name</th><th >Price</th>
               <th >Rating</th><th >Sold amount</th>
               <th >Category</th><th >Category value</th>
-              <th >initMembership</th>
+              <th >supervised Membership</th>
               <th >membership</th><th >distanceToCenter</th>
               <th >hasBeenBought</th>
               <th >isRecommended</th>
             </tr></thead>
             <tbody>
               {cluster.productsId.map((productId)=>(<tr style={{
-                backgroundColor:recommendInfo.productsList[productId].isRecommended?'blue':(recommendInfo.productsList[productId].hasBeenBought?'orange':null)}}>
+                backgroundColor:recommendInfo.productsList[productId].isRecommended?'lightgreen':(recommendInfo.productsList[productId].hasBeenBought?'orange':null)}}>
                 <td >{recommendInfo.productsList[productId].name}</td>
                 <td >{recommendInfo.productsList[productId].price.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].rating.toFixed(5)}</td>
@@ -365,7 +389,7 @@ export default function Home() {
                     return cat.name + ' > '
                 })}</td>
                 <td >{recommendInfo.productsList[productId].categoryValue.toFixed(5)}</td>
-                <td >{recommendInfo.productsList[productId].initMembership.toFixed(5)}</td>
+                <td >{recommendInfo.productsList[productId].supervisedMembership.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].membership.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].distanceToCenter.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].hasBeenBought?'X':''}</td>

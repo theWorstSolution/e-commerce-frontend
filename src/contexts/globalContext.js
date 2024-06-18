@@ -49,9 +49,3 @@ export function UserProvider({children}){
     </globalContext.Provider>
   )
 }
-/* 
-cart thì sao, nói chung tôi muốn cho làm global object thì cho hết vào provider/context
-cartContext: khi nào khởi tạo cart? khi onauthstatechange
-vậy cho vào chung 1 cái là global context, pass nhiều object trong 1 provider
-
-*/

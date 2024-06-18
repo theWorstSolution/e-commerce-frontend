@@ -3,7 +3,6 @@ import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft, BsCart3 } from
 import { globalContext } from '../contexts/globalContext';
 import { Link } from "react-router-dom";
 import userService from "../services/userService";
-import NumberBadge from "./NumberBadge";
 
 export default function NotificationBell() {
     const { user } = useContext(globalContext);

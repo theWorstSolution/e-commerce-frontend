@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState, useRef, useContext } from "react";
 import { globalContext } from '../../contexts/globalContext';
 import firebase from 'firebase/compat/app';
 import NotificationBell from '../NotificationBell';
+import Cart from '../Cart';
 const qs = require('qs')
 
 
@@ -50,7 +51,8 @@ function HomeHeader({navigateLinkOnSearch}){
             <input name='generalSearchInput' onChange={onSearchInputChange} className='header_searchbar_input' placeholder='searchbar'/>
             <button type='submit' className='header_searchbar_button'><BsSearch /></button>
           </form>
-          <div style={{position:'relative'}} className='cartIcon'>
+          <Cart/>
+          {/* <div style={{position:'relative'}} className='cartIcon'>
             <Link to='/cart'><BsCart3 className='largeIcon'/></Link>
             <div style={{position:'absolute', zIndex:'1', top:'100%', right:'-15px'}} className='cartDropdown'>
               <ul style={{listStyleType:'none', padding:0}} className='cartList'>
@@ -64,7 +66,7 @@ function HomeHeader({navigateLinkOnSearch}){
                 {user?.cart?.length>3 && <li>{user.cart.length-3} more products</li>}
               </ul>
             </div>
-          </div>
+          </div> */}
         </div>
       </header>
     )

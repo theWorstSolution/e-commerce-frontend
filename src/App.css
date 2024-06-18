@@ -285,3 +285,10 @@
     width: 100px;
     height: 100px;
 }
+
+table.recommendedProductTable, .recommendedProductTable th, .recommendedProductTable td{
+    border: 1px solid;
+}
+table.recommendedProductTable {
+    border-collapse: collapse;
+}
