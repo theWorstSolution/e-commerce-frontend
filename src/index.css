@@ -5,7 +5,8 @@
   --categoryImgWidth: 50px;
   --productThumbnailWidth: 100px;
   --productThumbnailHeight: 100px;
-
+  --y-margin: 20px;
+  --top-margin: 20px;
 }
 
 body {
