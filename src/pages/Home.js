@@ -11,12 +11,12 @@ import productService from '../services/productService';
 import Select from 'react-select';
 import { Pagination } from '@mui/material';
 import userService from '../services/userService';
+import HomeDetailSearchForm from '../components/HomeDetailSearchForm';
+import { Collapse, Divider } from 'antd';
 const qs = require('qs')
 
 export default function Home() {
   const { user } = useContext(globalContext);
-  const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{ id: categoryService.rootCategoryId, name: 'root' }]])  // có id, name
-  const [catsSelected, setCatsSelected] = useState([{ value: categoryService.rootCategoryId, label: 'root' }])    // có value và label
 
   const [recommendInfo, setRecommendInfo] = useState()
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,9 +36,6 @@ export default function Home() {
     categoryService.getChildrenCategory(categoryService.rootCategoryId).then(({ data }) => {
       // console.log(data);
       setMainCategories(data)
-      setCategoriesAtLevel((categoriesAtLevel) => {
-        return [...categoriesAtLevel, data]
-      })
     })
   }, [])
 
@@ -91,24 +88,18 @@ export default function Home() {
       if (searchParams.get('minPrice') != '' && searchParams.get('minPrice')) {
         filter.price.$gte = searchParams.get('minPrice')
       }
-      if (searchParams.get('maxPrice') != '' && searchParams.get('maxPrice')) {
+      if (searchParams.get('maxPrice') != '' && searchParams.get('maxPrice') != 'Infinity' && searchParams.get('maxPrice')) {
         filter.price.$lte = searchParams.get('maxPrice')
-      }
-      if (searchParams.get('minSoldAmount') != '' && searchParams.get('minSoldAmount')) {
-        filter.soldAmount.$gte = searchParams.get('minSoldAmount')
-      }
-      if (searchParams.get('maxSoldAmount') != '' && searchParams.get('maxSoldAmount')) {
-        filter.soldAmount.$lte = searchParams.get('maxSoldAmount')
       }
       filter['categories.id'] = searchParams.get('categoryId')
 
-      options = { sortBy: searchParams.get('sortField') + ':' + searchParams.get('sortOrder'), page: initialPage }
+      options = { sortBy: searchParams.get('sortBy') + ':' + searchParams.get('order'), page: initialPage }
       setResultsTitle('Search results:')
     }
-    // console.log(filter);
-    // console.log(options);
+    console.log(filter);
+    console.log(options);
     productService.getProducts(filter, options).then(({ data }) => {
-      // console.log(data);
+      console.log(data);
       setRes(data.results)
       setPagiProps((pagiProps) => ({
         ...pagiProps,
@@ -124,56 +115,6 @@ export default function Home() {
       return params
     });
   }, [setSearchParams])
-
-  const [detailSearchInput, setDetailSearchInput] = useState({ sortField: 'name', sortOrder: 'asc' })
-  const onDetailSearchInputChange = useCallback((event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setDetailSearchInput(values => ({ ...values, [name]: value }))
-  }, [])
-  const onDetailSearchSubmit = useCallback((e) => {
-    e.preventDefault()
-    const newSearchParams = new URLSearchParams();
-    for (let param in detailSearchInput) {
-      newSearchParams.set(param, detailSearchInput[param]);
-    }
-    newSearchParams.set('categoryId', catsSelected[catsSelected.length - 1].value)
-    setSearchParams(newSearchParams);
-    // const queryString = qs.stringify(detailSearchInput, { encode:false})
-    // navigate('/products?'+queryString)
-  }, [detailSearchInput, catsSelected])
-
-
-
-  const [accordionState, setAccordionState] = useState({
-    state: 0, // 0: hidden, 1: show
-    arrowStyle: {},
-    contentStyle: { maxHeight: 0 }
-  })
-  const onClickAccordion = useCallback(() => {
-    // console.log(accordionState);
-    if (accordionState.state == 0) {
-      // console.log('activate accordion');
-      const newAccordionState = { ...accordionState }
-      newAccordionState.state = 1;
-      newAccordionState.arrowStyle = {
-        transform: 'rotate(90deg)'
-      }
-      newAccordionState.contentStyle = { maxHeight: '300px' }
-      // console.log(newAccordionState);
-      setAccordionState(newAccordionState)
-    } else {
-      // console.log('deactivate accordion');
-      setAccordionState((a) => {
-        const newAccordionState = { ...a }
-        newAccordionState.state = 0;
-        newAccordionState.arrowStyle = null
-        newAccordionState.contentStyle = { maxHeight: 0 }
-        // console.log(newAccordionState);
-        return newAccordionState
-      })
-    }
-  }, [accordionState])
 
   const [slickerStyle, setSlickerStyle] = useState({ translate: '0px' })
   const onSlideSlicker = function (e) {
@@ -203,162 +144,108 @@ export default function Home() {
     }
   }, [res])
 
-  useEffect(()=>{console.log(recommendInfo);},[recommendInfo])
+  useEffect(() => { console.log(recommendInfo); }, [recommendInfo])
 
   return (<div>
     <HomeHeader navigateLinkOnSearch='/products?' />
 
-    <h2 onClick={onClickAccordion} style={{ display: 'flex', alignItems: 'center' }}><BsCaretRightFill style={{ transition: 'transform 1s ease-in-out', ...accordionState.arrowStyle }} />Detail search</h2>
-    <form onSubmit={onDetailSearchSubmit} style={{ transition: 'max-height 1s ease-in-out', border: 'solid', overflow: 'auto', ...accordionState.contentStyle }}>
-      <label>Name/description/category:</label>
-      <input type='search' name='name_description_category' onChange={onDetailSearchInputChange} />
-      <p>
-        <label>Price</label>
-        <input type='number' name="minPrice" onChange={onDetailSearchInputChange} />
-        <input type='number' name="maxPrice" onChange={onDetailSearchInputChange} />
-      </p>
-      <p>
-        <label>Sold amount</label>
-        <input type='number' name="minSoldAmount" onChange={onDetailSearchInputChange} />
-        <input type='number' name="maxSoldAmount" onChange={onDetailSearchInputChange} />
-      </p>
-      <div>
-        {categoriesAtLevel && categoriesAtLevel.map((catsAtLevel, idx) => {
-          return (<Select
-            key={catsSelected[idx]?.value}
-            isClearable
-            onChange={async (newSelected) => {
-              // console.log('trigger onchange');
-              // console.log('new value: ' + JSON.stringify(newSelected));
-              //if xóa lựa chọn
-              if (!newSelected) {
-                setCatsSelected((catsSelected) => {
-                  const newCatsSelected = [...catsSelected]
-                  newCatsSelected.splice(idx);
-                  return newCatsSelected
-                })
-
-                setCategoriesAtLevel((categoriesAtLevel) => {
-                  const newCatsAtLevel = [...categoriesAtLevel]
-                  newCatsAtLevel.splice(idx + 1)
-                  return newCatsAtLevel
-                })
-                return
+    <section className='sectionCard'>
+      <Collapse
+        items={[
+          {
+            key: '1',
+            label: 'Detail search',
+            children: <HomeDetailSearchForm onSubmit={(formInputs) => {
+              const newSearchParams = new URLSearchParams();
+              for (let param in formInputs) {
+                if (formInputs[param]) {
+                  newSearchParams.set(param, formInputs[param]);
+                }
               }
+              setSearchParams(newSearchParams);
+            }} />
+          },
+        ]}
+      />
+    </section>
 
+    <section className='sectionCard'>
+      <h2>Categories</h2>
+      <div style={{ display: 'flex' }}>
+        <button name='slideBack' onClick={onSlideSlicker}><BsArrowLeftCircle /></button>
+        <div style={{ overflow: 'hidden' }}>
+          {mainCategories && <ul className='horizontalUl' style={{ listStyleType: 'none', transition: 'translate 1s ease-in-out', ...slickerStyle }}>
+            <li onClick={async () => {
+              const { data } = await userService.genRecommendedProducts()
+              setRecommendInfo(data)
+              const newSearchParams = new URLSearchParams();
+              newSearchParams.set("recommended-products", true);
+              setSearchParams(newSearchParams);
+            }}><Link>Recommended Products</Link></li>
+            {mainCategories.map((cat) => (<li onClick={() => {
+              const newSearchParams = new URLSearchParams();
+              newSearchParams.set("categoryId", cat.id);
 
-              setCatsSelected((catsSelected) => {
-                const newCatsSelected = [...catsSelected]
-                newCatsSelected[idx] = newSelected
-                newCatsSelected.splice(idx + 1)
-                // console.log('newCatsSelected: ' + JSON.stringify(newCatsSelected));
-                return newCatsSelected
-              })
-
-              const { data: childrenCats } = await categoryService.getChildrenCategory(newSelected.value)
-              // console.log(childrenCats);
-              setCategoriesAtLevel((categoriesAtLevel) => {
-                const newCatsAtLevel = [...categoriesAtLevel]
-                newCatsAtLevel[idx + 1] = childrenCats;
-                newCatsAtLevel.splice(idx + 2)
-                // console.log('categoriesAtLevel: ' + JSON.stringify(newCatsAtLevel));
-                return newCatsAtLevel
-              })
-            }}
-            options={catsAtLevel.map((cat) => ({ value: cat.id, label: cat.name }))}
-            value={catsSelected[idx]}
-          />)
-        })}
+              setSearchParams(newSearchParams);
+            }} key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'var(--categoryCardWidth)', height: 'var(--categoryCardHeight)' }}>
+              <img src={cat.picture} style={{ width: 'var(--categoryImgWidth)', height: 'var(--categoryImgHeight)' }}></img>
+              {cat.name}
+            </li>))}
+          </ul>}
+        </div>
+        <button name='slideForward' onClick={onSlideSlicker}><BsArrowRightCircle /></button>
       </div>
-      <p>
-        <label>Sort by</label>
-        <select value={detailSearchInput.sortField} name="sortField" onChange={onDetailSearchInputChange}>
-          <option value='name' >Name</option>
-          <option value='price' >Price</option>
-          <option value='soldAmount' >Sold amount</option>
-        </select>
-      </p>
-      <div>
-        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="asc" defaultChecked={detailSearchInput.sortOrder == 'asc'} /><label>Ascending </label>
-        <input type="radio" onChange={onDetailSearchInputChange} name="sortOrder" value="desc" defaultChecked={detailSearchInput.sortOrder == 'desc'} /><label>Descending </label>
-      </div>
-      <button type='submit'>Submit</button>
-    </form>
-
-
-    <h2>Categories</h2>
-    <section style={{ display: 'flex' }}>
-      <button name='slideBack' onClick={onSlideSlicker}><BsArrowLeftCircle /></button>
-      <div style={{ overflow: 'hidden' }}>
-        {mainCategories && <ul className='horizontalUl' style={{ listStyleType: 'none', transition: 'translate 1s ease-in-out', ...slickerStyle }}>
-          <li onClick={async () => {
-            const {data} = await userService.genRecommendedProducts()
-            setRecommendInfo(data)
-            const newSearchParams = new URLSearchParams();
-            newSearchParams.set("recommended-products", true);
-            setSearchParams(newSearchParams);
-          }}><Link>Recommended Products</Link></li>
-          {mainCategories.map((cat) => (<li onClick={() => {
-            const newSearchParams = new URLSearchParams();
-            newSearchParams.set("categoryId", cat.id);
-            
-            setSearchParams(newSearchParams);
-          }} key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'var(--categoryCardWidth)', height: 'var(--categoryCardHeight)' }}>
-            <img src={cat.picture} style={{ width: 'var(--categoryImgWidth)', height: 'var(--categoryImgHeight)' }}></img>
-            {cat.name}
-          </li>))}
-        </ul>}
-      </div>
-      <button name='slideForward' onClick={onSlideSlicker}><BsArrowRightCircle /></button>
     </section>
 
 
-    <h2>{resultsTitle}</h2>
-    <section>
-      {productLists.map((productList) => <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
-        {productList.map((product) => <li key={product.id} style={{ width: '200px' }}>
-          <Link to={'/products/product/' + product.id}>
-            <div><img src={product.pictures[0]} style={{ width: 'var(--productThumbnailWidth)', height: 'var(--productThumbnailHeight)' }}></img></div>
-            <div>
-              <div>{product.name}</div>
-              <div>{product.rating} <BsStar /></div>
-              <div>{product.price}$</div>
-              <div>{product.soldAmount} sold</div>
-            </div>
-          </Link>
-        </li>)}
-      </ul>)}
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
+    <section className='sectionCard'>
+      <h2>{resultsTitle}</h2>
+      <div>
+        {productLists.map((productList) => <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
+          {productList.map((product) => <li key={product.id} style={{ width: '200px' }}>
+            <Link to={'/products/product/' + product.id}>
+              <div><img src={product.pictures[0]} style={{ width: 'var(--productThumbnailWidth)', height: 'var(--productThumbnailHeight)' }}></img></div>
+              <div>
+                <div>{product.name}</div>
+                <div>{product.rating} <BsStar /></div>
+                <div>{product.price}$</div>
+                <div>{product.soldAmount} sold</div>
+              </div>
+            </Link>
+          </li>)}
+        </ul>)}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
+      </div>
     </section>
     {recommendInfo && <section>
-    <h2>Supervised membership table</h2>
-    <table className='recommendedProductTable'><thead><tr>
-    <th style={{width:'200px'}}>Name</th><th >Price</th>
-              <th >Rating</th><th >Sold amount</th>
-              <th >Category</th><th >Category value</th>
-              {recommendInfo.clustersList.map((cluster, idx)=><th>Cluster {idx}</th>)}
-    </tr></thead>
-    <tbody>
-      {Object.entries(recommendInfo.productsList).map(([productId, product])=><tr>
-        <td >{product.name}</td>
-                <td >{product.price.toFixed(5)}</td>
-                <td >{product.rating.toFixed(5)}</td>
-                <td >{product.soldAmount.toFixed(5)}</td>
-                <td >{product.categories.map((cat, idx) => {
-                    if (idx == product.categories.length - 1) {
-                        return cat.name
-                    }
-                    return cat.name + ' > '
-                })}</td>
-                <td >{product.categoryValue.toFixed(5)}</td>
-                {recommendInfo.clustersList.map((cluster, idx)=><td style={{backgroundColor:(recommendInfo.u_[idx][productId]==0)?'transparent':'orange'}}>{recommendInfo.u_[idx][productId].toFixed(5)}</td>)}
-      </tr>)}
-    </tbody>
-    </table>
-        <p><em>Iterate: </em> {recommendInfo.iterate}</p>
-        <p><em>Error: </em> {recommendInfo.error.toFixed(5)}</p>
-        <ul>
-          {recommendInfo.clustersList.map((cluster, idx)=><li>
+      <h2>Supervised membership table</h2>
+      <table className='recommendedProductTable'><thead><tr>
+        <th style={{ width: '200px' }}>Name</th><th >Price</th>
+        <th >Rating</th><th >Sold amount</th>
+        <th >Category</th><th >Category value</th>
+        {recommendInfo.clustersList.map((cluster, idx) => <th>Cluster {idx}</th>)}
+      </tr></thead>
+        <tbody>
+          {Object.entries(recommendInfo.productsList).map(([productId, product]) => <tr>
+            <td >{product.name}</td>
+            <td >{product.price.toFixed(5)}</td>
+            <td >{product.rating.toFixed(5)}</td>
+            <td >{product.soldAmount.toFixed(5)}</td>
+            <td >{product.categories.map((cat, idx) => {
+              if (idx == product.categories.length - 1) {
+                return cat.name
+              }
+              return cat.name + ' > '
+            })}</td>
+            <td >{product.categoryValue.toFixed(5)}</td>
+            {recommendInfo.clustersList.map((cluster, idx) => <td style={{ backgroundColor: (recommendInfo.u_[idx][productId] == 0) ? 'transparent' : 'orange' }}>{recommendInfo.u_[idx][productId].toFixed(5)}</td>)}
+          </tr>)}
+        </tbody>
+      </table>
+      <p><em>Iterate: </em> {recommendInfo.iterate}</p>
+      <p><em>Error: </em> {recommendInfo.error.toFixed(5)}</p>
+      <ul>
+        {recommendInfo.clustersList.map((cluster, idx) => <li>
           <h2>Cluster {idx}</h2>
           <h3>Center</h3>
           <table className='recommendedProductTable'>
@@ -366,8 +253,8 @@ export default function Home() {
             <tbody><tr><td>{cluster.center.price.toFixed(5)}</td><td>{cluster.center.rating.toFixed(5)}</td><td>{cluster.center.soldAmount.toFixed(5)}</td><td>{cluster.center.categoryValue.toFixed(5)}</td></tr></tbody>
           </table>
           <h3>Member</h3>
-          <table style={{width:'100%'}} className='recommendedProductTable'>
-            <thead><tr><th style={{width:'200px'}}>Name</th><th >Price</th>
+          <table style={{ width: '100%' }} className='recommendedProductTable'>
+            <thead><tr><th style={{ width: '200px' }}>Name</th><th >Price</th>
               <th >Rating</th><th >Sold amount</th>
               <th >Category</th><th >Category value</th>
               <th >supervised Membership</th>
@@ -376,31 +263,32 @@ export default function Home() {
               <th >isRecommended</th>
             </tr></thead>
             <tbody>
-              {cluster.productsId.map((productId)=>(<tr style={{
-                backgroundColor:recommendInfo.productsList[productId].isRecommended?'lightgreen':(recommendInfo.productsList[productId].hasBeenBought?'orange':null)}}>
+              {cluster.productsId.map((productId) => (<tr style={{
+                backgroundColor: recommendInfo.productsList[productId].isRecommended ? 'lightgreen' : (recommendInfo.productsList[productId].hasBeenBought ? 'orange' : null)
+              }}>
                 <td >{recommendInfo.productsList[productId].name}</td>
                 <td >{recommendInfo.productsList[productId].price.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].rating.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].soldAmount.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].categories.map((cat, idx) => {
-                    if (idx == recommendInfo.productsList[productId].categories.length - 1) {
-                        return cat.name
-                    }
-                    return cat.name + ' > '
+                  if (idx == recommendInfo.productsList[productId].categories.length - 1) {
+                    return cat.name
+                  }
+                  return cat.name + ' > '
                 })}</td>
                 <td >{recommendInfo.productsList[productId].categoryValue.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].supervisedMembership.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].membership.toFixed(5)}</td>
                 <td >{recommendInfo.productsList[productId].distanceToCenter.toFixed(5)}</td>
-                <td >{recommendInfo.productsList[productId].hasBeenBought?'X':''}</td>
-                <td >{recommendInfo.productsList[productId].isRecommended?'X':''}</td>
+                <td >{recommendInfo.productsList[productId].hasBeenBought ? 'X' : ''}</td>
+                <td >{recommendInfo.productsList[productId].isRecommended ? 'X' : ''}</td>
               </tr>))}
             </tbody>
           </table>
-          
-          </li>) 
-            }
-        </ul>
+
+        </li>)
+        }
+      </ul>
     </section>}
     {/* Hoe Logined
          <div>

@@ -1,6 +1,6 @@
 .mock {
-    /* border-style: solid;
-    border-color: black; */
+    border-style: solid;
+    border-color: black;
 }
 
 .long-mock {
@@ -19,8 +19,11 @@
     top: 0; */
     /* transform: translateZ(0); */
     /* z-index: 100; */
+    
     background: #f53d2d;
     background: linear-gradient(-180deg, #f53d2d, #f63);
+    padding: var(--top-margin) var(--y-margin) 10px;
+    
     /* transition: transform .2s cubic-bezier(.4, 0, .2, 1); */
 
 }
@@ -291,4 +294,13 @@ table.recommendedProductTable, .recommendedProductTable th, .recommendedProductT
 }
 table.recommendedProductTable {
     border-collapse: collapse;
+}
+
+
+.sectionCard{
+    margin: 1.25rem var(--y-margin) 0;
+  background-color: white;
+  border-radius: 8px;
+  padding: 12px 8px;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
 }

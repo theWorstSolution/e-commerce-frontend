@@ -28,12 +28,12 @@ function HomeHeader({navigateLinkOnSearch}){
   }, [searchInput])
   
     return (
-      <header className='mock homeHeader' style={{paddingLeft:'var(--y-margin)', paddingRight:'var(--y-margin)'}}>
+      <header className='homeHeader'>
       <HeaderRow1/>
         <div className='header_row2'>
           <Link to='/' className='header_logo'>Shopee</Link>
           <form onSubmit={onSearchSubmit} className='header_searchbar'>
-            <input name='generalSearchInput' onChange={onSearchInputChange} className='header_searchbar_input' placeholder='searchbar'/>
+            <input name='generalSearchInput' onChange={onSearchInputChange} className='header_searchbar_input' placeholder='Search for products'/>
             <button type='submit' className='header_searchbar_button'><BsSearch /></button>
           </form>
           <Cart/>

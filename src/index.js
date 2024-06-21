@@ -14,15 +14,15 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
   <UserProvider>
-    <ThemeProvider theme={theme}>
+    {/* <ThemeProvider theme={theme}> */}
       <Helmet>
         <title>Page Title</title>
         <meta name="description" content="Description of the page" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Helmet>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <BrowserRouter><App /></BrowserRouter>
-    </ThemeProvider>
+    {/* </ThemeProvider> */}
   </UserProvider>
   // </React.StrictMode >
 );
