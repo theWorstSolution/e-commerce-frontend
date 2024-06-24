@@ -142,10 +142,10 @@ export default function NotificationBell() {
             }
             setNotifications(newNotis)
         }
-    }} className='centerChildren '>
-                <div className="centerChildren">
+    }}>
+                <div className="centerChildren" style={{cursor:'default'}}>
                     <BsBell className='headerIcon'/>
-                    {noOfNotSeenNoti > 0 && <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '-5px', right: '-4px', fontSize: '12px', borderRadius: '50%', backgroundColor: 'white', height: '12px', width: '12px' }}>
+                    {noOfNotSeenNoti > 0 && <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '-5px', right: '-4px', fontSize: '12px', borderRadius: '50%', backgroundColor: 'white', height: '12px', width: '12px', color:'var(--shopee-color)' }}>
                         {noOfNotSeenNoti}
                     </span>}
                     Thông báo

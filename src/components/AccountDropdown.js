@@ -52,7 +52,7 @@ function AccountDropdown() {
           placement="bottom"
         arrow
         >
-          <div className='centerChildren'><BsPersonCircle className='headerIcon'/><span>{user?user.name:'Account'}</span></div>
+          <div className='centerChildren' style={{cursor:'default'}}><BsPersonCircle className='headerIcon'/><span>{user?user.name:'Account'}</span></div>
         </Dropdown>
   )
 }
