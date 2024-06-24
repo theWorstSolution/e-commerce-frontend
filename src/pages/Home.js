@@ -13,6 +13,8 @@ import { Pagination } from '@mui/material';
 import userService from '../services/userService';
 import HomeDetailSearchForm from '../components/HomeDetailSearchForm';
 import { Collapse, Divider } from 'antd';
+import HomeSlicker from '../components/HomeSlicker';
+import HomeProductGrid from '../components/HomeProductGrid';
 const qs = require('qs')
 
 export default function Home() {
@@ -116,34 +118,6 @@ export default function Home() {
     });
   }, [setSearchParams])
 
-  const [slickerStyle, setSlickerStyle] = useState({ translate: '0px' })
-  const onSlideSlicker = function (e) {
-    // console.log(e)
-    // console.log(e.currentTarget.name);
-    const newSlickerStyle = { ...slickerStyle }
-    if (e.currentTarget.name == 'slideForward') {
-      newSlickerStyle.translate = 'calc(' + newSlickerStyle.translate + ' - ' + 'var(--categoryCardWidth)' + ')'
-    } else {
-      newSlickerStyle.translate = 'calc(' + newSlickerStyle.translate + ' + ' + 'var(--categoryCardWidth)' + ')'
-    }
-    setSlickerStyle(newSlickerStyle)
-  }
-
-  const [productLists, setProductLists] = useState([])
-  const maxProductsPerRow = 5
-  useEffect(() => {
-    if (res) {
-      const newProductLists = []
-      for (let i = 0; i < res.length; i++) {
-        if (!newProductLists[Math.floor(i / maxProductsPerRow)]) {
-          newProductLists[Math.floor(i / maxProductsPerRow)] = []
-        }
-        newProductLists[Math.floor(i / maxProductsPerRow)].push(res[i])
-      }
-      setProductLists(newProductLists)
-    }
-  }, [res])
-
   useEffect(() => { console.log(recommendInfo); }, [recommendInfo])
 
   return (<div>
@@ -151,6 +125,7 @@ export default function Home() {
 
     <section className='sectionCard'>
       <Collapse
+        size='small'
         items={[
           {
             key: '1',
@@ -171,52 +146,31 @@ export default function Home() {
 
     <section className='sectionCard'>
       <h2>Categories</h2>
-      <div style={{ display: 'flex' }}>
-        <button name='slideBack' onClick={onSlideSlicker}><BsArrowLeftCircle /></button>
-        <div style={{ overflow: 'hidden' }}>
-          {mainCategories && <ul className='horizontalUl' style={{ listStyleType: 'none', transition: 'translate 1s ease-in-out', ...slickerStyle }}>
-            <li onClick={async () => {
-              const { data } = await userService.genRecommendedProducts()
-              setRecommendInfo(data)
-              const newSearchParams = new URLSearchParams();
-              newSearchParams.set("recommended-products", true);
-              setSearchParams(newSearchParams);
-            }}><Link>Recommended Products</Link></li>
-            {mainCategories.map((cat) => (<li onClick={() => {
-              const newSearchParams = new URLSearchParams();
-              newSearchParams.set("categoryId", cat.id);
+      <HomeSlicker onClickRecommend={async () => {
+        const { data } = await userService.genRecommendedProducts()
+        setRecommendInfo(data)
+        const newSearchParams = new URLSearchParams();
+        newSearchParams.set("recommended-products", true);
+        setSearchParams(newSearchParams);
+      }}
+        onClickCategory={(catId) => {
+          const newSearchParams = new URLSearchParams();
+          newSearchParams.set("categoryId", catId);
 
-              setSearchParams(newSearchParams);
-            }} key={cat.id} className='mock' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'var(--categoryCardWidth)', height: 'var(--categoryCardHeight)' }}>
-              <img src={cat.picture} style={{ width: 'var(--categoryImgWidth)', height: 'var(--categoryImgHeight)' }}></img>
-              {cat.name}
-            </li>))}
-          </ul>}
-        </div>
-        <button name='slideForward' onClick={onSlideSlicker}><BsArrowRightCircle /></button>
-      </div>
+          setSearchParams(newSearchParams);
+        }}
+      />
     </section>
-
 
     <section className='sectionCard'>
       <h2>{resultsTitle}</h2>
       <div>
-        {productLists.map((productList) => <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
-          {productList.map((product) => <li key={product.id} style={{ width: '200px' }}>
-            <Link to={'/products/product/' + product.id}>
-              <div><img src={product.pictures[0]} style={{ width: 'var(--productThumbnailWidth)', height: 'var(--productThumbnailHeight)' }}></img></div>
-              <div>
-                <div>{product.name}</div>
-                <div>{product.rating} <BsStar /></div>
-                <div>{product.price}$</div>
-                <div>{product.soldAmount} sold</div>
-              </div>
-            </Link>
-          </li>)}
-        </ul>)}
+        <HomeProductGrid products={res}/>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
       </div>
     </section>
+
+
     {recommendInfo && <section>
       <h2>Supervised membership table</h2>
       <table className='recommendedProductTable'><thead><tr>

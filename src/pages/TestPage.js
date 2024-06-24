@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import axios from 'axios';
 import { Form, Input, Button } from 'antd';
-
+import Slider from "react-slick";
 const layout = {
   labelCol: {
     span: 8,
@@ -43,6 +43,15 @@ export default function TestPage() {
   }, [y]);
 let onClick, onClick1
     console.log('rerender');
+
+
+    var settings = {
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+    };
     return (
         <div>
             {/* <Headbar /> */}
@@ -95,6 +104,28 @@ let onClick, onClick1
         </Button>
       </Form.Item>
     </Form>
+    <Slider {...settings}>
+      <div>
+        <h3>1</h3>
+      </div>
+      <div>
+        <h3>2</h3>
+      </div>
+      <div>
+        <h3>3</h3>
+      </div>
+      <div>
+        <h3>4</h3>
+      </div>
+      <div>
+        <h3>5</h3>
+      </div>
+      <div>
+        <h3>6</h3>
+      </div>
+    </Slider>
+
+    <div style={{width:'20px'}}><p>this is a very long line</p></div><p></p>
         </div>
     )
 }

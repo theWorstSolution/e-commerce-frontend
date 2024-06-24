@@ -18,11 +18,11 @@ function Cart(){
   
     return (
         <div style={{position:'relative'}} className='cartIcon'>
-        <Link to='/cart'>
-            <BsCart3 className='largeIcon'/>
+        <div onClick={()=>{navigate('/cart')}}>
+            <BsCart3 className='largeIcon' color='white'/>
             {user?.cart?.length && <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '-5px', right: '-4px', fontSize: '12px', borderRadius: '50%', backgroundColor: 'white', height: '12px', width: '12px' }}>
                 {user.cart.length}
-            </span>}</Link>
+            </span>}</div>
         <div style={{position:'absolute', zIndex:'1', top:'100%', right:'-15px'}} className='cartDropdown'>
           <ul style={{listStyleType:'none', padding:0}} className='cartList'>
             {user?.cart?.slice(0,3).map((product)=><Link to={'/products/product/'+product.id}><li key={product.id} style={{display:'flex'}}>

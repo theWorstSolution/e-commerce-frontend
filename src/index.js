@@ -19,6 +19,17 @@ root.render(
         <title>Page Title</title>
         <meta name="description" content="Description of the page" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <link
+  rel="stylesheet"
+  type="text/css"
+  charset="UTF-8"
+  href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"
+/>
       </Helmet>
       {/* <CssBaseline /> */}
       <BrowserRouter><App /></BrowserRouter>

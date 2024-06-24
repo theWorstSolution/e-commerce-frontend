@@ -3,9 +3,13 @@ import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft, BsCart3 } from
 import { globalContext } from '../contexts/globalContext';
 import { Link } from "react-router-dom";
 import userService from "../services/userService";
+import { FaRegBell } from "react-icons/fa6";
+import { Popover, Button,List, Skeleton  } from "antd";
+
 
 export default function NotificationBell() {
     const { user } = useContext(globalContext);
+    const [loading, setLoading] = useState(false);
     const [notifications, setNotifications] = useState([])
     const [hasMoreNotis, setHasMoreNotis] = useState()
     const [noOfNotSeenNoti, setNoOfNotSeenNoti] = useState(0)
@@ -60,20 +64,72 @@ export default function NotificationBell() {
             setNoOfNotSeenNoti(noOfNotSeenNoti + 1)
         }
     }, [notifications])
-    
-    function renderNoti(noti) {
+
+
+    const onLoadMore = async() => {
+        setLoading(true);
+        const { data: notificationData } = await userService.fetchNotis(notifications[notifications.length-1].id);
+                // case has no noti
+                if (!notificationData.resNotis) { setHasMoreNotis(false); return }
+                const newNotis = [...notifications, ...notificationData.resNotis]
+                setNotifications(newNotis)
+                if (notificationData.hasMore) { setHasMoreNotis(true) } else { setHasMoreNotis(false) }
+                
+                setLoading(false);
+                window.dispatchEvent(new Event('resize'));
+
+      };
+
+    const loadMore =
+    hasMoreNotis && !loading ? (
+      <div
+        style={{
+          textAlign: 'center',
+          marginTop: 12,
+          height: 32,
+          lineHeight: '32px',
+        }}
+      >
+        <Button onClick={onLoadMore}>loading more</Button>
+      </div>
+    ) : null;
+
+    const content = 
+    <List
+      style={{width:'350px', height:'350px', overflow:'auto'}}
+      loading={!notifications}
+      itemLayout="horizontal"
+      loadMore={loadMore}
+      dataSource={notifications}
+      renderItem={(noti) => {
+        let title, description;
         switch (noti.type) {
             case 'newOrder':
-                return (<div style={{ backgroundColor: !noti.hasSeen && 'red' }}>New order: <Link to={'/admin/orders/order/' + noti.orderId}>User {noti.username} has bought {noti.amount} x {noti.productName}</Link></div>)
+                title = 'New order'
+                description = <Link style={{textDecoration:'none'}} to={'/admin/orders/order/' + noti.orderId}>User {noti.username} has bought {noti.amount} x {noti.productName}</Link>
+                break;
             case 'ChangeOrderStatusNoti':
-                return (<div style={{ backgroundColor: !noti.hasSeen && 'red' }}>
-                    Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</div>)
+                title = 'Order status has been changed'
+                description = <p>Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</p>
+                break;                
             default:
-                return (<div>OK</div>)
+                title = 'Error'
+                description = 'Error'
         }
-    }
+        return (
+        <List.Item>
+          <Skeleton title={false} loading={noti.loading} active>
+            <List.Item.Meta
+              title={title}
+              description={description}
+            />
+          </Skeleton>
+        </List.Item>
+        )
+      }}
+    />
 
-    return (<div onMouseLeave={() => {
+    return (<Popover placement="bottom" content={content} onMouseLeave={() => {
         if (noOfNotSeenNoti != 0) {
             userService.setHasSeenAllNotis()
 
@@ -86,34 +142,14 @@ export default function NotificationBell() {
             }
             setNotifications(newNotis)
         }
-    }} className='centerChildren header_noti' style={{ position: 'relative' }}>
-        <span style={{ position: 'relative', display: 'inline-block' }}>
-            <BsBell />
-            {noOfNotSeenNoti > 0 && <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '-5px', right: '-4px', fontSize: '12px', borderRadius: '50%', backgroundColor: 'white', height: '12px', width: '12px' }}>
-                {noOfNotSeenNoti}
-            </span>}
-        </span>
-        Thông báo
-        <div style={{ position: 'absolute', top: '100%' }} className='header_noti_dropdown'>
-            <div className="header_noti_ul">
-                {notifications && <ul style={{ listStyleType: 'none', padding: 0, width: '350px', maxHeight: '350px', overflow: 'auto' }} >
-                    {notifications.map((noti) => <li key={noti._id}>
-                        {renderNoti(noti)}
-
-                    </li>)}
-
-                </ul>}
-                {hasMoreNotis && <button onClick={async() => {
-                const { data: notificationData } = await userService.fetchNotis(notifications[notifications.length-1].id);
-                // case has no noti
-                if (!notificationData.resNotis) { setHasMoreNotis(false); return }
-                const newNotis = [...notifications, ...notificationData.resNotis]
-                setNotifications(newNotis)
-                if (notificationData.hasMore) { setHasMoreNotis(true) } else { setHasMoreNotis(false) }
-            }}>More</button>}
-            <div style={{height:'10px', backgroundColor:'transparent'}}></div>
-            </div>
+    }} className='centerChildren '>
+                <div className="centerChildren">
+                    <BsBell className='headerIcon'/>
+                    {noOfNotSeenNoti > 0 && <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '-5px', right: '-4px', fontSize: '12px', borderRadius: '50%', backgroundColor: 'white', height: '12px', width: '12px' }}>
+                        {noOfNotSeenNoti}
+                    </span>}
+                    Thông báo
+                </div>
             
-        </div>
-    </div>)
+    </Popover>)
 }
