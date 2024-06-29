@@ -49,7 +49,7 @@ let onClick, onClick1
       dots: true,
       infinite: true,
       speed: 500,
-      slidesToShow: 1,
+      slidesToShow: 3,
       slidesToScroll: 1,
     };
     return (
@@ -104,7 +104,7 @@ let onClick, onClick1
         </Button>
       </Form.Item>
     </Form>
-    <Slider {...settings}>
+    <Slider {...settings} style={{width:'500px'}}>
       <div>
         <h3>1</h3>
       </div>

@@ -302,7 +302,7 @@ table.recommendedProductTable {
 
 
 .sectionCard{
-    margin: 1.25rem var(--y-margin) 0;
+    margin: var(--section-dist) var(--y-margin) 0;
   background-color: white;
   border-radius: 8px;
   padding: 12px 8px;
@@ -360,7 +360,7 @@ table.recommendedProductTable {
     padding: 10px;
   }
 
-  .productTitleEllipsis{
+  .multilineEllipsis{
     -webkit-box-orient: vertical;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -368,4 +368,13 @@ table.recommendedProductTable {
   text-overflow: ellipsis;
   white-space: normal;
   margin: 0;
+  }
+
+  .amountInput .ant-input-number-group-addon{
+    /* height: 30px; */
+    padding: 0px;
+  }
+
+  .amountInput .ant-input-number-input-wrap input{
+    height: 40px;
   }

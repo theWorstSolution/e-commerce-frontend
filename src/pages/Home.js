@@ -32,15 +32,6 @@ export default function Home() {
     page: 1, //current page
   });
 
-  // display categories row to choose
-  const [mainCategories, setMainCategories] = useState()
-  useEffect(() => {
-    categoryService.getChildrenCategory(categoryService.rootCategoryId).then(({ data }) => {
-      // console.log(data);
-      setMainCategories(data)
-    })
-  }, [])
-
   //
   const [resultsTitle, setResultsTitle] = useState()
 
@@ -58,7 +49,7 @@ export default function Home() {
         ]
       }
       options = { page: initialPage }
-      setResultsTitle('Search results:')
+      setResultsTitle('All products')
     } else if (searchParams.get('recommended-products')) {
       options = { page: initialPage }
       userService.getRecommendedProducts(options).then(({ data }) => {
@@ -70,6 +61,7 @@ export default function Home() {
           page: data.page
         }))
       })
+      setResultsTitle('Recommended products')
       return;
     } else if ((searchParams.size == 1 || (searchParams.size == 2 && searchParams.get('page'))) && searchParams.get('categoryId') && searchParams.get('categoryId') != '') {
       filter = {
@@ -96,7 +88,7 @@ export default function Home() {
       filter['categories.id'] = searchParams.get('categoryId')
 
       options = { sortBy: searchParams.get('sortBy') + ':' + searchParams.get('order'), page: initialPage }
-      setResultsTitle('Search results:')
+      setResultsTitle('Search results')
     }
     console.log(filter);
     console.log(options);

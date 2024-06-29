@@ -1,15 +1,19 @@
 import { Link, useOutletContext, useParams } from "react-router-dom";
-import { useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState, useRef, useContext, useMemo } from "react";
 import productService from "../services/productService";
 import Creatable from 'react-select/creatable';
 import HomeHeader from "../components/HomeHeader";
-import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle, BsStar, BsFillStarFill } from "react-icons/bs";
+import { BsCaretRightFill, BsArrowRightCircle, BsArrowLeftCircle, BsStar, BsFillStarFill, BsPlusLg, BsDashLg, BsCartPlus } from "react-icons/bs";
 import orderService from "../services/orderService";
 import reviewService from "../services/reviewService";
 import { globalContext } from '../contexts/globalContext';
 import userService from "../services/userService";
 import User from "../models/User";
 import { Pagination } from '@mui/material';
+import { Avatar, Breadcrumb, Button, Divider, InputNumber, List, Rate } from "antd";
+import { SampleNextArrow, SamplePrevArrow } from '../components/SlickerArrow'
+import Slider from "react-slick";
+import TextArea from "antd/es/input/TextArea";
 
 export default function ProductDetail() {
     const { user, setUser } = useContext(globalContext);
@@ -20,7 +24,7 @@ export default function ProductDetail() {
     const [hasReviewed, setHasReviewed] = useState()
 
     // user review input
-    const [rating, setRating] = useState(0)
+    const [rating, setRating] = useState(3)
     const [reviewContent, setReviewContent] = useState('')
 
     const [reviews, setReviews] = useState()
@@ -44,45 +48,18 @@ export default function ProductDetail() {
             count: data.totalPages,
             page: data.page
         }))
-        if(hasBought && hasReviewed){
-            for(let review of data.results){
-                if (review.user.id.toString() == user.uid.toString()){
+        if (hasBought && hasReviewed) {
+            for (let review of data.results) {
+                if (review.user.id.toString() == user.uid.toString()) {
                     setRating(review.rating)
                     setReviewContent(review.content)
                     break;
                 }
             }
-            
+
         }
     }
 
-
-
-    function renderRatingInput(rating) {
-        const res = []
-        for (let i = 1; i <= 5; i++) {
-            if (i < rating) {
-                res.push(<BsFillStarFill onClick={() => { setRating(i) }} />)
-            } else if (i == rating) {
-                res.push(<BsFillStarFill onClick={() => { setRating(0) }} />)
-            } else {
-                res.push(<BsStar onClick={() => { setRating(i) }} />)
-            }
-        }
-        return res
-    }
-
-    function renderRating(rating) {
-        const res = []
-        for (let i = 1; i <= 5; i++) {
-            if (i <= rating) {
-                res.push(<BsFillStarFill />)
-            } else {
-                res.push(<BsStar />)
-            }
-        }
-        return res
-    }
 
     // set product, hasBought, hasReviewed, reviews, pagiProps
     useEffect(() => {
@@ -90,6 +67,7 @@ export default function ProductDetail() {
         productService.getProduct(productId).then(async ({ data: product }) => {
             // console.log('product: ' + JSON.stringify(product));
             setProduct(product)
+            setMainPic(product.pictures[0])
 
             // set hasBought
             if (user) {
@@ -109,7 +87,7 @@ export default function ProductDetail() {
             }
 
 
-            
+
             const filter = { product: product.id }
             const options = { sortBy: 'timeCreated', populate: 'user.name,user.picture', page: 1 }
             const { data } = await reviewService.getReviews(filter, options)
@@ -121,24 +99,24 @@ export default function ProductDetail() {
                 count: data.totalPages,
                 page: data.page
             }))
-            
-            
+
+
         })
     }, [])
 
     // case hasBought and hasReviewed, change rating and reviewContent to reviewed data so that we can update them
-    useEffect(()=>{
-        if(hasBought && hasReviewed && reviews?.length>0){
-            for(let review of reviews){
-                if (review.user.id.toString() == user.uid.toString()){
+    useEffect(() => {
+        if (hasBought && hasReviewed && reviews?.length > 0) {
+            for (let review of reviews) {
+                if (review.user.id.toString() == user.uid.toString()) {
                     setRating(review.rating)
                     setReviewContent(review.content)
                     break;
                 }
             }
-            
+
         }
-    },[hasBought, hasReviewed, reviews])
+    }, [hasBought, hasReviewed, reviews])
 
     // set hasBought
     // useEffect(async () => {
@@ -189,86 +167,147 @@ export default function ProductDetail() {
             })
         }
     }
+
+    function createBreadcrumbList(product) {
+        let res = product.categories.map((cat, idx) =>
+            ({ title: cat.name, href: '/products?categoryId=' + cat.id }))
+        res.push({ title: product.name })
+        return res
+    }
+
+    const slickerSettings = useMemo(() => ({
+        dots: false,
+        infinite: false,
+        speed: 500,
+        slidesToShow: 5,
+        slidesToScroll: 1,
+        nextArrow: product?.pictures.length > 5 ? <SamplePrevArrow /> : null,
+        prevArrow: product?.pictures.length > 5 ? <SampleNextArrow /> : null,
+    }), [product]);
+
+    const [mainPic, setMainPic] = useState();
+
     return (<div>
         <HomeHeader navigateLinkOnSearch='/'></HomeHeader>
         {product && <article>
-            <div>{product.categories.map((cat, idx) => {
-                if (idx == product.categories.length - 1) {
-                    return <Link to={'/products?categoryId=' + cat.id}>{cat.name}</Link>
-                }
-                return <Link to={'/products?categoryId=' + cat.id}>{cat.name + ' > '}</Link>
-            })}</div>
-            <div style={{ display: 'flex' }}>
-                <img src={product.pictures[0]}></img>
-                <div>
-                    <h3>{product.name}</h3>
-                    <p><label>Price:</label> {product.price + '$'}</p>
-                    <p><label>Rating:</label> {product.rating}<BsStar /></p>
-                    <p><label>Sold amount:</label> {product.soldAmount}</p>
-                    <form><label>Amount</label><input onChange={(e) => { setAmount(e.target.value) }} type="number" defaultValue={amount} min={1} /></form>
-                    <button type="submit" onClick={putInCart}>Put in cart</button><button type="submit" onClick={onBuy}>Buy</button>
+            <Breadcrumb
+                style={{ paddingLeft: 'var(--y-margin)', paddingTop: 'var(--section-dist)' }}
+                separator=">"
+                items={createBreadcrumbList(product)}
+            />
+            <section className="sectionCard" style={{ display: 'flex', gap: '20px' }}>
+                <div style={{ flex: 2 }}>
+                    <img src={mainPic} style={{ width: '100%' }}></img>
+                    <Slider {...slickerSettings}>{product.pictures.map((pic) =>
+                        <div key={pic} onClick={() => { setMainPic(pic) }}><img src={pic} style={{ width: '100%', objectFit: 'cover' }} /></div>)}
+                    </Slider>
                 </div>
-            </div>
-            <div>
-                <h3>Description:</h3>
-                <p>{product.description}</p>
-            </div>
-            <section>
-                <h2>Review</h2>
-                {hasBought && !hasReviewed && <div><img src={user.picture}></img>{user.name}
-                    <form onSubmit={async (e) => {
-                        e.preventDefault()
-                        const { data } = await reviewService.createReview(product.id, rating, reviewContent)
-                        alert('posted review')
-                        console.log(data);
-                        setHasReviewed(true)
-                        onChangePage(null,1)
-                    }}>
-                        <div>{renderRatingInput(rating)}</div>
-                        <input type="text" placeholder='How do you feel about this product?' value={reviewContent} onChange={(e) => {
-                            setReviewContent(e.target.value)
-                        }} />
-                        <button type="submit">Submit</button>
-                    </form>
-                </div>}
+                <div style={{ flex: 3 }}>
+                    <h3>{product.name}</h3>
+                    <p><label>Price:</label> {product.price + 'đ'}</p>
+                    <p><label>Rating:</label> {product.rating}<BsStar /></p>
 
-                <ul style={{ listStyleType: 'none', padding: 0 }}>{reviews && reviews.map((review) => {
-                    if (user && (review.user.id.toString() == user.uid.toString())) {
-                        return (<li key={review.id}>
-                            <img src={review.user.picture}></img>{review.user.name}
-                            <form onSubmit={async (e) => {
-                                e.preventDefault()
-                                const { data } = await reviewService.updateReview(review.id, rating, reviewContent)
+                    <p><label>Sold amount:</label> {product.soldAmount}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px', paddingBottom: '16px' }}>
+                        <label>Amount:</label><InputNumber className="amountInput"
+                            controls={false}
+                            // addonBefore={<div style={{cursor:'pointer'}} onClick={()=>{setAmountValue((amountValue)=>--amountValue)}}>-</div>} 
+                            addonBefore={<div className="centerChildren" style={{ cursor: amount == 1 ? 'not-allowed' : 'pointer', padding: '11px' }} onClick={amount == 1 ? null : () => { setAmount((amountValue) => --amountValue) }}><BsDashLg /></div>}
+
+                            addonAfter={<div className="centerChildren" style={{ cursor: 'pointer', padding: '11px' }} onClick={() => { setAmount((amountValue) => ++amountValue) }}><BsPlusLg /></div>}
+                            value={amount} min={1} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px' }}>
+                        <Button size="large" icon={<BsCartPlus />} iconPosition='start' onClick={putInCart}>Put in cart</Button>
+                        <Button size="large" type='primary' onClick={onBuy}>Buy now</Button>
+                    </div>
+                    <div>
+                        <h3>Description:</h3>
+                        <p>{product.description}</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section style={{padding: '8px 32px'}} className="sectionCard">
+                <h2>Review</h2>
+                {hasBought && !hasReviewed && <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px', height: '84px', padding: '20px 0' }}>
+                        <div style={{ height: '100%' }}><img src={user.picture} style={{ objectFit: 'cover' }}></img></div>
+                        <div style={{ height: '100%' }}>
+                            <h3 style={{ marginTop: '0', marginBottom: '10px' }}>{user.name}</h3>
+                            <Rate value={rating} allowClear={false} onChange={(value) => setRating(value)} />
+                        </div>
+                        <div />
+                    </div>
+
+                    <div>
+                        <TextArea placeholder='How do you feel about this product?' rows={4} value={reviewContent}
+                            onChange={(e) => {
+                                setReviewContent(e.target.value)
+                            }}
+                        />
+                        <div style={{textAlign:'right'}}>
+                            <Button style={{ marginTop: '8px', marginLeft:'auto' }} type='primary' onClick={async () => {
+                                const { data } = await reviewService.createReview(product.id, rating, reviewContent)
                                 alert('posted review')
                                 console.log(data);
-                            }}>
-                                <div>{renderRatingInput(rating)}</div>
-                                <input type="text" value={reviewContent} onChange={(e) => {
-                                    setReviewContent(e.target.value)
-                                }} />
-                                <button onClick={()=>{
-                                    reviewService.deleteReview(review.id).then(({data})=>{
-                                        console.log(data);
-                                        setHasReviewed(false);
-                                        setRating(0)
-                                        setReviewContent('')
-                                        onChangePage(null,pagiProps.page)
-                                    })
-                                }}>Delete</button>
-                                <button type="submit">Update</button>
-                            </form>
-                        </li>)
-                    } else {
-                        return (
-                            <li key={review.id}>
-                                <img src={review.user.picture}></img>{review.user.name}
-                                <div>{renderRating(review.rating)}</div>
-                                <p>{review.content}</p>
-                            </li>)
+                                setHasReviewed(true)
+                                onChangePage(null, 1)
+                            }}>Submit</Button>
+                        </div>
+
+
+
+                    </div>
+                    <Divider />
+                </div>
+                }
+
+                <List
+                    itemLayout="vertical"
+                    dataSource={reviews}
+                    renderItem={(review, index) => 
+                        <List.Item>
+                            <List.Item.Meta
+                                avatar={<Avatar src={review.user.picture} />}
+                                title={review.user.name}
+                            />
+                            {user && (review.user.id.toString() == user.uid.toString()) ?
+                                <div>
+                                    <Rate value={rating} allowClear={false} onChange={(value) => setRating(value)} />
+                                    <TextArea rows={4} value={reviewContent}
+                                        onChange={(e) => {
+                                            setReviewContent(e.target.value)
+                                        }}
+                                    />
+                                    <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end', gap:'20px', paddingTop:'10px'}}>
+                                        <Button danger onClick={() => {
+                                            reviewService.deleteReview(review.id).then(({ data }) => {
+                                                console.log(data);
+                                                setHasReviewed(false);
+                                                setRating(0)
+                                                setReviewContent('')
+                                                onChangePage(null, pagiProps.page)
+                                            })
+                                        }}>Delete</Button>
+                                        <Button type="primary" onClick={async () => {
+                                            const { data } = await reviewService.updateReview(review.id, rating, reviewContent)
+                                            alert('posted review')
+                                            console.log(data);
+                                        }}>Update</Button>
+                                    </div>
+                                </div> : <div>
+                                    <Rate value={review.rating} disabled />
+                                    <p>{review.content}</p>
+                                </div>}
+
+                        </List.Item>
                     }
-                })}</ul>
+                />
+
+                
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
-                <button onClick={()=>{console.log(rating);}}>clgt</button>
             </section>
         </article>}
     </div>)

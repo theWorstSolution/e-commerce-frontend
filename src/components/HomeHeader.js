@@ -31,7 +31,7 @@ function HomeHeader({navigateLinkOnSearch}){
       <header className='homeHeader'>
       <HeaderRow1/>
         <div className='header_row2'>
-          <Link to='/' className='header_logo'>Shopee</Link>
+          <Link to='/' className='header_logo'>BkShop</Link>
           <form onSubmit={onSearchSubmit} className='header_searchbar'>
             <input name='generalSearchInput' onChange={onSearchInputChange} className='header_searchbar_input' placeholder='Search for products'/>
             <button type='submit' className='header_searchbar_button'><BsSearch style={{color:'white'}}/></button>

@@ -27,7 +27,7 @@ export default function OrderDetail(){
             setOrder(res.data)
             console.log(res.data);
         })
-    },[])
+    },[orderId])
     return(<div>{order?<article>
         <form style={{display:'flex', flexDirection:'column'}} onSubmit={handleSubmit}>
             <label>Id</label>

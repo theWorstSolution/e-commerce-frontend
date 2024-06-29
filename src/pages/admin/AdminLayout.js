@@ -1,7 +1,7 @@
 import { Pagination } from '@mui/material';
 import { useState, useRef } from 'react';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import AdminHeader from '../../components/AdminHeader'
 
 
@@ -21,7 +21,7 @@ export default function AdminLayout() {
             <nav className='admin_tab'>
                 <ul className='horizontalUl' style={{ justifyContent: 'space-around' }}>
                     {tabNames.map((tabName, index) => (
-                        <a key={index} href={'/admin/' + tabName} style={{ textDecoration: currentTab === tabName ? 'none' : 'underline' }}><h2 className='mock'>{tabName}</h2></a>
+                        <Link key={index} to={'/admin/' + tabName} style={{ textDecoration: currentTab === tabName ? 'none' : 'underline' }}><h2 className=''>{tabName}</h2></Link>
                     ))}
                 </ul>
             </nav>

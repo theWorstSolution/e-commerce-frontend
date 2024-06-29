@@ -15,7 +15,7 @@ export default function HomeProductGrid({products}){
               cover={<img className="" src={product.pictures[0]}
                 style={{ objectFit: 'cover', textAlign: 'center', height:'175px' }} />}
             >
-              <Meta className="" title={<p className="productTitleEllipsis">{product.name}</p>}
+              <Meta className="" title={<p className="multilineEllipsis">{product.name}</p>}
                 description={<div><div>{product.rating} <BsStar /></div>
                   <div>{product.price}đ</div>
                   <div>{product.soldAmount} sold</div></div>}

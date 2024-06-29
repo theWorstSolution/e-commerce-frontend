@@ -147,17 +147,17 @@ export default function ProductTabContent() {
                         <table style={{ width: '100%' }}>
                             <thead>
                                 <tr>
-                                    <th style={{ width: '30%' }}>Id</th><th>Name</th><th>Category</th><th>Description</th><th>Price</th><th>Sold amount</th><th>Option</th>
+                                    <th style={{ width: '50px' }}>Id</th><th style={{minWidth:'175px'}}>Name</th><th>Category</th><th>Description</th><th>Price</th><th>Sold amount</th><th>Option</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {res.map((product) => (<tr key={product.id}><td>{product.id}</td><td>{product.name}</td>
+                                {res.map((product) => (<tr key={product.id} style={{maxHeight:'100px'}}><td style={{wordBreak:'break-word'}}>{product.id}</td><td className="multilineEllipsis" style={{WebkitLineClamp:4}}>{product.name}</td>
                                     <td>{product.categories.map((cat, idx) => {
                                         if (idx == product.categories.length - 1) {
                                             return cat.name
                                         }
                                         return cat.name + ' > '
-                                    })}</td><td>{product.description}</td><td>{product.price}</td><td>{product.soldAmount}</td>
+                                    })}</td><td className="multilineEllipsis" style={{WebkitLineClamp:4}}>{product.description}</td><td>{product.price}</td><td>{product.soldAmount}</td>
                                     <td className="centerChildren"><button className="centerChildren" onClick={() => { navigate('/admin/products/product/' + product.id) }}><AiOutlineEdit /></button></td></tr>))}
                             </tbody>
                         </table>}

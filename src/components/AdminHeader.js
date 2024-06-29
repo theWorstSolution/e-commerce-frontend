@@ -21,7 +21,7 @@ function AdminHeader(){
       <header className='homeHeader'>
       <HeaderRow1/>
         <div className='header_row2' style={{display:'flex', justifyContent:'center', marginLeft:'auto', marginRight:'auto'}}>
-          <Link to='/' className='header_logo' style={{textAlign:'center'}}>Shopee</Link>
+          <Link to='/admin' className='header_logo' style={{textAlign:'center'}}>BkShop</Link>
         </div>
       </header>
     )
