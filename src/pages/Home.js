@@ -168,7 +168,7 @@ export default function Home() {
       <table className='recommendedProductTable'><thead><tr>
         <th style={{ width: '200px' }}>Name</th><th >Price</th>
         <th >Rating</th><th >Sold amount</th>
-        <th >Category</th><th >Category value</th>
+        <th >Category</th><th >Category value</th><th>hasBeenBought</th>
         {recommendInfo.clustersList.map((cluster, idx) => <th>Cluster {idx}</th>)}
       </tr></thead>
         <tbody>
@@ -184,6 +184,7 @@ export default function Home() {
               return cat.name + ' > '
             })}</td>
             <td >{product.categoryValue.toFixed(5)}</td>
+            <td>{product.hasBeenBought?'X':''}</td>
             {recommendInfo.clustersList.map((cluster, idx) => <td style={{ backgroundColor: (recommendInfo.u_[idx][productId] == 0) ? 'transparent' : 'orange' }}>{recommendInfo.u_[idx][productId].toFixed(5)}</td>)}
           </tr>)}
         </tbody>
