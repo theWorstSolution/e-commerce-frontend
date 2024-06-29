@@ -5,6 +5,11 @@ import { updateUser } from "../services/userService";
 import orderService from "../services/orderService";
 import { Pagination } from '@mui/material';
 import { useNavigate,useSearchParams } from 'react-router-dom';
+import { Avatar, List, DatePicker, Input } from "antd";
+
+import utils from "../utils/utils";
+const { RangePicker } = DatePicker;
+const { Search } = Input;
 
 export default function BuyHistory(){
     const { setCurrentTab } = useOutletContext();
@@ -27,12 +32,17 @@ export default function BuyHistory(){
         } );
     }, [])
 
+    const [keyword, setKeyword] = useState('')
+    const [dateRange, setDateRange] = useState()
     useEffect(()=>{
-        const filter = {user: user.id};
-        const initialPage = searchParams.get('page')
-        const options = {populate: 'product', page: initialPage}
+        // console.log(searchParams.get('dateRange'));
+        // const filter = {user: user.id};
+        // const initialPage = searchParams.get('page')
+        // const options = {populate: 'product', page: initialPage, sortBy:'createdAt'}
         
-        orderService.getOrders(filter, options).then(({data})=>{
+        orderService.getOwnOrders(searchParams.get('keyword'), searchParams.get('page'),
+            searchParams.get('startDate'), searchParams.get('endDate')
+    ).then(({data})=>{
                 console.log(data);
                 setRes(data.results)
                 setPagiProps((pagiProps) => ({
@@ -43,16 +53,57 @@ export default function BuyHistory(){
         })
     },[searchParams])
     
-    return (<div>{res &&  <div><ul >
-        {res.map((order)=><li key={order.id} style={{display:'flex', flexDirection:'row'}}>
-            <img src={order.product.pictures[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img>
-            <div>
-                <h3><Link to={'/products/product/'+order.product.id}>{order.product.name}</Link></h3>
-                <p><label>Bought amount:</label>{order.amount}</p>
-                <p><label>Total cost:</label>{order.totalCost}</p>
-            </div>
-        </li>)}
-    </ul><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>}</div>)
+    return (<div>
+    <form style={{textAlign:'center'}}>
+    <Search
+        style={{width:'20%'}}
+      placeholder="name or category"
+      onChange={(e)=>{setKeyword(e.target.value)}}
+      onSearch={()=>{
+        if(dateRange){
+            setSearchParams((params) => {
+            params.set("startDate", dateRange[0])
+            params.set("endDate", dateRange[1])
+            params.set("keyword", keyword)
+            params.set("page", 1)
+            return params
+        } );
+        }else{
+            setSearchParams((params) => {
+            params.set("keyword", keyword)
+            params.set("page", 1)
+            return params
+        } );
+        }
+      }}
+    />
+        <RangePicker style={{marginLeft:'20px'}} onChange={(dates,dateStrings)=>{
+            console.log(dateStrings);
+            setDateRange(dateStrings)
+        }}/>
+    </form>
+    <article className="sectionCard" >
+    <List
+                    itemLayout="vertical"
+                    dataSource={res}
+                    renderItem={(order, index) => 
+                        <List.Item>
+                            <List.Item.Meta
+                                avatar={<Link to={'/products/product/'+order.product.id}><img src={order.product.pictures[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img></Link>}
+                                title={<Link to={'/products/product/'+order.product.id}>{order.product.name}</Link>}
+                                description={<div>
+                                    {order.createdAt && <div><label>Bought at:</label> {utils.convertDate(order.createdAt)}</div>}
+                                    <div><label>Bought amount:</label> {order.amount}</div>
+                                    <div><label>Total cost:</label> {order.totalCost}</div>
+                                    </div>}
+
+                            />
+
+                        </List.Item>
+                    }
+                />
+                <Pagination {...pagiProps} onChange={onChangePage} style={{ display:'flex', justifyContent:'flex-end'}} />
+    </article></div>)
     
 }
 

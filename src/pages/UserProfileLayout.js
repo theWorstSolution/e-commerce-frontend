@@ -21,7 +21,7 @@ export default function UserProfileLayout(){
             <nav className='admin_tab'>
                 <ul className='horizontalUl' style={{ justifyContent: 'space-around' }}>
                     {tabNames.map((tabName, index) => (
-                        <Link key={index} to={tabLinks[index]} style={{ textDecoration: currentTab === tabName ? 'none' : 'underline' }}><h2 className='mock'>{tabName}</h2></Link>
+                        <Link key={index} to={tabLinks[index]} style={{ textDecoration: currentTab === tabName ? 'none' : 'underline' }}><h2 className=''>{tabName}</h2></Link>
                     ))}
                 </ul>
             </nav>

@@ -77,6 +77,7 @@ export default function OrderTabContent() {
 
             options = { sortBy: searchParams.get('sortField') + ':' + searchParams.get('sortOrder'), page: initialPage }
         }
+        options.populate = 'user,product'
         console.log(filter);
         orderService.getOrders(filter, options).then(({ data }) => {
             console.log(data);

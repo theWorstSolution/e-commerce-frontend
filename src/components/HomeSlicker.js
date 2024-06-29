@@ -36,6 +36,7 @@ function HomeSlicker({ onClickRecommend, onClickCategory }) {
                             <Card
                                 onClick={onClickRecommend}
                                 hoverable
+                                className="ripple"
                                 style={{margin:'5px 10px'}}
                                 cover={<img className="" src='https://img.freepik.com/premium-vector/recommend-icon-banner-recommended-with-thumb-up_186930-1010.jpg' 
                                     style={{ objectFit:'contain', height:'100px', textAlign:'center' }} />}
@@ -52,6 +53,7 @@ function HomeSlicker({ onClickRecommend, onClickCategory }) {
                                     onClickCategory(cat.id)
                                 }}
                                 hoverable
+                                className="ripple"
                                 style={{margin:'5px 10px'}}
                                 cover={<img className="" src={cat.picture} style={{ objectFit:'contain', height:'100px', textAlign:'center' }} />}
                             >

@@ -22,6 +22,23 @@ function getOrders(filter, options){
     return response;
 }
 
+/**
+ * 
+ * @param {String} keyword 
+ * @param {*} dateRange ['2024-06-25', '2024-06-28']
+ * @returns 
+ */
+function getOwnOrders(keyword, page, startDate, endDate, gmt){
+    console.log(keyword)
+    const response = axiosInstance({
+        method: 'GET',
+        url: '/v1/orders/own',
+        params: {keyword,page, startDate, endDate, gmt:gmt?gmt:7}
+    })
+    // TODO: thêm query
+    return response;
+}
+
 function updateOrder(id, updateBody){
     const response = axiosInstance({
         method: 'PATCH',
@@ -62,4 +79,4 @@ function getOrderByProduct(id){
     return getOrders({product:id})
 }
 
-export default {getOrder, getOrders, updateOrder, createOrder,createOrders, getOrderByProduct, getOrderByUser};
+export default {getOwnOrders,getOrder, getOrders, updateOrder, createOrder,createOrders, getOrderByProduct, getOrderByUser};
