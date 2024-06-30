@@ -5,6 +5,7 @@ import categoryService, { getChildrenCategory, createCategory } from "../../serv
 import productService from "../../services/productService";
 import Creatable from 'react-select/creatable';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
+import { message } from "antd";
 
 
 export default function EditProduct() {
@@ -34,7 +35,7 @@ export default function EditProduct() {
         }
         console.log('patch data');
         console.log(body);
-        updateProduct(productId, body).then((res) => {console.log(res); alert('updated')})
+        updateProduct(productId, body).then((res) => {console.log(res); message.success('Successful!')})
     }
     useEffect(() => {
         setCurrentTab('Products')
@@ -60,7 +61,7 @@ export default function EditProduct() {
             <label>Price</label>
             <input type="number" name='price' onChange={handleChange} defaultValue={product.price} />
             <label>Description</label>
-            <input type="text" name='description' onChange={handleChange} defaultValue={product.description} />
+            <textarea rows={5} name='description' onChange={handleChange} defaultValue={product.description}/>
             <label>Pictures</label>
             {product.pictures.map((picture, idx)=><input key={picture} type="url" name={'picture'+idx} onChange={handleChange} defaultValue={picture} />)}
             {morePicturesField}

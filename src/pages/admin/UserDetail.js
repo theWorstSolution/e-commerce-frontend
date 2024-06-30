@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { getUser, updateUser } from "../../services/userService";
+import { message } from "antd";
 
 export default function UserDetail(){
     const {userId} = useParams()
@@ -15,8 +16,8 @@ export default function UserDetail(){
   }
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert(inputs);
-    updateUser(userId, inputs).then((res)=>console.log(res))
+    // alert(inputs);
+    updateUser(userId, inputs).then((res)=>{console.log(res);message.success('Successful!');})
   }
 
 

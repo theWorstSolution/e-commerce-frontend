@@ -426,3 +426,29 @@ table.recommendedProductTable {
   .notiPopover .ant-list-item-meta-title{
     margin-bottom: 0 !important;
   }
+
+  .tabBar .ant-segmented-group{
+    /* width: 100%; */
+    display: flex;
+    justify-content:space-around;
+    /* gap:20px; */
+  }
+
+  .tabBar .ant-segmented-item{
+    width: 100%;
+  }
+
+  .cartTable {
+    thead{
+        border-bottom: solid black;
+    }
+    th{
+        /* border-bottom: solid black; */
+    }
+    td{
+        padding-top: 20px;
+    }
+    td:not(:first-child){
+        text-align: center;
+    }
+  }

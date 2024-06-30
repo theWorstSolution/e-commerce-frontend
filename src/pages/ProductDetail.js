@@ -209,11 +209,13 @@ export default function ProductDetail() {
                 separator=">"
                 items={createBreadcrumbList(product)}
             />
-            <section className="sectionCard" style={{ display: 'flex', gap: '20px' }}>
-                <div style={{ flex: 2 }}>
+            <section className="sectionCard" style={{ display: 'flex', gap: '20px'}}>
+            {/* BUG: bỏ width100px đi thì nếu nhiều hơn 5 ảnh là lỗi */}
+                <div style={{ flex: 2, width:'100px' }}>
                     <img src={mainPic} style={{ width: '100%' }}></img>
-                    <Slider {...slickerSettings}>{product.pictures.map((pic) =>
-                        <div key={pic} onClick={() => { setMainPic(pic) }}><img src={pic} style={{ width: '100%', objectFit: 'cover' }} /></div>)}
+                    <Slider {...slickerSettings}>
+                    {product.pictures.map((pic) =>
+                        <div key={pic} onClick={() => { setMainPic(pic) }}><img src={pic} style={{ width: '100px', objectFit: 'cover'  }} /></div>)}
                     </Slider>
                 </div>
                 <div style={{ flex: 3 }}>
@@ -227,9 +229,10 @@ export default function ProductDetail() {
                             controls={false}
                             // addonBefore={<div style={{cursor:'pointer'}} onClick={()=>{setAmountValue((amountValue)=>--amountValue)}}>-</div>} 
                             addonBefore={<div className="centerChildren" style={{ cursor: amount == 1 ? 'not-allowed' : 'pointer', padding: '11px' }} onClick={amount == 1 ? null : () => { setAmount((amountValue) => --amountValue) }}><BsDashLg /></div>}
-
                             addonAfter={<div className="centerChildren" style={{ cursor: 'pointer', padding: '11px' }} onClick={() => { setAmount((amountValue) => ++amountValue) }}><BsPlusLg /></div>}
-                            value={amount} min={1} />
+                            value={amount} min={1}
+                            onChange={(value)=>setAmount(value)}
+                             />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px' }}>
                         <Button size="large" icon={<BsCartPlus />} iconPosition='start' onClick={putInCart}>Put in cart</Button>
@@ -259,7 +262,7 @@ export default function ProductDetail() {
                     </div>
                     <div>
                         <h3>Description:</h3>
-                        <p>{product.description}</p>
+                        <p style={{whiteSpace:'pre-wrap'}}>{product.description}</p>
                     </div>
 
                 </div>

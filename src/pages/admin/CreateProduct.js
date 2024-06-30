@@ -5,6 +5,7 @@ import { getChildrenCategory, createCategory } from "../../services/categoryServ
 import categoryService from "../../services/categoryService";
 import Creatable from 'react-select/creatable';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
+import { message } from "antd";
 
 
 export default function CreateProduct() {
@@ -27,7 +28,8 @@ export default function CreateProduct() {
         event.preventDefault();
         const temp = inputs.pictures.filter((picture)=>picture!='')
         if(temp.length==0){
-            alert('must have at least 1 picture')
+            // alert('must have at least 1 picture')
+            message.error('must have at least 1 picture!')
             return
         }
         inputs.pictures = temp
@@ -36,7 +38,7 @@ export default function CreateProduct() {
             categories: catsSelected.map((catSelected) => ({id:catSelected.value, name:catSelected.label}))
         }
         console.log(body);
-        createProduct(body).then((res) => {console.log(res); alert('Created')})
+        createProduct(body).then((res) => {console.log(res); message.success('Successful!')})
     }
     useEffect(() => {
         setCurrentTab('Product')
@@ -53,7 +55,7 @@ export default function CreateProduct() {
             <label>Price</label>
             <input type="number" name='price' onChange={handleChange} />
             <label>Description</label>
-            <input type="text" name='description' onChange={handleChange} />
+            <textarea rows={5} name='description' onChange={handleChange} />
             <label>Pictures</label>
             {morePicturesField}
             <button onClick={(e)=>{

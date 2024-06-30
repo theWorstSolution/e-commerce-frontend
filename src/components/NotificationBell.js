@@ -110,7 +110,7 @@ export default function NotificationBell() {
                 break;
             case 'ChangeOrderStatusNoti':
                 title = 'Order status has been changed'
-                description = <p>Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</p>
+                description = <span>Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</span>
                 break;                
             default:
                 title = 'Error'

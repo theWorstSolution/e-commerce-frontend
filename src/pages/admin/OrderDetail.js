@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { getUser, updateUser } from "../../services/userService";
 import orderService from "../../services/orderService";
+import { message } from "antd";
 
 export default function OrderDetail(){
     const {orderId} = useParams()
@@ -16,8 +17,8 @@ export default function OrderDetail(){
   }
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert(inputs);
-    orderService.updateOrder(orderId, inputs).then((res)=>console.log(res))
+    // alert(inputs);
+    orderService.updateOrder(orderId, inputs).then((res)=>{console.log(res);message.success('Successful!')})
   }
 
 
