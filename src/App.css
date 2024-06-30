@@ -404,3 +404,25 @@ table.recommendedProductTable {
     line-height: 26px;
 
   }
+
+
+  .notiPopover .ant-popover-inner{
+    /* padding-top: 0; */
+  }
+
+  .notiPopover  .ant-list-item:first-child{
+    padding-top: 0;
+  }
+
+  .notiPopover  .ant-list-item{
+    padding-top: 4px;
+  }
+
+  .notiPopover .ant-list-item-meta{
+    margin-block-end: 0 !important;
+    /* background-color: #f53d2d; */
+  }
+
+  .notiPopover .ant-list-item-meta-title{
+    margin-bottom: 0 !important;
+  }

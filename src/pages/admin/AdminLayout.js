@@ -17,7 +17,7 @@ export default function AdminLayout() {
                     <li className='centerChildren'><BsPersonCircle />Tài khoản</li>
                 </ul>
             </header> */}
-            <AdminHeader/>
+            <AdminHeader logoLink={'/admin'}/>
             <nav className='admin_tab'>
                 <ul className='horizontalUl' style={{ justifyContent: 'space-around' }}>
                     {tabNames.map((tabName, index) => (

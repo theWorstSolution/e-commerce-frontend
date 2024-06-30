@@ -10,13 +10,13 @@ import { globalContext } from '../contexts/globalContext';
 import userService from "../services/userService";
 import User from "../models/User";
 import { Pagination } from '@mui/material';
-import { Avatar, Breadcrumb, Button, Divider, InputNumber, List, Rate } from "antd";
+import { Avatar, Breadcrumb, Button, Divider, InputNumber, List, Modal, Popconfirm, Rate, message } from "antd";
 import { SampleNextArrow, SamplePrevArrow } from '../components/SlickerArrow'
 import Slider from "react-slick";
 import TextArea from "antd/es/input/TextArea";
 
 export default function ProductDetail() {
-    const { user, setUser } = useContext(globalContext);
+    const { user, setUser, alertApi } = useContext(globalContext);
     const { productId } = useParams()
     const [product, setProduct] = useState()
     const [amount, setAmount] = useState(1)
@@ -38,7 +38,7 @@ export default function ProductDetail() {
 
     const onChangePage = async (event, page) => {
         const filter = { product: product.id }
-        const options = { sortBy: 'timeCreated', populate: 'user.name,user.picture', page }
+        const options = { sortBy: 'createdAt', populate: 'user.name,user.picture', page }
         const { data } = await reviewService.getReviews(filter, options)
         console.log('aaaaa');
         console.log(data);
@@ -89,7 +89,7 @@ export default function ProductDetail() {
 
 
             const filter = { product: product.id }
-            const options = { sortBy: 'timeCreated', populate: 'user.name,user.picture', page: 1 }
+            const options = { sortBy: 'createdAt', populate: 'user.name,user.picture', page: 1 }
             const { data } = await reviewService.getReviews(filter, options)
             setReviews(data.results)
             console.log('set reviews');
@@ -135,27 +135,36 @@ export default function ProductDetail() {
     //         setHasBought(false)
     //     }
     // }, [user])
-    function onBuy() {
-        const isConfirmed = window.confirm('Buy ' + amount + ' x ' + product.name + '? That will be ' + amount * product.price + '$')
-        if (isConfirmed) {
-            orderService.createOrder({ user: user.id, product: productId, amount }).then(async ({ data }) => {
-                console.log(data)
-                if (data) {
-                    alert('Buy successfully')
-                }
-                // await user.refresh()
-                const newUser = new User()
-                Object.assign(newUser, user)
-                newUser.foo = 'foo'
-                await newUser.refresh()
-                setUser(newUser)
-                setHasBought(true)
-            })
-        }
-    }
+    // function onBuy() {
+    //     const isConfirmed = window.confirm('Buy ' + amount + ' x ' + product.name + '? That will be ' + amount * product.price + '$')
+
+    //     if (isConfirmed) {
+    //         orderService.createOrder({ user: user.id, product: productId, amount }).then(async ({ data }) => {
+    //             console.log(data)
+    //             if (data) {
+    //                 // alert('Buy successfully')
+    //                 alertApi.open({
+    //                     type: 'success',
+    //                     content: 'successful!',
+    //                 });
+    //             }
+    //             // await user.refresh()
+    //             const newUser = new User()
+    //             Object.assign(newUser, user)
+    //             newUser.foo = 'foo'
+    //             await newUser.refresh()
+    //             setUser(newUser)
+    //             setHasBought(true)
+    //         })
+    //     }
+    // }
     function putInCart() {
         if (user.cart.filter((product) => product.id == productId).length != 0) {
-            alert('Already existed in cart')
+            // alert('Already existed in cart')
+            alertApi.open({
+                type: 'warning',
+                content: 'Already existed in cart',
+            });
         } else {
             userService.updateUser(user.uid, { cart: [...user.cart.map((product) => product.id), productId] }).then(({ data }) => {
                 console.log(data);
@@ -163,7 +172,11 @@ export default function ProductDetail() {
                 Object.assign(newUser, user)
                 newUser.cart.push(product)
                 setUser(newUser)
-                alert('Put in cart successfully')
+                // alert('Put in cart successfully')
+                alertApi.open({
+                    type: 'success',
+                    content: 'successful!',
+                });
             })
         }
     }
@@ -186,6 +199,7 @@ export default function ProductDetail() {
     }), [product]);
 
     const [mainPic, setMainPic] = useState();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (<div>
         <HomeHeader navigateLinkOnSearch='/'></HomeHeader>
@@ -219,7 +233,29 @@ export default function ProductDetail() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px' }}>
                         <Button size="large" icon={<BsCartPlus />} iconPosition='start' onClick={putInCart}>Put in cart</Button>
-                        <Button size="large" type='primary' onClick={onBuy}>Buy now</Button>
+                        <Button size="large" type='primary' onClick={() => { setIsModalOpen(true) }}>Buy now</Button>
+                        <Modal title="Confirm" open={isModalOpen} onOk={() => {
+                            setIsModalOpen(false)
+                            orderService.createOrder({ user: user.id, product: productId, amount }).then(async ({ data }) => {
+                                console.log(data)
+                                if (data) {
+                                    // alert('Buy successfully')
+                                    alertApi.open({
+                                        type: 'success',
+                                        content: 'successful!',
+                                    });
+                                }
+                                // await user.refresh()
+                                const newUser = new User()
+                                Object.assign(newUser, user)
+                                newUser.foo = 'foo'
+                                await newUser.refresh()
+                                setUser(newUser)
+                                setHasBought(true)
+                            })
+                        }} onCancel={() => { setIsModalOpen(false) }}>
+                            {'Buy ' + amount + ' x ' + product.name + '? That will be ' + amount * product.price + 'đ'}
+                        </Modal>
                     </div>
                     <div>
                         <h3>Description:</h3>
@@ -229,7 +265,7 @@ export default function ProductDetail() {
                 </div>
             </section>
 
-            <section style={{padding: '8px 32px'}} className="sectionCard">
+            <section style={{ padding: '8px 32px' }} className="sectionCard">
                 <h2>Review</h2>
                 {hasBought && !hasReviewed && <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px', height: '84px', padding: '20px 0' }}>
@@ -247,10 +283,14 @@ export default function ProductDetail() {
                                 setReviewContent(e.target.value)
                             }}
                         />
-                        <div style={{textAlign:'right'}}>
-                            <Button style={{ marginTop: '8px', marginLeft:'auto' }} type='primary' onClick={async () => {
+                        <div style={{ textAlign: 'right' }}>
+                            <Button style={{ marginTop: '8px', marginLeft: 'auto' }} type='primary' onClick={async () => {
                                 const { data } = await reviewService.createReview(product.id, rating, reviewContent)
-                                alert('posted review')
+                                // alert('posted review')
+                                alertApi.open({
+                                    type: 'success',
+                                    content: 'successful!',
+                                });
                                 console.log(data);
                                 setHasReviewed(true)
                                 onChangePage(null, 1)
@@ -267,7 +307,7 @@ export default function ProductDetail() {
                 <List
                     itemLayout="vertical"
                     dataSource={reviews}
-                    renderItem={(review, index) => 
+                    renderItem={(review, index) =>
                         <List.Item>
                             <List.Item.Meta
                                 avatar={<Avatar src={review.user.picture} />}
@@ -281,8 +321,8 @@ export default function ProductDetail() {
                                             setReviewContent(e.target.value)
                                         }}
                                     />
-                                    <div style={{display:'flex', alignItems:'center', justifyContent:'flex-end', gap:'20px', paddingTop:'10px'}}>
-                                        <Button danger onClick={() => {
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '20px', paddingTop: '10px' }}>
+                                        {/* <Button danger onClick={() => {
                                             reviewService.deleteReview(review.id).then(({ data }) => {
                                                 console.log(data);
                                                 setHasReviewed(false);
@@ -290,10 +330,33 @@ export default function ProductDetail() {
                                                 setReviewContent('')
                                                 onChangePage(null, pagiProps.page)
                                             })
-                                        }}>Delete</Button>
+                                        }}>Delete</Button> */}
+                                        <Popconfirm
+                                            title="Delete review"
+                                            description="Are you sure to delete this review?"
+                                            onConfirm={() => {
+                                                reviewService.deleteReview(review.id).then(({ data }) => {
+                                                    console.log(data);
+                                                    setHasReviewed(false);
+                                                    setRating(0)
+                                                    setReviewContent('')
+                                                    onChangePage(null, pagiProps.page)
+                                                    message.success('successful!');
+                                                })
+                                            }}
+                                            // onCancel={cancel}
+                                            okText="Yes"
+                                            cancelText="No"
+                                        >
+                                            <Button danger>Delete</Button>
+                                        </Popconfirm>
                                         <Button type="primary" onClick={async () => {
                                             const { data } = await reviewService.updateReview(review.id, rating, reviewContent)
-                                            alert('posted review')
+                                            // alert('posted review')
+                                            alertApi.open({
+                                                type: 'success',
+                                                content: 'successful!',
+                                            });
                                             console.log(data);
                                         }}>Update</Button>
                                     </div>
@@ -306,7 +369,7 @@ export default function ProductDetail() {
                     }
                 />
 
-                
+
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
             </section>
         </article>}

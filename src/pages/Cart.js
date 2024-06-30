@@ -44,7 +44,7 @@ export default function Cart() {
         }
     }
     return (<div>
-        <AdminHeader />
+        <AdminHeader logoLink={'/'} />
         <table>
             <tr><th>Product</th><th>Unit price</th><th>Quantity</th><th>Total price</th><th>Action</th></tr>
             {user.cart.map((product, idx) => <tr key={product.id}>

@@ -13,7 +13,7 @@ import HeaderRow1 from './HeaderRow1';
 const qs = require('qs')
 
 
-function AdminHeader(){
+function AdminHeader({logoLink}){
   const { user } = useContext(globalContext);
   const navigate = useNavigate()
   
@@ -21,7 +21,7 @@ function AdminHeader(){
       <header className='homeHeader'>
       <HeaderRow1/>
         <div className='header_row2' style={{display:'flex', justifyContent:'center', marginLeft:'auto', marginRight:'auto'}}>
-          <Link to='/admin' className='header_logo' style={{textAlign:'center'}}>BkShop</Link>
+          <Link to={logoLink} className='header_logo' style={{textAlign:'center'}}>BkShop</Link>
         </div>
       </header>
     )

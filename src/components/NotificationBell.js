@@ -4,9 +4,9 @@ import { globalContext } from '../contexts/globalContext';
 import { Link } from "react-router-dom";
 import userService from "../services/userService";
 import { FaRegBell } from "react-icons/fa6";
-import { Popover, Button,List, Skeleton  } from "antd";
-
-
+import { Popover, Button,List, Skeleton, Typography, Badge   } from "antd";
+import utils from '../utils/utils'
+const { Text } = Typography;
 export default function NotificationBell() {
     const { user } = useContext(globalContext);
     const [loading, setLoading] = useState(false);
@@ -98,7 +98,7 @@ export default function NotificationBell() {
     <List
       style={{width:'350px', height:'350px', overflow:'auto'}}
       loading={!notifications}
-      itemLayout="horizontal"
+      itemLayout="vertical"
       loadMore={loadMore}
       dataSource={notifications}
       renderItem={(noti) => {
@@ -116,9 +116,12 @@ export default function NotificationBell() {
                 title = 'Error'
                 description = 'Error'
         }
+        const createdAt = noti.createdAt;
+        console.log(noti);
         return (
         <List.Item>
           <Skeleton title={false} loading={noti.loading} active>
+          <div style={{display:'flex', justifyContent:'space-between'}}><Text type="secondary">{utils.convertDate(createdAt)}</Text> {!noti.hasSeen && <Badge color='blue' styles={{indicator:{marginRight:'10px'}}}/>}</div>
             <List.Item.Meta
               title={title}
               description={description}
@@ -129,7 +132,9 @@ export default function NotificationBell() {
       }}
     />
 
-    return (<Popover placement="bottom" content={content} onMouseLeave={() => {
+    return (<Popover overlayClassName="notiPopover" placement="bottom" content={content} onOpenChange={(open) => {
+        //if dong
+        if(!open){
         if (noOfNotSeenNoti != 0) {
             userService.setHasSeenAllNotis()
 
@@ -141,6 +146,7 @@ export default function NotificationBell() {
                 else { noti.hasSeen = true }
             }
             setNotifications(newNotis)
+        }
         }
     }}>
                 <div className="centerChildren" style={{cursor:'default'}}>

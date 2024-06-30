@@ -2,6 +2,10 @@ import { createContext, useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
 /* import user, onauthstatechange -> if user, new User(), gọi user.refresh, save user vào context */
 import User from '../models/User'
+
+import { message } from 'antd';
+
+
 export const globalContext = createContext();
 
 // Configure Firebase.
@@ -19,6 +23,7 @@ firebase.initializeApp(config);
 
 
 export function UserProvider({children}){
+  const [alertApi, alertHolder] = message.useMessage()
     const [user, setUser] = useState(); // Local signed-in state.
   const [isInit, setIsInit] = useState(false)
   
@@ -44,7 +49,8 @@ export function UserProvider({children}){
 
   return (
     
-    <globalContext.Provider value={{user, setUser}}>
+    <globalContext.Provider value={{user, setUser, alertApi}}>
+      {alertHolder}
       {isInit?children:<div>Is Loading</div>}
     </globalContext.Provider>
   )

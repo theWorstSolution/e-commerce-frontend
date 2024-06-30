@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import orderService from "../../services/orderService";
 import { Pagination } from '@mui/material';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
+const qs = require('qs')
 
 export default function OrderTabContent() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -34,7 +35,7 @@ export default function OrderTabContent() {
 
     // }, [])
     useEffect(() => {
-        setCurrentTab('Products')
+        setCurrentTab('Orders')
         const initialGeneralSearchInput = searchParams.get('generalSearchInput')
         console.log(initialGeneralSearchInput);
         const initialPage = searchParams.get('page')
@@ -51,23 +52,23 @@ export default function OrderTabContent() {
             filter = {
                 amount: {}, totalPrice: {}, $and: []
             }
-            if (searchParams.get('userId') != '') {
+            if (searchParams.get('userId') && searchParams.get('userId') != '') {
                 filter.user = searchParams.get('userId')
             }
-            if (searchParams.get('productId') != '') {
+            if (searchParams.get('productId') && searchParams.get('productId') != '') {
                 filter.product = searchParams.get('productId')
             }
-            if (searchParams.get('minAmount') != '') {
+            if (searchParams.get('minAmount') && searchParams.get('minAmount') != '') {
                 filter.amount.$gte = searchParams.get('minAmount')
             }
-            if (searchParams.get('maxAmount') != '') {
+            if (searchParams.get('maxAmount') && searchParams.get('maxAmount') != '') {
                 filter.amount.$lte = searchParams.get('maxAmount')
             }
-            if (searchParams.get('minTotalCost') != '') {
+            if (searchParams.get('minTotalCost') && searchParams.get('minTotalCost') != '') {
                 let $expr = { $gte: [{ $add: ["$deliveryFee", "$totalPrice"] }, { $toInt: searchParams.get('minTotalCost') }] }
                 filter.$and.push({ $expr })
             }
-            if (searchParams.get('maxTotalCost') != '') {
+            if (searchParams.get('maxTotalCost') && searchParams.get('maxTotalCost') != '') {
                 let $expr = { $lte: [{ $add: ["$deliveryFee", "$totalPrice"] }, { $toInt: searchParams.get('maxTotalCost') }] }
                 filter.$and.push({ $expr })
             }
@@ -95,23 +96,34 @@ export default function OrderTabContent() {
             return params
         });
     }, [])
+    const [detailSearchInput, setDetailSearchInput] = useState({sortField:'createdAt', sortOrder:'desc', hasPaid:1, status:'delivered'})
+    const onDetailSearchInputChange = useCallback((event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        setDetailSearchInput(values => ({ ...values, [name]: value }))
+    }, [])
+    const onDetailSearchSubmit = useCallback((e) => { 
+        e.preventDefault()
+        const queryString = qs.stringify(detailSearchInput, { encode:false})
+        navigate('/admin/orders?'+queryString)
+    }, [detailSearchInput])
     return (
         <article className='admin_main'>
             <section>
                 <h3 style={{ textAlign: 'center' }}>DETAIL SEARCH</h3>
-                <form style={{ display: 'flex', flexDirection: 'column' }}>
+                <form onSubmit={onDetailSearchSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
                     <label>User id</label>
-                    <input type='search' name="userId" />
+                    <input type='search' name="userId" onChange={onDetailSearchInputChange}/>
                     <label>Product id</label>
-                    <input type='search' name="productId" />
+                    <input type='search' name="productId" onChange={onDetailSearchInputChange}/>
                     <label>Amount</label>
-                    <input type='number' name="minAmount" />
-                    <input type='number' name="maxAmount" />
+                    <input type='number' name="minAmount" onChange={onDetailSearchInputChange}/>
+                    <input type='number' name="maxAmount" onChange={onDetailSearchInputChange}/>
                     <label>Total cost</label>
-                    <input type='number' name="minTotalCost" />
-                    <input type='number' name="maxTotalCost" />
+                    <input type='number' name="minTotalCost" onChange={onDetailSearchInputChange}/>
+                    <input type='number' name="maxTotalCost" onChange={onDetailSearchInputChange}/>
                     <label>Status</label>
-                    <select defaultValue={'delivered'} name="status" >
+                    <select defaultValue={'delivered'} name="status" onChange={onDetailSearchInputChange}>
                         <option value='onGoing' >On going</option>
                         <option value='canceled' >Canceled</option>
                         <option value='delivered' >Delivered</option>
@@ -119,18 +131,19 @@ export default function OrderTabContent() {
                         <option value='confirmed' >Confirm</option>
                     </select>
                     <label>Has paid</label>
-                    <select defaultValue={1} name="hasPaid" >
+                    <select defaultValue={1} name="hasPaid" onChange={onDetailSearchInputChange}>
                         <option value={1} >Yes</option>
                         <option value={0} >No</option>
                     </select>
                     <label>Sort by</label>
-                    <select defaultValue={'totalCost'} name="sortField" >
+                    <select defaultValue={'createdAt'} name="sortField" onChange={onDetailSearchInputChange}>
                         <option value='totalCost' >total cost</option>
                         <option value='amount' >amount</option>
+                        <option value='createdAt' >time created</option>
                     </select>
                     <div>
-                        <input type="radio" name="sortOrder" value="asc" defaultChecked /><label>Ascending </label>
-                        <input type="radio" name="sortOrder" value="desc" /><label>Descending </label>
+                        <input type="radio" name="sortOrder" value="asc" onChange={onDetailSearchInputChange} /><label>Ascending </label>
+                        <input type="radio" name="sortOrder" value="desc" defaultChecked onChange={onDetailSearchInputChange}/><label>Descending </label>
                     </div>
                     <button type='submit' style={{ display: 'flex' }}>Submit</button>
                 </form>

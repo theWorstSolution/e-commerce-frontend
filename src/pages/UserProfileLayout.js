@@ -17,7 +17,7 @@ export default function UserProfileLayout(){
                     <li className='centerChildren'><BsPersonCircle />Tài khoản</li>
                 </ul>
             </header> */}
-            <AdminHeader/>
+            <AdminHeader logoLink={'/'}/>
             <nav className='admin_tab'>
                 <ul className='horizontalUl' style={{ justifyContent: 'space-around' }}>
                     {tabNames.map((tabName, index) => (
