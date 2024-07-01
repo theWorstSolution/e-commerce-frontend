@@ -1,14 +1,20 @@
 import { Pagination } from '@mui/material';
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-icons/bs";
 import { Link, Outlet } from 'react-router-dom';
 import AdminHeader from '../../components/AdminHeader'
+import { globalContext } from '../../contexts/globalContext';
+import NotFoundPage from '../NotFoundPage';
 
 
 
 export default function AdminLayout() {
+    const { user } = useContext(globalContext);
     const [currentTab, setCurrentTab] = useState(); 
     const tabNames = ['Users', 'Products', 'Categories', 'Orders'];
+    if(!user || user.role!='admin'){
+        return(<NotFoundPage/>)
+    }
     return (
         <div>
             {/* <header className='admin_header'>
