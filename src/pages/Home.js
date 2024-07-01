@@ -139,11 +139,16 @@ export default function Home() {
     <section className='sectionCard'>
       <h2>Categories</h2>
       <HomeSlicker onClickRecommend={async () => {
-        const { data } = await userService.genRecommendedProducts()
+        if(user){
+          const { data } = await userService.genRecommendedProducts()
         setRecommendInfo(data)
         const newSearchParams = new URLSearchParams();
         newSearchParams.set("recommended-products", true);
         setSearchParams(newSearchParams);
+        }else{
+          navigate('/auth')
+        }
+        
       }}
         onClickCategory={(catId) => {
           const newSearchParams = new URLSearchParams();

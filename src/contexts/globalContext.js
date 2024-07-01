@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from 'react';
 import firebase from 'firebase/compat/app';
 /* import user, onauthstatechange -> if user, new User(), gọi user.refresh, save user vào context */
 import User from '../models/User'
-
+import LoadingPage from '../pages/LoadingPage'
 import { message } from 'antd';
 
 
@@ -51,7 +51,7 @@ export function UserProvider({children}){
     
     <globalContext.Provider value={{user, setUser, alertApi}}>
       {alertHolder}
-      {isInit?children:<div>Is Loading</div>}
+      {isInit?children:<LoadingPage/>}
     </globalContext.Provider>
   )
 }

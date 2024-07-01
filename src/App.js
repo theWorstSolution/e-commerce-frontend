@@ -22,6 +22,7 @@ import UserProfile from './pages/UserProfile'
 import BuyHistory from './pages/BuyHistory';
 import TestPage from './pages/TestPage';
 import Cart from './pages/Cart';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
         </Route>
       </Route> 
       <Route path='test' element={<TestPage/>} />
+      <Route path='*' element={<NotFoundPage/>} />
     </Routes>
   );
 }

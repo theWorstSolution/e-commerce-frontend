@@ -56,3 +56,5 @@ export const defaultSettings = {
   themeLayout: 'horizontal',
   themeStretch: false,
 };
+
+export const webName = 'BKSHOP'

@@ -1,12 +1,55 @@
 <!DOCTYPE html>
-<html>
-    <head></head>
-    <body>
-        <!-- <div>
-            <span style="border: solid 2px black; margin: -10px;">hello</span>
-            <span style="border: solid 2px black; margin: 5px;">hey</span>
-        </div> -->
-            <div style="border: solid 2px black; margin-bottom: -60px;">hello</div>
-            <div style="border: solid 2px black; margin-top: 50px;">hey</div>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TiDo Logo</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .logo {
+            font-family: 'Arial', sans-serif;
+            font-size: 60px;
+            font-weight: bold;
+            color: #4CAF50; /* Màu chủ đạo của logo */
+            position: relative;
+        }
+        .logo::before {
+            content: 'T';
+            color: #FF5722; /* Màu của chữ cái đầu tiên */
+            position: absolute;
+            top: 0;
+            left: -40px;
+            font-size: 100px; /* Tăng kích thước chữ cái đầu tiên */
+        }
+        .logo::after {
+            content: 'o';
+            color: #FFC107; /* Màu của chữ cái cuối cùng */
+            position: absolute;
+            top: 0;
+            right: -40px;
+            font-size: 100px; /* Tăng kích thước chữ cái cuối cùng */
+        }
+        .dot {
+            width: 20px;
+            height: 20px;
+            background-color: #FFEB3B; /* Màu của chấm tròn */
+            border-radius: 50%;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        Ti<span class="dot"></span>Do
+    </div>
+</body>
 </html>

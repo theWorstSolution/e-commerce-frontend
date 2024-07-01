@@ -156,7 +156,7 @@ export default function NotificationBell() {
                             {noOfNotSeenNoti}
                         </span>}
                     </div>
-                    Thông báo
+                    Notifications
                 </div>
             
     </Popover>)

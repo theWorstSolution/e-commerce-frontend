@@ -10,6 +10,7 @@ import { globalContext } from '../contexts/globalContext';
 import firebase from 'firebase/compat/app';
 import NotificationBell from './NotificationBell';
 import HeaderRow1 from './HeaderRow1';
+import { webName } from '../config';
 const qs = require('qs')
 
 
@@ -21,7 +22,7 @@ function AdminHeader({logoLink}){
       <header className='homeHeader'>
       <HeaderRow1/>
         <div className='header_row2' style={{display:'flex', justifyContent:'center', marginLeft:'auto', marginRight:'auto'}}>
-          <Link to={logoLink} className='header_logo' style={{textAlign:'center'}}>BkShop</Link>
+          <Link to={logoLink} className='header_logo' style={{textAlign:'center'}}>{webName}</Link>
         </div>
       </header>
     )

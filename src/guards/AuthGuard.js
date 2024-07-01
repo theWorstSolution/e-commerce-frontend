@@ -4,7 +4,8 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { globalContext } from '../contexts/globalContext';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { webName } from '../config';
 
 // Configure FirebaseUI.
 const uiConfig = {
@@ -24,9 +25,13 @@ function AuthGuard({children}) {
   const {user} = useContext(globalContext)
   if (!user) {
     return (
-      <div>
-        <h1>My App</h1>
-        <p>Please sign-in: </p>
+      <div className='authPage'>
+        <div style={{paddingTop:'30px', paddingBottom:'150px', display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <div className='neonText' >
+            <div>Welcome to</div>
+            <div style={{marginTop:'12px'}}><Link to='/' className='header_logo'>{webName}</Link></div>
+          </div>
+        </div>
         <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
       </div>
     );
