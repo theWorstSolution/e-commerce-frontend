@@ -19,16 +19,18 @@ export default class User {
         const { data } = await userService.getUsers(filter, options)
         console.log('first data about user');
         console.log(data.results[0]);
-        if(data.results[0]){
-            Object.assign(this, data.results[0]);
-        }else{
-            // console.log('create new user');
-            await userService.createUser()
-            const { data: newData } = await userService.getUsers(filter, options)
-            // console.log('second data about user');
-            // console.log(newData);
-            Object.assign(this, newData.results[0]);
-        }
+        Object.assign(this, data.results[0]);
+
+        // if(data.results[0]){
+        //     Object.assign(this, data.results[0]);
+        // }else{
+        //     // console.log('create new user');
+        //     await userService.createUser()
+        //     const { data: newData } = await userService.getUsers(filter, options)
+        //     // console.log('second data about user');
+        //     // console.log(newData);
+        //     Object.assign(this, newData.results[0]);
+        // }
         
         
     }

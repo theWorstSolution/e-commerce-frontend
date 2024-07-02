@@ -41,7 +41,7 @@ function App() {
         <Route path='product/:productId' element={<ProductDetail/>}/>
       </Route>
       <Route path='admin' element={<AdminLayout/>}>
-        <Route index element={<UserTabContent/>}/>   
+        <Route index element={<UserTabContent/>}/>
         <Route path='users'>
           <Route index element={<UserTabContent/>}/>
           <Route path='user/:userId' element={<UserDetail/>}/>
