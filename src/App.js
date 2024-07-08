@@ -23,6 +23,7 @@ import BuyHistory from './pages/BuyHistory';
 import TestPage from './pages/TestPage';
 import Cart from './pages/Cart';
 import NotFoundPage from './pages/NotFoundPage';
+import BuySuccess from './pages/BuySuccess';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
       <Route index element={<Home/>}/>
       <Route path='auth' element={<AuthGuard/>} />
       <Route path='cart' element={<AuthGuard><Cart/></AuthGuard>} />
+      <Route path='buy-success' element={<BuySuccess/>} />
       <Route path='user' element={<UserProfileLayout/>}>
         <Route index element={<UserProfile/>} />
         <Route path='profile' element={<UserProfile/>} />

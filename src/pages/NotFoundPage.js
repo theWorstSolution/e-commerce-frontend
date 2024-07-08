@@ -12,7 +12,7 @@ export default function NotFoundPage() {
                 <div className="neonLabel">Page is not found...</div>
 
                 <div  style={{marginTop:'130px'}}>
-                <div className="glow">back to</div>
+                <div className="glow" style={{fontFamily:'Arial, sans-serif'}}>back to</div>
                     <Link style={{marginTop:'15px', fontFamily:'Arial, sans-serif'}} to='/' className='glow header_logo'>{webName}</Link>
                     </div>
             </div>
