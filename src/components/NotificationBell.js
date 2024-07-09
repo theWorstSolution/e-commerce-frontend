@@ -130,7 +130,7 @@ export default function NotificationBell() {
                 description = 'Error'
         }
         const createdAt = noti.createdAt;
-        console.log(noti);
+        // console.log(noti);
         return (
         <List.Item>
           <Skeleton title={false} loading={noti.loading} active>

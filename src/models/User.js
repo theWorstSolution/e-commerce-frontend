@@ -13,7 +13,7 @@ export default class User {
         this.id = uid
     }
     async refresh() {
-        console.log('id: ' + this.uid);
+        // console.log('id: ' + this.uid);
         const filter = { _id: this.uid }
         const options = { populate: 'cart' }
         const { data } = await userService.getUsers(filter, options)
