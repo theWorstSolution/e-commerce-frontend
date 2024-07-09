@@ -1,4 +1,4 @@
-import { Link, useOutletContext, useParams } from "react-router-dom";
+import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useEffect, useState, useRef, useContext, useMemo } from "react";
 import productService from "../services/productService";
 import Creatable from 'react-select/creatable';
@@ -16,6 +16,7 @@ import Slider from "react-slick";
 import TextArea from "antd/es/input/TextArea";
 
 export default function ProductDetail() {
+    const navigate = useNavigate();
     const { user, setUser, alertApi } = useContext(globalContext);
     const { productId } = useParams()
     const [product, setProduct] = useState()
@@ -237,24 +238,30 @@ export default function ProductDetail() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px' }}>
                         <Button size="large" icon={<BsCartPlus />} iconPosition='start' onClick={putInCart}>Put in cart</Button>
                         <Button size="large" type='primary' onClick={() => { setIsModalOpen(true) }}>Buy now</Button>
-                        <Modal title="Confirm" open={isModalOpen} onOk={() => {
+                        <Modal title="Confirm" open={isModalOpen} 
+                        okText='Pay with Zalopay'
+                        onOk={() => {
+                            message.loading('Action in progress..');
                             setIsModalOpen(false)
-                            orderService.createOrder({ user: user.id, product: productId, amount }).then(async ({ data }) => {
-                                console.log(data)
-                                if (data) {
-                                    // alert('Buy successfully')
-                                    alertApi.open({
-                                        type: 'success',
-                                        content: 'successful!',
-                                    });
-                                }
+                            orderService.createOrder({ user: user.id, product: productId, amount }).then(async (res) => {
+                                // console.log(res)
+                                const payUrl = res.data
+                                window.location.href = payUrl;
+                                // if (data) {
+                                //     // alert('Buy successfully')
+                                //     alertApi.open({
+                                //         type: 'success',
+                                //         content: 'successful!',
+                                //     });
+                                // }
                                 // await user.refresh()
-                                const newUser = new User()
-                                Object.assign(newUser, user)
-                                newUser.foo = 'foo'
-                                await newUser.refresh()
-                                setUser(newUser)
-                                setHasBought(true)
+
+                                // const newUser = new User()
+                                // Object.assign(newUser, user)
+                                // newUser.foo = 'foo'
+                                // await newUser.refresh()
+                                // setUser(newUser)
+                                // setHasBought(true)
                             })
                         }} onCancel={() => { setIsModalOpen(false) }}>
                             {'Buy ' + amount + ' x ' + product.name + '? That will be ' + amount * product.price + 'đ'}

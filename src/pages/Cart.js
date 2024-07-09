@@ -12,41 +12,6 @@ export default function Cart() {
     const { user, setUser } = useContext(globalContext);
     const [quantityList, setQuantityList] = useState(new Array(user.cart.length).fill(1));
     const [checkedList, setCheckedList] = useState(new Array(user.cart.length).fill(false));
-    function buy(){
-        const buyList = user.cart.map((product,idx)=>({...product, amount:quantityList[idx]})).filter((product,idx)=>checkedList[idx])
-        let confirmStr = ''
-        let totalPrice = 0;
-        for(let product of buyList){
-            confirmStr += product.name + '\t' + product.amount + '\t' + product.price + '\t' + product.amount*product.price + '\n'
-            totalPrice += product.amount*product.price
-        }
-        const isConfirmed = window.confirm('Product\tAmount\tUnit price\tTotal price\n'+ confirmStr + 
-            '==================================\n'+
-            '\t\t\t\t\tTotal: ' + totalPrice + '\n'+
-            'confirm?')
-
-        if(isConfirmed){
-            const body = {
-                userId: user.uid,
-                buyList: buyList.map((product)=>({productId:product.id, amount:product.amount}))
-            }
-            orderService.createOrders(body).then(({data})=>{
-                console.log(data)
-                userService.updateUser(user.uid, { cart: [...user.cart.filter((prdct, idx)=>!checkedList[idx]).map((product) => product.id)] }).then(({ data }) => {
-                    console.log(data);
-                    const newUser = { ...user }
-                    newUser.cart = newUser.cart.filter((prdct, idx)=>!checkedList[idx])
-                    setUser(newUser)
-                    quantityList.filter((prdct,idx)=>!checkedList[idx])
-                    checkedList.filter((isChecked)=>!isChecked)
-                })
-                if(data){
-                    // alert('Buy successfully')
-                    message.success('Successful!')
-                }
-            })
-        }
-    }
     const [isModalOpen, setIsModalOpen] = useState(false);
     let buyList;
     function genConfirmMessage(){
@@ -145,27 +110,27 @@ return(<table>
             </table>
             <div style={{display:'flex', justifyContent:'flex-end', paddingTop:'20px', paddingRight:'20px'}}>
             <Button size="large" type='primary' onClick={()=>setIsModalOpen(true)}>Buy</Button>
-            <Modal title="Confirm buy" open={isModalOpen} onOk={() => {
+            <Modal title="Confirm buy" open={isModalOpen} 
+            okText='Pay via Zalopay'
+            onOk={() => {
+                message.loading('Action in progress..');
                             const body = {
                 userId: user.uid,
                 buyList: buyList.map((product)=>({productId:product.id, amount:product.amount}))
             }
-            orderService.createOrders(body).then(({data})=>{
-                console.log(data)
+            orderService.createOrders(body).then(({data: payUrl})=>{
                 userService.updateUser(user.uid, { cart: [...user.cart.filter((prdct, idx)=>!checkedList[idx]).map((product) => product.id)] }).then(({ data }) => {
-                    console.log(data);
-                    const newUser = { ...user }
-                    newUser.cart = newUser.cart.filter((prdct, idx)=>!checkedList[idx])
-                    setUser(newUser)
-                    quantityList.filter((prdct,idx)=>!checkedList[idx])
-                    checkedList.filter((isChecked)=>!isChecked)
+                    // console.log(data);
+                    // const newUser = { ...user }
+                    // newUser.cart = newUser.cart.filter((prdct, idx)=>!checkedList[idx])
+                    // setUser(newUser)
+                    // quantityList.filter((prdct,idx)=>!checkedList[idx])
+                    // checkedList.filter((isChecked)=>!isChecked)
                 })
-                if(data){
-                    // alert('Buy successfully')
-                    message.success('Successful!')
-                }
+                window.location.href = payUrl;
             })
-                        }} onCancel={() => { setIsModalOpen(false) }}>
+                        }} 
+                        onCancel={() => { setIsModalOpen(false) }}>
                             {genConfirmMessage()}
                         </Modal>
             </div>

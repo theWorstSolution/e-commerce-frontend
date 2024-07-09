@@ -1,13 +1,14 @@
 import { useState, useContext, useEffect, useCallback, useRef } from "react";
 import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft, BsCart3 } from "react-icons/bs";
 import { globalContext } from '../contexts/globalContext';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import userService from "../services/userService";
 import { FaRegBell } from "react-icons/fa6";
 import { Popover, Button,List, Skeleton, Typography, Badge   } from "antd";
 import utils from '../utils/utils'
 const { Text } = Typography;
 export default function NotificationBell() {
+    const navigate = useNavigate()
     const { user } = useContext(globalContext);
     const [loading, setLoading] = useState(false);
     const [notifications, setNotifications] = useState([])
@@ -106,11 +107,17 @@ export default function NotificationBell() {
         switch (noti.type) {
             case 'newOrder':
                 title = 'New order'
-                description = <Link style={{textDecoration:'none'}} to={'/admin/orders/order/' + noti.orderId}>User {noti.username} has bought {noti.amount} x {noti.productName}</Link>
+                description = <Link style={{textDecoration:'none'}}
+                onClick={(e)=>{e.preventDefault();setReadAllThenNavigate('/admin/orders/order/' + noti.orderId)}}
+                    >
+                    <span >User {noti.username} has bought {noti.amount} x {noti.productName}</span></Link>
                 break;
             case 'ChangeOrderStatusNoti':
                 title = 'Order status has been changed'
-                description = <span>Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</span>
+                description = <Link style={{textDecoration:'none'}}
+                onClick={(e)=>{e.preventDefault();setReadAllThenNavigate('/user/buy-history?keyword=' + noti.orderId)}}
+                    >
+                    <span >Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</span></Link>
                 break;                
             default:
                 title = 'Error'
@@ -132,11 +139,10 @@ export default function NotificationBell() {
       }}
     />
 
-    return (<Popover overlayClassName="notiPopover" placement="bottom" content={content} onOpenChange={(open) => {
-        //if dong
-        if(!open){
+    async function setReadAllThenNavigate(redirectUrl){
+        console.log('setReadAll');
         if (noOfNotSeenNoti != 0) {
-            userService.setHasSeenAllNotis()
+            await userService.setHasSeenAllNotis()
 
             setNoOfNotSeenNoti(0)
 
@@ -146,9 +152,25 @@ export default function NotificationBell() {
                 else { noti.hasSeen = true }
             }
             setNotifications(newNotis)
+            console.log('setReadAll123');
         }
+        console.log('redirect');
+        console.log(redirectUrl);
+        if(redirectUrl){
+            console.log('jere');
+            navigate(redirectUrl)
+            console.log('after');
         }
-    }}>
+    }
+
+    return (<Popover overlayClassName="notiPopover" placement="bottom" content={content} 
+    onOpenChange={(open) => {
+        //if dong
+        if(!open){
+            setReadAllThenNavigate();
+        }
+    }}
+    >
                 <div className="centerChildren" style={{cursor:'default'}}>
                     <div style={{position:'relative'}}>
                         <BsBell className='headerIcon'/>

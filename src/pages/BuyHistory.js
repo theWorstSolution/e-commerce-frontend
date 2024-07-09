@@ -93,8 +93,11 @@ export default function BuyHistory(){
                                 title={<Link to={'/products/product/'+order.product.id}>{order.product.name}</Link>}
                                 description={<div>
                                     {order.createdAt && <div><label>Bought at:</label> {utils.convertDate(order.createdAt)}</div>}
+                                    <div><label>Order Id:</label> {order._id}</div>
                                     <div><label>Bought amount:</label> {order.amount}</div>
                                     <div><label>Total cost:</label> {order.totalCost}</div>
+                                    <div><label>Status:</label> {order.status}</div>
+                                    <div><label>Has been paid:</label> {order.hasPaid?'Yes':'No'}</div>
                                     </div>}
 
                             />
