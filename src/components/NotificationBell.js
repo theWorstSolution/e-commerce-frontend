@@ -6,6 +6,8 @@ import userService from "../services/userService";
 import { FaRegBell } from "react-icons/fa6";
 import { Popover, Button,List, Skeleton, Typography, Badge   } from "antd";
 import utils from '../utils/utils'
+import { HOST_API } from '../config';
+
 const { Text } = Typography;
 export default function NotificationBell() {
     const navigate = useNavigate()
@@ -17,7 +19,7 @@ export default function NotificationBell() {
     let eventSource = useRef({})
     useEffect(() => {
         if (user) {
-            eventSource.current = new EventSource('http://localhost:3000/v1/users/user/' + user.id + '/subcribe-notifications');
+            eventSource.current = new EventSource(HOST_API + '/v1/users/user/' + user.id + '/subcribe-notifications');
             // console.log('on message');
             // console.log(eventSource.current.onmessage);
             eventSource.current.onmessage = (event) => {
