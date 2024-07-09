@@ -19,7 +19,7 @@ export default function NotificationBell() {
     let eventSource = useRef({})
     useEffect(() => {
         if (user) {
-            eventSource.current = new EventSource(HOST_API + '/v1/users/user/' + user.id + '/subcribe-notifications');
+            eventSource.current = new EventSource(HOST_API + '/v1/users/user/' + user.id + '/subcribe-notifications', { withCredentials: true });
             // console.log('on message');
             // console.log(eventSource.current.onmessage);
             eventSource.current.onmessage = (event) => {
