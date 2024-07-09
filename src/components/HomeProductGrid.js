@@ -17,7 +17,7 @@ export default function HomeProductGrid({products}){
             >
               <Meta className="" title={<p className="multilineEllipsis">{product.name}</p>}
                 description={<div><div>{product.rating} <BsStar /></div>
-                  <div>{product.price}đ</div>
+                  <div>{product.price.toLocaleString('de-DE')}đ</div>
                   <div>{product.soldAmount} sold</div></div>}
               />
             </Card>

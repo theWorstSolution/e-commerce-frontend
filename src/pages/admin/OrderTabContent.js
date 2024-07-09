@@ -166,7 +166,7 @@ export default function OrderTabContent() {
                             </thead>
                             <tbody>
                                 {res.map((order) => (<tr key={order.id}><td>{order.id}</td><td><a href={"/admin/users/user/" + order.user.id}>{order.user.name}</a></td><td><a href={'/admin/products/product/' + order.product.id}>{order.product.name}</a></td>
-                                    <td>{order.amount}</td><td>{order.deliveryFee + order.totalPrice}</td><td>{order.status}</td><td>{order.hasPaid}</td>
+                                    <td>{order.amount}</td><td>{(order.deliveryFee + order.totalPrice).toLocaleString('de-DE')}</td><td>{order.status}</td><td>{order.hasPaid}</td>
                                     <td className="centerChildren"><button className="centerChildren" onClick={() => { navigate('/admin/orders/order/' + order.id) }}><AiOutlineEdit /></button></td></tr>))}
                             </tbody>
                         </table>}

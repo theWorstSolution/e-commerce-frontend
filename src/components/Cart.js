@@ -46,7 +46,7 @@ function Cart() {
             <img src={item.pictures[0]} className='productSmallThumbnail'></img>
             <div style={{paddingLeft:'8px'}}>
               <div><Link to={'/products/product/' + item.id}>{item.name}</Link></div>
-              <div>{item.price}đ</div>
+              <div>{item.price.toLocaleString('de-DE')}đ</div>
             </div>
           </div>
         </Skeleton>

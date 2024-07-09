@@ -10,10 +10,12 @@ import { globalContext } from '../contexts/globalContext';
 import userService from "../services/userService";
 import User from "../models/User";
 import { Pagination } from '@mui/material';
-import { Avatar, Breadcrumb, Button, Divider, InputNumber, List, Modal, Popconfirm, Rate, message } from "antd";
+import { Avatar, Breadcrumb, Button, Card, Divider, InputNumber, List, Modal, Popconfirm, Rate, message } from "antd";
 import { SampleNextArrow, SamplePrevArrow } from '../components/SlickerArrow'
 import Slider from "react-slick";
 import TextArea from "antd/es/input/TextArea";
+import Meta from "antd/es/card/Meta"
+import Footer from "../components/Footer";
 
 export default function ProductDetail() {
     const navigate = useNavigate();
@@ -66,7 +68,8 @@ export default function ProductDetail() {
     useEffect(() => {
 
         productService.getProduct(productId).then(async ({ data: product }) => {
-            // console.log('product: ' + JSON.stringify(product));
+            console.log('product: ');
+            console.log(product);
             setProduct(product)
             setMainPic(product.pictures[0])
 
@@ -221,7 +224,7 @@ export default function ProductDetail() {
                 </div>
                 <div style={{ flex: 3 }}>
                     <h3>{product.name}</h3>
-                    <p><label>Price:</label> {product.price + 'đ'}</p>
+                    <p><label>Price:</label> {product.price.toLocaleString('de-DE') + 'đ'}</p>
                     <p><label>Rating:</label> {product.rating}<BsStar /></p>
 
                     <p><label>Sold amount:</label> {product.soldAmount}</p>
@@ -264,7 +267,7 @@ export default function ProductDetail() {
                                 // setHasBought(true)
                             })
                         }} onCancel={() => { setIsModalOpen(false) }}>
-                            {'Buy ' + amount + ' x ' + product.name + '? That will be ' + amount * product.price + 'đ'}
+                            {'Buy ' + amount + ' x ' + product.name + '? That will be ' + (amount * product.price).toLocaleString('de-DE') + 'đ'}
                         </Modal>
                     </div>
                     <div>
@@ -275,113 +278,137 @@ export default function ProductDetail() {
                 </div>
             </section>
 
-            <section style={{ padding: '8px 32px' }} className="sectionCard">
-                <h2>Review</h2>
-                {hasBought && !hasReviewed && <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px', height: '84px', padding: '20px 0' }}>
-                        <div style={{ height: '100%' }}><img src={user.picture} style={{ objectFit: 'cover' }}></img></div>
-                        <div style={{ height: '100%' }}>
-                            <h3 style={{ marginTop: '0', marginBottom: '10px' }}>{user.name}</h3>
-                            <Rate value={rating} allowClear={false} onChange={(value) => setRating(value)} />
+            <div style={{display:'flex'}}>
+                <section style={{ padding: '8px 32px', flex:0.8, marginRight:'10px' }} className="sectionCard">
+                    <h2>Review</h2>
+                    {hasBought && !hasReviewed && <div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px', height: '84px', padding: '20px 0' }}>
+                            <div style={{ height: '100%' }}><img src={user.picture} style={{ objectFit: 'cover' }}></img></div>
+                            <div style={{ height: '100%' }}>
+                                <h3 style={{ marginTop: '0', marginBottom: '10px' }}>{user.name}</h3>
+                                <Rate value={rating} allowClear={false} onChange={(value) => setRating(value)} />
+                            </div>
+                            <div />
                         </div>
-                        <div />
-                    </div>
-
-                    <div>
-                        <TextArea placeholder='How do you feel about this product?' rows={4} value={reviewContent}
-                            onChange={(e) => {
-                                setReviewContent(e.target.value)
-                            }}
-                        />
-                        <div style={{ textAlign: 'right' }}>
-                            <Button style={{ marginTop: '8px', marginLeft: 'auto' }} type='primary' onClick={async () => {
-                                const { data } = await reviewService.createReview(product.id, rating, reviewContent)
-                                // alert('posted review')
-                                alertApi.open({
-                                    type: 'success',
-                                    content: 'successful!',
-                                });
-                                console.log(data);
-                                setHasReviewed(true)
-                                onChangePage(null, 1)
-                            }}>Submit</Button>
-                        </div>
-
-
-
-                    </div>
-                    <Divider />
-                </div>
-                }
-
-                <List
-                    itemLayout="vertical"
-                    dataSource={reviews}
-                    renderItem={(review, index) =>
-                        <List.Item>
-                            <List.Item.Meta
-                                avatar={<Avatar src={review.user.picture} />}
-                                title={review.user.name}
+    
+                        <div>
+                            <TextArea placeholder='How do you feel about this product?' rows={4} value={reviewContent}
+                                onChange={(e) => {
+                                    setReviewContent(e.target.value)
+                                }}
                             />
-                            {user && (review.user.id.toString() == user.uid.toString()) ?
-                                <div>
-                                    <Rate value={rating} allowClear={false} onChange={(value) => setRating(value)} />
-                                    <TextArea rows={4} value={reviewContent}
-                                        onChange={(e) => {
-                                            setReviewContent(e.target.value)
-                                        }}
-                                    />
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '20px', paddingTop: '10px' }}>
-                                        {/* <Button danger onClick={() => {
-                                            reviewService.deleteReview(review.id).then(({ data }) => {
-                                                console.log(data);
-                                                setHasReviewed(false);
-                                                setRating(0)
-                                                setReviewContent('')
-                                                onChangePage(null, pagiProps.page)
-                                            })
-                                        }}>Delete</Button> */}
-                                        <Popconfirm
-                                            title="Delete review"
-                                            description="Are you sure to delete this review?"
-                                            onConfirm={() => {
+                            <div style={{ textAlign: 'right' }}>
+                                <Button style={{ marginTop: '8px', marginLeft: 'auto' }} type='primary' onClick={async () => {
+                                    const { data } = await reviewService.createReview(product.id, rating, reviewContent)
+                                    // alert('posted review')
+                                    alertApi.open({
+                                        type: 'success',
+                                        content: 'successful!',
+                                    });
+                                    console.log(data);
+                                    setHasReviewed(true)
+                                    onChangePage(null, 1)
+                                }}>Submit</Button>
+                            </div>
+    
+    
+    
+                        </div>
+                        <Divider />
+                    </div>
+                    }
+    
+                    <List
+                        itemLayout="vertical"
+                        dataSource={reviews}
+                        renderItem={(review, index) =>
+                            <List.Item>
+                                <List.Item.Meta
+                                    avatar={<Avatar src={review.user.picture} />}
+                                    title={review.user.name}
+                                />
+                                {user && (review.user.id.toString() == user.uid.toString()) ?
+                                    <div>
+                                        <Rate value={rating} allowClear={false} onChange={(value) => setRating(value)} />
+                                        <TextArea rows={4} value={reviewContent}
+                                            onChange={(e) => {
+                                                setReviewContent(e.target.value)
+                                            }}
+                                        />
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '20px', paddingTop: '10px' }}>
+                                            {/* <Button danger onClick={() => {
                                                 reviewService.deleteReview(review.id).then(({ data }) => {
                                                     console.log(data);
                                                     setHasReviewed(false);
                                                     setRating(0)
                                                     setReviewContent('')
                                                     onChangePage(null, pagiProps.page)
-                                                    message.success('successful!');
                                                 })
-                                            }}
-                                            // onCancel={cancel}
-                                            okText="Yes"
-                                            cancelText="No"
-                                        >
-                                            <Button danger>Delete</Button>
-                                        </Popconfirm>
-                                        <Button type="primary" onClick={async () => {
-                                            const { data } = await reviewService.updateReview(review.id, rating, reviewContent)
-                                            // alert('posted review')
-                                            alertApi.open({
-                                                type: 'success',
-                                                content: 'successful!',
-                                            });
-                                            console.log(data);
-                                        }}>Update</Button>
-                                    </div>
-                                </div> : <div>
-                                    <Rate value={review.rating} disabled />
-                                    <p>{review.content}</p>
-                                </div>}
+                                            }}>Delete</Button> */}
+                                            <Popconfirm
+                                                title="Delete review"
+                                                description="Are you sure to delete this review?"
+                                                onConfirm={() => {
+                                                    reviewService.deleteReview(review.id).then(({ data }) => {
+                                                        console.log(data);
+                                                        setHasReviewed(false);
+                                                        setRating(0)
+                                                        setReviewContent('')
+                                                        onChangePage(null, pagiProps.page)
+                                                        message.success('successful!');
+                                                    })
+                                                }}
+                                                // onCancel={cancel}
+                                                okText="Yes"
+                                                cancelText="No"
+                                            >
+                                                <Button danger>Delete</Button>
+                                            </Popconfirm>
+                                            <Button type="primary" onClick={async () => {
+                                                const { data } = await reviewService.updateReview(review.id, rating, reviewContent)
+                                                // alert('posted review')
+                                                alertApi.open({
+                                                    type: 'success',
+                                                    content: 'successful!',
+                                                });
+                                                console.log(data);
+                                            }}>Update</Button>
+                                        </div>
+                                    </div> : <div>
+                                        <Rate value={review.rating} disabled />
+                                        <p>{review.content}</p>
+                                    </div>}
+    
+                            </List.Item>
+                        }
+                    />
+    
+    
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
+                </section>
 
-                        </List.Item>
-                    }
-                />
-
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
-            </section>
+                <section style={{ padding: '8px 32px', flex:0.2, marginLeft:0 }} className="sectionCard">
+                <h2 style={{textAlign:'center'}}>Similar products</h2>
+                <ul className='productGrid' style={{ listStyleType: 'none', padding:0, display:'flex', flexDirection:'column' }}>
+          {product?.similarProducts.map((product) => <li key={product.id}>
+            <Card
+              onClick={() => { navigate('/products/product/' + product.id) }}
+              hoverable
+              style={{}}
+              cover={<img className="" src={product.pictures[0]}
+                style={{ objectFit: 'cover', textAlign: 'center', height:'175px' }} />}
+            >
+              <Meta className="" title={<p className="multilineEllipsis">{product.name}</p>}
+                description={<div><div>{product.rating} <BsStar /></div>
+                  <div>{product.price.toLocaleString('de-DE')}đ</div>
+                  <div>{product.soldAmount} sold</div></div>}
+              />
+            </Card>
+          </li>)}
+        </ul>
+                </section>
+            </div>
         </article>}
+        <Footer/>
     </div>)
 }

@@ -157,7 +157,7 @@ export default function ProductTabContent() {
                                             return cat.name
                                         }
                                         return cat.name + ' > '
-                                    })}</td><td className="multilineEllipsis" style={{WebkitLineClamp:4}}>{product.description}</td><td>{product.price}</td><td>{product.soldAmount}</td>
+                                    })}</td><td className="multilineEllipsis" style={{WebkitLineClamp:4}}>{product.description}</td><td>{product.price.toLocaleString('de-DE')}</td><td>{product.soldAmount}</td>
                                     <td className="centerChildren"><button className="centerChildren" onClick={() => { navigate('/admin/products/product/' + product.id) }}><AiOutlineEdit /></button></td></tr>))}
                             </tbody>
                         </table>}

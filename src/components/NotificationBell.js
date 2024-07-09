@@ -118,7 +118,11 @@ export default function NotificationBell() {
                 onClick={(e)=>{e.preventDefault();setReadAllThenNavigate('/user/buy-history?keyword=' + noti.orderId)}}
                     >
                     <span >Your order {noti.amount} x {noti.productName} has been set status from {noti.oldStatus} to {noti.newStatus} by admin</span></Link>
-                break;                
+                break;
+            case 'welcome':
+                title = 'Welcome'
+                description = <span>Welcome to our shop. If you need any help, please contact admin at <a href="mailto:goodboybachkhoa@gmail.com">goodboybachkhoa@gmail.com</a></span>
+                break;      
             default:
                 title = 'Error'
                 description = 'Error'

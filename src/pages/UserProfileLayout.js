@@ -4,6 +4,7 @@ import { BsBell, BsPlusLg, BsSearch, BsPersonCircle, BsArrowLeft } from "react-i
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import AdminHeader from '../components/AdminHeader'
 import { Segmented } from 'antd';
+import Footer from '../components/Footer';
 
 
 export default function UserProfileLayout() {
@@ -41,7 +42,7 @@ export default function UserProfileLayout() {
             </nav> */}
 
             <Outlet context={{ setCurrentTab }} />
-
+            <Footer/>
         </div>
     );
 }

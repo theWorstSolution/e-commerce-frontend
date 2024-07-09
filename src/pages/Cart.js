@@ -29,9 +29,9 @@ return(<table>
     <tbody>
         {buyList.map((product)=><tr>
             <td>{product.name}</td><td>{product.amount}</td>
-            <td>{product.price}đ</td><td>{product.amount*product.price}đ</td>
+            <td>{product.price.toLocaleString('de-DE')}đ</td><td>{(product.amount*product.price).toLocaleString('de-DE')}đ</td>
         </tr>)}
-            <tr><td colSpan={3} style={{textAlign:'center', borderTop: 'solid black'}}><strong>Total</strong></td><td style={{borderTop: 'solid black'}}>{totalPrice}đ</td></tr>
+            <tr><td colSpan={3} style={{textAlign:'center', borderTop: 'solid black'}}><strong>Total</strong></td><td style={{borderTop: 'solid black'}}>{totalPrice.toLocaleString('de-DE')}đ</td></tr>
     </tbody>
 
 </table>)
@@ -47,7 +47,7 @@ return(<table>
                             <img src={product.pictures[0]} className='productSmallThumbnail'></img>
                             <Link style={{textDecoration:'none'}} to={'/products/product/'+product.id}>{product.name}</Link>
                         </td>
-                        <td>{product.price}đ</td>
+                        <td>{product.price.toLocaleString('de-DE')}đ</td>
                         <td>
                         <InputNumber style={{width:'50%'}} className="amountInput"
                             controls={false}
@@ -75,7 +75,7 @@ return(<table>
                                 setQuantityList(newQuantityList)
                             }} /> */}
                         </td>
-                        <td>{quantityList[idx] * product.price}đ</td>
+                        <td>{(quantityList[idx] * product.price).toLocaleString('de-DE')}đ</td>
                         <td>
                             <input style={{transform:'scale(2.5)'}} type="checkbox" checked={checkedList[idx]} onChange={(e) => {
                                 const newCheckedList = [...checkedList]

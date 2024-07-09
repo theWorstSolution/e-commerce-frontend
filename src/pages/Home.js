@@ -15,6 +15,7 @@ import HomeDetailSearchForm from '../components/HomeDetailSearchForm';
 import { Collapse, Divider } from 'antd';
 import HomeSlicker from '../components/HomeSlicker';
 import HomeProductGrid from '../components/HomeProductGrid';
+import Footer from '../components/Footer';
 const qs = require('qs')
 
 export default function Home() {
@@ -166,7 +167,8 @@ export default function Home() {
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
       </div>
     </section>
-
+    
+    <Footer/>
 
     {recommendInfo && <section>
       <h2>Supervised membership table</h2>
@@ -242,39 +244,6 @@ export default function Home() {
         }
       </ul>
     </section>}
-    {/* Hoe Logined
-         <div>
-       <h1>My App</h1>
-       <p>Welcome {firebase.auth().currentUser.displayName}! You are now signed-in!</p>
-       <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
-     </div> */}
   </div>)
-  // // The user object has basic properties such as display name, email, etc.
-  // const displayName = user.displayName;
-  // const email = user.email;
-  // const photoURL = user.photoURL;
-  // const emailVerified = user.emailVerified;
-
-  // console.log({
-  //     displayName: user.displayName,
-  //     email: user.email,
-  //     photoURL: user.photoURL,
-  //     emailVerified: user.emailVerified,
-
-  //   });
-  // // The user's ID, unique to the Firebase project. Do NOT use
-  // // this value to authenticate with your backend server, if
-  // // you have one. Use User.getToken() instead.
-  // const uid = user.uid;
-  // user.providerData.forEach((profile) => {
-  //     console.log("Sign-in provider: " + profile.providerId);
-  //     console.log("  Provider-specific UID: " + profile.uid);
-  //     console.log("  Name: " + profile.displayName);
-  //     console.log("  Email: " + profile.email);
-  //     console.log("  Photo URL: " + profile.photoURL);
-  //   });
-  // }
-
-
-  return (<div>Home</div>)
+  
 }
