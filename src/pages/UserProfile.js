@@ -9,7 +9,7 @@ export default function UserProfile(){
     const { setCurrentTab } = useOutletContext();
     const [inputs, setInputs] = useState({});
     setCurrentTab('Profile')
-    const { user } = useContext(globalContext);
+    const { user, setUser } = useContext(globalContext);
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -22,8 +22,14 @@ export default function UserProfile(){
         //   content: 'Action in progress..',
         //   duration: 0,
         // });
-        updateUser(user.id, inputs).then((res)=>{
-          console.log(res);
+        updateUser(user.id, inputs).then(({data})=>{
+          console.log(data);
+          
+          const newUser = {...user}
+          newUser.name = data.name;
+          newUser.email = data.email;
+          setUser(newUser)
+          
           // messageApi.destroy();
           messageApi.open({
             type: 'success',

@@ -66,7 +66,7 @@ export default function ProductDetail() {
 
     // set product, hasBought, hasReviewed, reviews, pagiProps
     useEffect(() => {
-
+        window.scrollTo(0, 0)
         productService.getProduct(productId).then(async ({ data: product }) => {
             console.log('product: ');
             console.log(product);
@@ -75,6 +75,7 @@ export default function ProductDetail() {
 
             // set hasBought
             if (user) {
+                setHasBought(false)
                 for (let boughtProduct of user.boughtProducts) {
                     if (boughtProduct.toString() == product.id) {
                         setHasBought(true)
@@ -106,7 +107,7 @@ export default function ProductDetail() {
 
 
         })
-    }, [])
+    }, [productId])
 
     // case hasBought and hasReviewed, change rating and reviewContent to reviewed data so that we can update them
     useEffect(() => {
