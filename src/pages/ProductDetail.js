@@ -207,7 +207,7 @@ export default function ProductDetail() {
 
     return (<div>
         <HomeHeader navigateLinkOnSearch='/'></HomeHeader>
-        {product && <article>
+        {product && <div><article>
             <Breadcrumb
                 style={{ paddingLeft: 'var(--y-margin)', paddingTop: 'var(--section-dist)' }}
                 separator=">"
@@ -408,7 +408,7 @@ export default function ProductDetail() {
         </ul>
                 </section>
             </div>
-        </article>}
-        <Footer/>
+        </article><Footer/></div>}
+        
     </div>)
 }

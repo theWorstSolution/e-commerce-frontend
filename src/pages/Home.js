@@ -115,7 +115,7 @@ export default function Home() {
 
   return (<div>
     <HomeHeader navigateLinkOnSearch='/products?' />
-
+{res && <div>
     <section className='sectionCard'>
       <Collapse
         size='small'
@@ -168,7 +168,7 @@ export default function Home() {
       </div>
     </section>
     
-    <Footer/>
+    <Footer/> </div>}
 
     {recommendInfo && <section>
       <h2>Supervised membership table</h2>

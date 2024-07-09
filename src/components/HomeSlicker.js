@@ -30,7 +30,7 @@ function HomeSlicker({ onClickRecommend, onClickCategory }) {
         prevArrow: <SampleNextArrow />,
     };
     return (
-        <div className="categoryCard">
+        <div>{mainCategories && <div className="categoryCard">
             <Slider {...settings}>
                 <div >
                             <Card
@@ -62,7 +62,7 @@ function HomeSlicker({ onClickRecommend, onClickCategory }) {
                         </div>
                     ))}
             </Slider>
-        </div>
+        </div>}</div>
     );
 }
 
