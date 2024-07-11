@@ -1,6 +1,6 @@
 // API
 // ----------------------------------------------------------------------
-export const HOST_API = process.env.NODE_ENV === 'development' ? "http://localhost:3000" : process.env.REACT_APP_HOST_API_KEY;
+export const HOST_API = process.env.NODE_ENV === 'development' ? "http://localhost:3000" : process.env.REACT_APP_BACKEND_URL;
 
 export const PRODUCT_NAME = process.env.REACT_APP_PRODUCT_NAME || 'tct';
 
