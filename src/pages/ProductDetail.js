@@ -66,13 +66,13 @@ export default function ProductDetail() {
 
     // set product, hasBought, hasReviewed, reviews, pagiProps
     useEffect(() => {
-        window.scrollTo(0, 0)
+        
         productService.getProduct(productId).then(async ({ data: product }) => {
             console.log('product: ');
             console.log(product);
             setProduct(product)
             setMainPic(product.pictures[0])
-
+            window.scrollTo(0, 0)
             // set hasBought
             if (user) {
                 setHasBought(false)
@@ -164,20 +164,31 @@ export default function ProductDetail() {
     //     }
     // }
     function putInCart() {
+        setDisabledAddToCart(true)
         if (user.cart.filter((product) => product.id == productId).length != 0) {
             // alert('Already existed in cart')
+            alertApi.destroy()
             alertApi.open({
                 type: 'warning',
                 content: 'Already existed in cart',
             });
+            setDisabledAddToCart(false)
         } else {
+            alertApi.destroy()
+            alertApi.open({
+                type: 'loading',
+                content: 'Action in progress..',
+                duration: 0,
+              });
             userService.updateUser(user.uid, { cart: [...user.cart.map((product) => product.id), productId] }).then(({ data }) => {
+                setDisabledAddToCart(false)
                 console.log(data);
                 const newUser = new User()
                 Object.assign(newUser, user)
                 newUser.cart.push(product)
                 setUser(newUser)
                 // alert('Put in cart successfully')
+                alertApi.destroy()
                 alertApi.open({
                     type: 'success',
                     content: 'successful!',
@@ -205,7 +216,7 @@ export default function ProductDetail() {
 
     const [mainPic, setMainPic] = useState();
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+const [disabledAddToCart, setDisabledAddToCart] = useState(false);
     return (<div>
         <HomeHeader navigateLinkOnSearch='/'></HomeHeader>
         {product && <div><article>
@@ -240,7 +251,7 @@ export default function ProductDetail() {
                              />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px' }}>
-                        <Button size="large" icon={<BsCartPlus />} iconPosition='start' onClick={putInCart}>Put in cart</Button>
+                        <Button size="large" icon={<BsCartPlus />} iconPosition='start' onClick={putInCart} disabled={disabledAddToCart}>Put in cart</Button>
                         <Button size="large" type='primary' onClick={() => { setIsModalOpen(true) }}>Buy now</Button>
                         <Modal title="Confirm" open={isModalOpen} 
                         okText='Pay with Zalopay'

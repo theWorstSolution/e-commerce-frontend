@@ -92,7 +92,7 @@ export default function BuyHistory(){
                                 avatar={<Link to={'/products/product/'+order.product._id}><img src={order.product.pictures[0]} style={{width:'var(--productThumbnailWidth)', height:'var(--productThumbnailHeight)'}}></img></Link>}
                                 title={<Link to={'/products/product/'+order.product._id}>{order.product.name}</Link>}
                                 description={<div>
-                                    {order.createdAt && <div><label>Bought at:</label> {utils.convertDate(order.createdAt)}</div>}
+                                    {order.createdAt && <div><label>Order at:</label> {utils.convertDate(order.createdAt)}</div>}
                                     <div><label>Order Id:</label> {order._id}</div>
                                     <div><label>Bought amount:</label> {order.amount}</div>
                                     <div><label>Total cost:</label> {order.totalCost.toLocaleString('de-DE')+'đ'}</div>
