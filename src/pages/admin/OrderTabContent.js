@@ -40,7 +40,7 @@ export default function OrderTabContent() {
         console.log(initialGeneralSearchInput);
         const initialPage = searchParams.get('page')
         let filter, options;
-        if (searchParams.size == 0 || initialGeneralSearchInput == '') {
+        if (searchParams.size == 0 || (searchParams.size == 1 && initialPage && initialPage!= '')) {
             filter = {}
             options = { page: initialPage }
         } else if (initialGeneralSearchInput) {
@@ -80,6 +80,7 @@ export default function OrderTabContent() {
         }
         options.populate = 'user,product'
         console.log(filter);
+        console.log(options);
         orderService.getOrders(filter, options).then(({ data }) => {
             console.log(data);
             setRes(data.results)

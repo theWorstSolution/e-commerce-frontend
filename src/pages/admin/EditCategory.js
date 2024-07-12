@@ -23,7 +23,7 @@ export default function EditCategory() {
         categoryService.updateCategory(categoryId, body).then((res) => console.log(res))
     }
     useEffect(() => {
-        setCurrentTab('Products')
+        setCurrentTab('Categories')
         categoryService.getCategory(categoryId).then(({ data: category }) => {
             console.log('category: ' + JSON.stringify(category));
             setCategory(category)
