@@ -164,6 +164,7 @@ export default function ProductDetail() {
     //     }
     // }
     function putInCart() {
+        if(!user){navigate('/auth'); return}
         setDisabledAddToCart(true)
         if (user.cart.filter((product) => product.id == productId).length != 0) {
             // alert('Already existed in cart')
