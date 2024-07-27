@@ -18,7 +18,7 @@ const qs = require('qs')
 
 
 function HomeHeader({navigateLinkOnSearch}){
-  const { user } = useContext(globalContext);
+  const { user, screenSize } = useContext(globalContext);
   const navigate = useNavigate()
   const [searchInput, setSearchInput] = useState()
   const onSearchInputChange = useCallback((event) => {
@@ -34,7 +34,7 @@ function HomeHeader({navigateLinkOnSearch}){
       <header className='homeHeader'>
       <HeaderRow1/>
         <div className='header_row2'>
-          <div><Link to='/' className='header_logo'>{webName}</Link></div>
+          {screenSize.isPc && <div><Link to='/' className='header_logo'>{webName}</Link></div>}
           <form onSubmit={onSearchSubmit} className='header_searchbar'>
             <input name='generalSearchInput' onChange={onSearchInputChange} className='header_searchbar_input' placeholder='Search for products'/>
             <button type='submit' className='header_searchbar_button'><BsSearch style={{color:'white'}}/></button>

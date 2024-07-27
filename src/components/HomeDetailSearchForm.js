@@ -1,36 +1,59 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Form, Input, Button, Checkbox, Slider, Select, Radio } from 'antd';
 import categoryService from '../services/categoryService';
 import SelectCategories from './SelectCategories';
+import { globalContext } from '../contexts/globalContext';
 
 const layout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 16 },
 };
-const tailLayout = {
-    wrapperCol: { offset: 4, span: 16 },
-};
-const priceMarks = {
-    0: '0',
-    100000: '100.000đ',
-    500000: '500.000đ',
-    1000000: '1.000.000đ',
-    2000000: '2.000.000đ',
-    2500000: 'No limit',
-};
-const maxPriceMark = 2500000;
+// const tailLayout = {
+//     wrapperCol: { offset: 4, span: 16 },
+// };
+
 
 
 /**
  * @params onSubmit (formInputs) =>{set search params}
  */
 const HomeDetailSearchForm = ({ onSubmit }) => {
+    const { screenSize } = useContext(globalContext);
     const [form] = Form.useForm();
     const [formValues, setFormValues] = useState({});
     const [priceRange, setPriceRange] = useState([0, 2000000]);
     const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{ id: categoryService.rootCategoryId, name: 'root' }]])  // có id, name
     const [catsSelected, setCatsSelected] = useState([categoryService.rootCategoryId])
 
+    const priceMarks = useMemo(()=>{
+        if(screenSize.isMobile){
+            return {
+                0: '0',
+                500000: '500.000đ',
+                2000000: '2.000.000đ',
+                2500000: 'No limit',
+            };
+        }
+        return {
+            0: '0',
+            100000: '100.000đ',
+            500000: '500.000đ',
+            1000000: '1.000.000đ',
+            2000000: '2.000.000đ',
+            2500000: 'No limit',
+        };
+    },[screenSize])
+
+    const tailLayout = useMemo(()=>{
+        if(screenSize.isMobile){
+            return {
+                wrapperCol: { offset: 18, span: 2 },
+            }
+        }
+        return {
+        wrapperCol: { offset: 4, span: 16 },
+    }},[screenSize]);
+    const maxPriceMark = 2500000;
     useEffect(() => {
         categoryService.getChildrenCategory(categoryService.rootCategoryId).then(({ data }) => {
             setCategoriesAtLevel((categoriesAtLevel) => {

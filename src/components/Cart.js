@@ -18,7 +18,7 @@ function Cart() {
   const navigate = useNavigate()
 
   const loadMore =
-    user?.cart?.length > 3 ? (
+     (
       <div
         style={{
           textAlign: 'center',
@@ -27,9 +27,9 @@ function Cart() {
           lineHeight: '32px',
         }}
       >
-        <Button onClick={() => { navigate('/cart') }}>See all</Button>
+        <Button onClick={() => { navigate('/cart') }}>{user?.cart?.length > 3 ? 'See all' : 'Manage cart'}</Button>
       </div>
-    ) : null;
+    ) ;
 
 
   const content = <List
@@ -57,7 +57,7 @@ function Cart() {
   return (
 
     <Popover placement="bottom" content={content}>
-      <div onClick={() => { navigate('/cart') }} style={{ position: 'relative', cursor: 'pointer' }}>
+      <div  style={{ position: 'relative', cursor: 'pointer' }}>
         <BsCart3 className='largeIcon' color='white' />
         {user?.cart?.length>0 && <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: '-5px', right: '-4px', fontSize: '12px', borderRadius: '50%', backgroundColor: 'white', height: '12px', width: '12px', color: 'var(--shopee-color)' }}>
           {user.cart.length}

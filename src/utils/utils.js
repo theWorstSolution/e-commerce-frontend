@@ -1,3 +1,15 @@
+
+
+function getResponsiveValue(screenSize, mobileValue, pcValue){ 
+    if(screenSize.isMobile){
+        return mobileValue
+    }else{
+        return pcValue
+    }
+}
+
+
+
 function convertDate(dateString) {
     // Create a new Date object
     const date = new Date(dateString);
@@ -18,4 +30,4 @@ function convertDate(dateString) {
     return formattedDate
 }
 
-export default {convertDate}
+export default {convertDate, getResponsiveValue}

@@ -1,5 +1,6 @@
 import logo from './logo.svg';
-import './App.css';
+import './mobile.css';
+import './pc.css';
 
 import { Route, Routes } from 'react-router-dom';
 import AuthGuard from './guards/AuthGuard';

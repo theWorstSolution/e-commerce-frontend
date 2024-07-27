@@ -4,7 +4,7 @@ import firebase from 'firebase/compat/app';
 import User from '../models/User'
 import LoadingPage from '../pages/LoadingPage'
 import { message } from 'antd';
-
+import { useMediaQuery } from 'react-responsive'
 
 export const globalContext = createContext();
 
@@ -47,9 +47,16 @@ export function UserProvider({children}){
     return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
   }, []);
 
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
+  const isPc = useMediaQuery({
+    query: '(min-width: 768px)'
+  })
+
+  const screenSize = {isMobile, isPc}
+
   return (
     
-    <globalContext.Provider value={{user, setUser, alertApi}}>
+    <globalContext.Provider value={{user, setUser, alertApi, screenSize}}>
       {alertHolder}
       {isInit?children:<LoadingPage/>}
     </globalContext.Provider>

@@ -11,18 +11,19 @@ import firebase from 'firebase/compat/app';
 import NotificationBell from './NotificationBell';
 import HeaderRow1 from './HeaderRow1';
 import { webName } from '../config';
+import utils from '../utils/utils';
 const qs = require('qs')
 
 
 function AdminHeader({logoLink}){
-  const { user } = useContext(globalContext);
+  const { user, screenSize } = useContext(globalContext);
   const navigate = useNavigate()
   
     return (
-      <header className='homeHeader'>
-      <HeaderRow1/>
+      <header className='homeHeader' style={{paddingBottom:0}}>
+      <HeaderRow1 style={utils.getResponsiveValue(screenSize,{marginBottom:'0.5em'},{})}/>
         <div className='header_row2' style={{display:'flex', justifyContent:'center', marginLeft:'auto', marginRight:'auto'}}>
-          <Link to={logoLink} className='header_logo' style={{textAlign:'center'}}>{webName}</Link>
+          {screenSize.isPc && <Link to={logoLink} className='header_logo' style={{textAlign:'center'}}>{webName}</Link>}
         </div>
       </header>
     )

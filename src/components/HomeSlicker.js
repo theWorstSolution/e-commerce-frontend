@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Slider from "react-slick";
 import categoryService from "../services/categoryService";
 import { Link } from "react-router-dom";
 import { Card } from 'antd';
 import {SampleNextArrow, SamplePrevArrow} from './SlickerArrow'
+import { globalContext } from "../contexts/globalContext";
+import utils from "../utils/utils";
+
 const { Meta } = Card;
 
 /**
@@ -12,6 +15,7 @@ const { Meta } = Card;
  * @returns 
  */
 function HomeSlicker({ onClickRecommend, onClickCategory }) {
+    const {screenSize} = useContext(globalContext)
     // display categories row to choose
     const [mainCategories, setMainCategories] = useState()
     useEffect(() => {
@@ -24,8 +28,8 @@ function HomeSlicker({ onClickRecommend, onClickCategory }) {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 6,
-        slidesToScroll: 3,
+        slidesToShow: utils.getResponsiveValue(screenSize,3,6),
+        slidesToScroll: utils.getResponsiveValue(screenSize,1,3),
         nextArrow: <SamplePrevArrow />,
         prevArrow: <SampleNextArrow />,
     };

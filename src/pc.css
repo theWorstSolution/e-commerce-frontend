@@ -1,3 +1,16 @@
+@media only screen and (min-width: 768px) { 
+    :root {
+        --categoryCardWidth: 100px;
+    --categoryCardHeight: 100px;
+    --categoryImgHeight: 50px;
+    --categoryImgWidth: 50px;
+    --productThumbnailWidth: 100px;
+    --productThumbnailHeight: 100px;
+    --y-margin: 32px;
+    --top-margin: 5px;
+    --shopee-color: #ee4d2d;
+    --section-dist: 1.25rem;
+      }
 .mock {
     border-style: solid;
     border-color: black;
@@ -28,33 +41,13 @@
 
 }
 
-.header_row1 {
-    /* margin-top: auto;
-    margin-bottom: auto; */
-    display: flex;
-    /* flex-direction: row; */
+.headerRow1{
     justify-content: flex-end;
-    margin-right: 50px;
-}
-
-.headbar_row1_item {
     color: white;
-    /* font-size: .8125rem; */
-    /* font-weight: 300; */
-    /* margin-left: .3125rem; */
-    text-transform: capitalize;
-    cursor: pointer;
-    display: flex;
-    padding: 6px 6px;
-    /* align-items: center; */
-    /* justify-content: center; */
-    /* flex-wrap: 'wrap'; */
+    gap: 10px;
+    margin-bottom: 0;
 }
 
-.headbar_row1_item:hover {
-    color: hsla(0, 0%, 100%, .7);
-
-}
 
 .headerIcon {
     padding-right: 4px;
@@ -373,6 +366,25 @@ table.recommendedProductTable {
     padding: 10px;
 }
 
+.reviews{
+    padding: 8px 32px; 
+    flex: 0.8;
+    margin-right: 10px;
+}
+
+.buyHistoryForm{
+    text-align: center;
+    display: block;
+}
+
+.buyHistorySearch{
+    width: 20%;
+}
+
+.buyHistoryRangePicker{
+    margin-left: 20px;
+}
+
 .multilineEllipsis {
     -webkit-box-orient: vertical;
     display: -webkit-box;
@@ -596,3 +608,4 @@ table.recommendedProductTable {
     .success-message a:hover {
         background-color: #45a049;
     }
+}

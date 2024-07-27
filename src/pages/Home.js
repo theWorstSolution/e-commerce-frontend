@@ -113,7 +113,7 @@ export default function Home() {
 
   useEffect(() => { console.log(recommendInfo); }, [recommendInfo])
 
-  return (<div>
+  return (<div style={{width:'100%'}}>
     <HomeHeader navigateLinkOnSearch='/products?' />
 {res && <div>
     <section className='sectionCard'>

@@ -54,9 +54,9 @@ export default function BuyHistory(){
     },[searchParams])
     
     return (<div>
-    <form style={{textAlign:'center'}}>
+    <form className="buyHistoryForm">
     <Search
-        style={{width:'20%'}}
+    className="buyHistorySearch"
       placeholder="name or category"
       onChange={(e)=>{setKeyword(e.target.value)}}
       onSearch={()=>{
@@ -77,7 +77,7 @@ export default function BuyHistory(){
         }
       }}
     />
-        <RangePicker style={{marginLeft:'20px'}} onChange={(dates,dateStrings)=>{
+        <RangePicker className="buyHistoryRangePicker" popupClassName='buyHistoryRangePicker-popup' onChange={(dates,dateStrings)=>{
             console.log(dateStrings);
             setDateRange(dateStrings)
         }}/>

@@ -16,10 +16,11 @@ import Slider from "react-slick";
 import TextArea from "antd/es/input/TextArea";
 import Meta from "antd/es/card/Meta"
 import Footer from "../components/Footer";
+import utils from "../utils/utils";
 
 export default function ProductDetail() {
     const navigate = useNavigate();
-    const { user, setUser, alertApi } = useContext(globalContext);
+    const { user, setUser, alertApi, screenSize } = useContext(globalContext);
     const { productId } = useParams()
     const [product, setProduct] = useState()
     const [amount, setAmount] = useState(1)
@@ -66,7 +67,7 @@ export default function ProductDetail() {
 
     // set product, hasBought, hasReviewed, reviews, pagiProps
     useEffect(() => {
-        
+
         productService.getProduct(productId).then(async ({ data: product }) => {
             console.log('product: ');
             console.log(product);
@@ -164,7 +165,7 @@ export default function ProductDetail() {
     //     }
     // }
     function putInCart() {
-        if(!user){navigate('/auth'); return}
+        if (!user) { navigate('/auth'); return }
         setDisabledAddToCart(true)
         if (user.cart.filter((product) => product.id == productId).length != 0) {
             // alert('Already existed in cart')
@@ -180,7 +181,7 @@ export default function ProductDetail() {
                 type: 'loading',
                 content: 'Action in progress..',
                 duration: 0,
-              });
+            });
             userService.updateUser(user.uid, { cart: [...user.cart.map((product) => product.id), productId] }).then(({ data }) => {
                 setDisabledAddToCart(false)
                 console.log(data);
@@ -209,15 +210,16 @@ export default function ProductDetail() {
         dots: false,
         infinite: false,
         speed: 500,
-        slidesToShow: 5,
+        slidesToShow: utils.getResponsiveValue(screenSize,3,5),
         slidesToScroll: 1,
-        nextArrow: product?.pictures.length > 5 ? <SamplePrevArrow /> : null,
-        prevArrow: product?.pictures.length > 5 ? <SampleNextArrow /> : null,
+        nextArrow: utils.getResponsiveValue(screenSize,product?.pictures.length > 3 ? <SamplePrevArrow /> : null, product?.pictures.length > 5 ? <SamplePrevArrow /> : null),
+        prevArrow: utils.getResponsiveValue(screenSize,product?.pictures.length > 3 ? <SampleNextArrow /> : null, product?.pictures.length > 5 ? <SampleNextArrow /> : null),
     }), [product]);
 
     const [mainPic, setMainPic] = useState();
     const [isModalOpen, setIsModalOpen] = useState(false);
-const [disabledAddToCart, setDisabledAddToCart] = useState(false);
+    const [disabledAddToCart, setDisabledAddToCart] = useState(false);
+
     return (<div>
         <HomeHeader navigateLinkOnSearch='/'></HomeHeader>
         {product && <div><article>
@@ -226,17 +228,26 @@ const [disabledAddToCart, setDisabledAddToCart] = useState(false);
                 separator=">"
                 items={createBreadcrumbList(product)}
             />
-            <section className="sectionCard" style={{ display: 'flex', gap: '20px'}}>
-            {/* BUG: bỏ width100px đi thì nếu nhiều hơn 5 ảnh là lỗi */}
-                <div style={{ flex: 2, width:'100px' }}>
+            <section className="sectionCard" style={{ display: 'flex', gap: '20px', minWidth:'0' }}>
+                {/* BUG: bỏ width100px đi thì nếu nhiều hơn 5 ảnh là lỗi => minWidth:'0' fix dc*/}
+                {screenSize.isPc && <div style={{ flex: 2, minWidth:'0' }}>
                     <img src={mainPic} style={{ width: '100%' }}></img>
                     <Slider {...slickerSettings}>
-                    {product.pictures.map((pic) =>
-                        <div key={pic} onClick={() => { setMainPic(pic) }}><img src={pic} style={{ width: '100px', objectFit: 'cover'  }} /></div>)}
+                        {product.pictures.map((pic) =>
+                            <div key={pic} onClick={() => { setMainPic(pic) }}><img src={pic} style={{ width: '100px', objectFit: 'cover' }} /></div>)}
                     </Slider>
-                </div>
-                <div style={{ flex: 3 }}>
+                </div>}
+                <div style={{ flex: 3, minWidth:'0' }}>
                     <h3>{product.name}</h3>
+                    {screenSize.isMobile && <div>
+                        <div><img src={mainPic} style={{width:'100%', objectFit:'cover'}}></img></div>
+                        <div>
+                            <Slider {...slickerSettings} >
+                                {product.pictures.map((pic) =>
+                                    <div  key={pic} onClick={() => { setMainPic(pic) }}><img src={pic} style={{ width: '100%', objectFit: 'contain' }} /></div>)}
+                            </Slider>
+                        </div>
+                    </div>}
                     <p><label>Price:</label> {product.price.toLocaleString('de-DE') + 'đ'}</p>
                     <p><label>Rating:</label> {product.rating}<BsStar /></p>
 
@@ -248,51 +259,51 @@ const [disabledAddToCart, setDisabledAddToCart] = useState(false);
                             addonBefore={<div className="centerChildren" style={{ cursor: amount == 1 ? 'not-allowed' : 'pointer', padding: '11px' }} onClick={amount == 1 ? null : () => { setAmount((amountValue) => --amountValue) }}><BsDashLg /></div>}
                             addonAfter={<div className="centerChildren" style={{ cursor: 'pointer', padding: '11px' }} onClick={() => { setAmount((amountValue) => ++amountValue) }}><BsPlusLg /></div>}
                             value={amount} min={1}
-                            onChange={(value)=>setAmount(value)}
-                             />
+                            onChange={(value) => setAmount(value)}
+                        />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px' }}>
                         <Button size="large" icon={<BsCartPlus />} iconPosition='start' onClick={putInCart} disabled={disabledAddToCart}>Put in cart</Button>
                         <Button size="large" type='primary' onClick={() => { setIsModalOpen(true) }}>Buy now</Button>
-                        <Modal title="Confirm" open={isModalOpen} 
-                        okText='Pay with Zalopay'
-                        onOk={() => {
-                            message.loading('Action in progress..');
-                            setIsModalOpen(false)
-                            orderService.createOrder({ user: user.id, product: productId, amount }).then(async (res) => {
-                                // console.log(res)
-                                const payUrl = res.data
-                                window.location.href = payUrl;
-                                // if (data) {
-                                //     // alert('Buy successfully')
-                                //     alertApi.open({
-                                //         type: 'success',
-                                //         content: 'successful!',
-                                //     });
-                                // }
-                                // await user.refresh()
+                        <Modal title="Confirm" open={isModalOpen}
+                            okText='Pay with Zalopay'
+                            onOk={() => {
+                                message.loading('Action in progress..');
+                                setIsModalOpen(false)
+                                orderService.createOrder({ user: user.id, product: productId, amount }).then(async (res) => {
+                                    // console.log(res)
+                                    const payUrl = res.data
+                                    window.location.href = payUrl;
+                                    // if (data) {
+                                    //     // alert('Buy successfully')
+                                    //     alertApi.open({
+                                    //         type: 'success',
+                                    //         content: 'successful!',
+                                    //     });
+                                    // }
+                                    // await user.refresh()
 
-                                // const newUser = new User()
-                                // Object.assign(newUser, user)
-                                // newUser.foo = 'foo'
-                                // await newUser.refresh()
-                                // setUser(newUser)
-                                // setHasBought(true)
-                            })
-                        }} onCancel={() => { setIsModalOpen(false) }}>
+                                    // const newUser = new User()
+                                    // Object.assign(newUser, user)
+                                    // newUser.foo = 'foo'
+                                    // await newUser.refresh()
+                                    // setUser(newUser)
+                                    // setHasBought(true)
+                                })
+                            }} onCancel={() => { setIsModalOpen(false) }}>
                             {'Buy ' + amount + ' x ' + product.name + '? That will be ' + (amount * product.price).toLocaleString('de-DE') + 'đ'}
                         </Modal>
                     </div>
                     <div>
                         <h3>Description:</h3>
-                        <p style={{whiteSpace:'pre-wrap'}}>{product.description}</p>
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
                     </div>
 
                 </div>
             </section>
 
-            <div style={{display:'flex'}}>
-                <section style={{ padding: '8px 32px', flex:0.8, marginRight:'10px' }} className="sectionCard">
+            <div style={{ display: 'flex' }}>
+                <section className="sectionCard reviews">
                     <h2>Review</h2>
                     {hasBought && !hasReviewed && <div>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '20px', height: '84px', padding: '20px 0' }}>
@@ -303,7 +314,7 @@ const [disabledAddToCart, setDisabledAddToCart] = useState(false);
                             </div>
                             <div />
                         </div>
-    
+
                         <div>
                             <TextArea placeholder='How do you feel about this product?' rows={4} value={reviewContent}
                                 onChange={(e) => {
@@ -323,14 +334,14 @@ const [disabledAddToCart, setDisabledAddToCart] = useState(false);
                                     onChangePage(null, 1)
                                 }}>Submit</Button>
                             </div>
-    
-    
-    
+
+
+
                         </div>
                         <Divider />
                     </div>
                     }
-    
+
                     <List
                         itemLayout="vertical"
                         dataSource={reviews}
@@ -391,37 +402,57 @@ const [disabledAddToCart, setDisabledAddToCart] = useState(false);
                                         <Rate value={review.rating} disabled />
                                         <p>{review.content}</p>
                                     </div>}
-    
+
                             </List.Item>
                         }
                     />
-    
-    
+
+
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Pagination {...pagiProps} onChange={onChangePage} style={{ marginRight: '5px' }} /></div>
                 </section>
 
-                <section style={{ padding: '8px 32px', flex:0.2, marginLeft:0 }} className="sectionCard">
-                <h2 style={{textAlign:'center'}}>Similar products</h2>
-                <ul className='productGrid' style={{ listStyleType: 'none', padding:0, display:'flex', flexDirection:'column' }}>
-          {product?.similarProducts.map((product) => <li key={product.id}>
-            <Card
-              onClick={() => { navigate('/products/product/' + product.id) }}
-              hoverable
-              style={{}}
-              cover={<img className="" src={product.pictures[0]}
-                style={{ objectFit: 'cover', textAlign: 'center', height:'175px' }} />}
-            >
-              <Meta className="" title={<p className="multilineEllipsis">{product.name}</p>}
-                description={<div><div>{product.rating} <BsStar /></div>
-                  <div>{product.price.toLocaleString('de-DE')}đ</div>
-                  <div>{product.soldAmount} sold</div></div>}
-              />
-            </Card>
-          </li>)}
-        </ul>
-                </section>
+                {screenSize.isPc && <section style={{ padding: '8px 32px', flex: 0.2, marginLeft: 0 }} className="sectionCard">
+                    <h2 style={{ textAlign: 'center' }}>Similar products</h2>
+                    <ul className='productGrid' style={{ listStyleType: 'none', padding: 0, display: 'flex', flexDirection: 'column' }}>
+                        {product?.similarProducts.map((product) => <li key={product.id}>
+                            <Card
+                                onClick={() => { navigate('/products/product/' + product.id) }}
+                                hoverable
+                                style={{}}
+                                cover={<img className="" src={product.pictures[0]}
+                                    style={{ objectFit: 'cover', textAlign: 'center', height: '175px' }} />}
+                            >
+                                <Meta className="" title={<p className="multilineEllipsis">{product.name}</p>}
+                                    description={<div><div>{product.rating} <BsStar /></div>
+                                        <div>{product.price.toLocaleString('de-DE')}đ</div>
+                                        <div>{product.soldAmount} sold</div></div>}
+                                />
+                            </Card>
+                        </li>)}
+                    </ul>
+                </section>}
             </div>
-        </article><Footer/></div>}
-        
+            {screenSize.isMobile && <section className="sectionCard">
+                <h2 style={{ textAlign: 'center' }}>Similar products</h2>
+                <ul className='productGrid' style={{ listStyleType: 'none', padding: 0, display: 'flex', flexDirection: 'column' }}>
+                    {product?.similarProducts.map((product) => <li key={product.id}>
+                        <Card
+                            onClick={() => { navigate('/products/product/' + product.id) }}
+                            hoverable
+                            style={{}}
+                            cover={<img className="" src={product.pictures[0]}
+                                style={{ objectFit: 'cover', textAlign: 'center', height: '175px' }} />}
+                        >
+                            <Meta className="" title={<p className="multilineEllipsis">{product.name}</p>}
+                                description={<div><div>{product.rating} <BsStar /></div>
+                                    <div>{product.price.toLocaleString('de-DE')}đ</div>
+                                    <div>{product.soldAmount} sold</div></div>}
+                            />
+                        </Card>
+                    </li>)}
+                </ul>
+            </section>}
+        </article><Footer /></div>}
+
     </div>)
 }

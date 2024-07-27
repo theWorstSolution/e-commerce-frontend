@@ -39,7 +39,7 @@ export default function UserProfile(){
       }
     return (<article className="sectionCard">{user &&  <div style={{display:'flex', gap:'20px'}}>
     {contextHolder}
-        <img src={user.picture} style={{width:'20%'}}></img>
+        <img src={user.picture} style={{width:'20%', objectFit:'contain'}}></img>
         <form style={{display:'flex', flexDirection:'column'}} onSubmit={handleSubmit}>
             <label>Id: </label> {user.id}
             <label>Name</label>
