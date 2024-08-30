@@ -9,7 +9,7 @@ const qs = require('qs')
 export default function UserTabContent() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
-    const { setCurrentTab } = useOutletContext();
+    // const { setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
     const [pagiProps, setPagiProps] = useState({
         boundaryCount: 1, //Number of always visible pages at the beginning and end.
@@ -23,7 +23,7 @@ export default function UserTabContent() {
         setGeneralSearchInput(event.target.value)
     },[])
     useEffect(() => {
-        setCurrentTab('Users')
+        // setCurrentTab('Users')
         const initialQuery = searchParams.get('generalSearchInput')
         const initialPage = searchParams.get('page')
         console.log('initialQuery');console.log(initialQuery);

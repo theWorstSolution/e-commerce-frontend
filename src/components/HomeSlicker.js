@@ -28,8 +28,8 @@ function HomeSlicker({ onClickRecommend, onClickCategory }) {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: utils.getResponsiveValue(screenSize,3,6),
-        slidesToScroll: utils.getResponsiveValue(screenSize,1,3),
+        slidesToShow: utils.getResponsiveValue(screenSize,()=>3,()=>6),
+        slidesToScroll: utils.getResponsiveValue(screenSize,()=>1,()=>3),
         nextArrow: <SamplePrevArrow />,
         prevArrow: <SampleNextArrow />,
     };

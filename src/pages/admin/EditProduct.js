@@ -10,7 +10,7 @@ import { message } from "antd";
 
 export default function EditProduct() {
     const { productId } = useParams()
-    const { setCurrentTab } = useOutletContext()
+    // const { setCurrentTab } = useOutletContext()
     const [inputs, setInputs] = useState({});
     const [categoriesAtLevel, setCategoriesAtLevel] = useState([]) // element = mảng các object cat có id, name
     const [catsSelected, setCatsSelected] = useState([])    // có value và label
@@ -38,7 +38,7 @@ export default function EditProduct() {
         updateProduct(productId, body).then((res) => {console.log(res); message.success('Successful!')})
     }
     useEffect(() => {
-        setCurrentTab('Products')
+        // setCurrentTab('Products')
         productService.getProduct(productId).then(async ({ data: product }) => {
             console.log('product: ' + JSON.stringify(product));
             setProduct(product)

@@ -6,9 +6,9 @@ import { message } from "antd";
 
 export default function UserProfile(){
   const [messageApi, contextHolder] = message.useMessage();
-    const { setCurrentTab } = useOutletContext();
+    // const { setCurrentTab } = useOutletContext();
+    // setCurrentTab('Profile')
     const [inputs, setInputs] = useState({});
-    setCurrentTab('Profile')
     const { user, setUser } = useContext(globalContext);
     const handleChange = (event) => {
         const name = event.target.name;

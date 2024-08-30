@@ -8,7 +8,6 @@ import Home from './pages/Home';
 import AdminLayout from './pages/admin/AdminLayout';
 import UserTabContent from './pages/admin/UserTabContent';
 import UserDetail from './pages/admin/UserDetail';
-import AdminLayout1 from './pages/admin/AdminLayout1';
 import CreateProduct from './pages/admin/CreateProduct';
 import ProductTabContent from './pages/admin/ProductTabContent';
 import EditProduct from './pages/admin/EditProduct';

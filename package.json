@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.18.3",
     "axios": "^1.6.8",
+    "country-flag-icons": "^1.5.13",
     "dotenv": "^16.4.5",
     "firebase": "^10.9.0",
     "firebaseui": "^6.1.0",

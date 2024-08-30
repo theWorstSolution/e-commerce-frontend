@@ -8,7 +8,7 @@ import Creatable from 'react-select/creatable';
 
 export default function EditCategory() {
     const { categoryId } = useParams()
-    const { setCurrentTab } = useOutletContext()
+    // const { setCurrentTab } = useOutletContext()
     const [inputs, setInputs] = useState({});
     const [category, setCategory] = useState()
     const handleChange = (event) => {
@@ -23,7 +23,7 @@ export default function EditCategory() {
         categoryService.updateCategory(categoryId, body).then((res) => console.log(res))
     }
     useEffect(() => {
-        setCurrentTab('Categories')
+        // setCurrentTab('Categories')
         categoryService.getCategory(categoryId).then(({ data: category }) => {
             console.log('category: ' + JSON.stringify(category));
             setCategory(category)

@@ -6,7 +6,7 @@ import { message } from "antd";
 
 export default function OrderDetail(){
     const {orderId} = useParams()
-    const {setCurrentTab} = useOutletContext()
+    // const {setCurrentTab} = useOutletContext()
     const [order,setOrder] = useState()
     const [inputs, setInputs] = useState({});
 
@@ -23,7 +23,7 @@ export default function OrderDetail(){
 
 
     useEffect(()=>{
-        setCurrentTab('Orders')
+        // setCurrentTab('Orders')
         orderService.getOrder(orderId).then((res)=>{
             setOrder(res.data)
             console.log(res.data);

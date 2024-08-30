@@ -7,7 +7,7 @@ import Select from 'react-select';
 
 
 export default function CreateCategory() {
-    const { setCurrentTab } = useOutletContext()
+    // const { setCurrentTab } = useOutletContext()
     const [inputs, setInputs] = useState({});
     const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{id: categoryService.rootCategoryId, name:'root'}]])  // có id, name
     const [catsSelected, setCatsSelected] = useState([{value: categoryService.rootCategoryId, label:'root'}])    // có value và label
@@ -25,7 +25,7 @@ export default function CreateCategory() {
         createCategory(newCategory).then(({data})=>{console.log('createCategory: ' + JSON.stringify(data));})
     }
     useEffect(() => {
-        setCurrentTab('Categories')
+        // setCurrentTab('Categories')
         getChildrenCategory(categoryService.rootCategoryId).then(({data: rootChildren}) => {
             setCategoriesAtLevel((categoriesAtLevel) => {
                 return [...categoriesAtLevel, rootChildren]

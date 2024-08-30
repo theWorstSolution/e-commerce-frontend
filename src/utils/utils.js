@@ -1,10 +1,16 @@
 
-
+/**
+ * 
+ * @param {*} screenSize 
+ * @param {function} mobileValue
+ * @param {function} pcValue 
+ * @returns 
+ */
 function getResponsiveValue(screenSize, mobileValue, pcValue){ 
     if(screenSize.isMobile){
-        return mobileValue
+        return mobileValue()
     }else{
-        return pcValue
+        return pcValue()
     }
 }
 

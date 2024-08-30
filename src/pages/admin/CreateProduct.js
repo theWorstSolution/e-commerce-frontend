@@ -9,7 +9,7 @@ import { message } from "antd";
 
 
 export default function CreateProduct() {
-    const { setCurrentTab } = useOutletContext()
+    // const { setCurrentTab } = useOutletContext()
     const [inputs, setInputs] = useState({pictures:['']});
     const [categoriesAtLevel, setCategoriesAtLevel] = useState([[{id: categoryService.rootCategoryId, name:'root'}]])  // có id, name
     const [catsSelected, setCatsSelected] = useState([{value: categoryService.rootCategoryId, label:'root'}])    // có value và label
@@ -41,7 +41,7 @@ export default function CreateProduct() {
         createProduct(body).then((res) => {console.log(res); message.success('Successful!')})
     }
     useEffect(() => {
-        setCurrentTab('Product')
+        // setCurrentTab('Product')
         getChildrenCategory(categoryService.rootCategoryId).then(({data: rootChildren}) => {
             setCategoriesAtLevel((categoriesAtLevel) => {
                 return [...categoriesAtLevel, rootChildren]

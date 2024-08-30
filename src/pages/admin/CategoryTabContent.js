@@ -10,7 +10,7 @@ const qs = require('qs')
 export default function CategoryTabContent() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
-    const { setCurrentTab } = useOutletContext();
+    // const { setCurrentTab } = useOutletContext();
     const [res,setRes] = useState()
     const [pagiProps, setPagiProps] = useState({
         boundaryCount: 1, //Number of always visible pages at the beginning and end.
@@ -24,7 +24,7 @@ export default function CategoryTabContent() {
         setGeneralSearchInput(event.target.value)
     },[])
     useEffect(() => {
-        setCurrentTab('Categories')
+        // setCurrentTab('Categories')
         const initialQuery = searchParams.get('generalSearchInput')
         const initialPage = searchParams.get('page')
         console.log('initialQuery');console.log(initialQuery);

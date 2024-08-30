@@ -11,7 +11,7 @@ const qs = require('qs')
 export default function OrderTabContent() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate()
-    const { setCurrentTab } = useOutletContext();
+    // const { setCurrentTab } = useOutletContext();
     const [res, setRes] = useState()
     const [pagiProps, setPagiProps] = useState({
         boundaryCount: 1, //Number of always visible pages at the beginning and end.
@@ -35,7 +35,7 @@ export default function OrderTabContent() {
 
     // }, [])
     useEffect(() => {
-        setCurrentTab('Orders')
+        // setCurrentTab('Orders')
         const initialGeneralSearchInput = searchParams.get('generalSearchInput')
         console.log(initialGeneralSearchInput);
         const initialPage = searchParams.get('page')

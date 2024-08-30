@@ -5,7 +5,7 @@ import { message } from "antd";
 
 export default function UserDetail(){
     const {userId} = useParams()
-    const {setCurrentTab} = useOutletContext()
+    // const {setCurrentTab} = useOutletContext()
     const [user,setUser] = useState()
     const [inputs, setInputs] = useState({});
 
@@ -22,7 +22,7 @@ export default function UserDetail(){
 
 
     useEffect(()=>{
-        setCurrentTab('Users')
+        // setCurrentTab('Users')
         getUser(userId).then((res)=>{
             setUser(res.data)
             console.log(res.data);

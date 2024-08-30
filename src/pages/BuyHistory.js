@@ -12,8 +12,8 @@ const { RangePicker } = DatePicker;
 const { Search } = Input;
 
 export default function BuyHistory(){
-    const { setCurrentTab } = useOutletContext();
-    setCurrentTab('Buy history')
+    // const { setCurrentTab } = useOutletContext();
+    // setCurrentTab('Buy history')
 
     const [searchParams, setSearchParams] = useSearchParams();   
     const { user } = useContext(globalContext);

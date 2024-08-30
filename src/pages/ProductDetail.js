@@ -210,10 +210,10 @@ export default function ProductDetail() {
         dots: false,
         infinite: false,
         speed: 500,
-        slidesToShow: utils.getResponsiveValue(screenSize,3,5),
+        slidesToShow: utils.getResponsiveValue(screenSize,()=>3,()=>5),
         slidesToScroll: 1,
-        nextArrow: utils.getResponsiveValue(screenSize,product?.pictures.length > 3 ? <SamplePrevArrow /> : null, product?.pictures.length > 5 ? <SamplePrevArrow /> : null),
-        prevArrow: utils.getResponsiveValue(screenSize,product?.pictures.length > 3 ? <SampleNextArrow /> : null, product?.pictures.length > 5 ? <SampleNextArrow /> : null),
+        nextArrow: utils.getResponsiveValue(screenSize,()=>(product?.pictures.length > 3 ? <SamplePrevArrow /> : null), ()=>(product?.pictures.length > 5 ? <SamplePrevArrow /> : null)),
+        prevArrow: utils.getResponsiveValue(screenSize,()=>(product?.pictures.length > 3 ? <SampleNextArrow /> : null), ()=>(product?.pictures.length > 5 ? <SampleNextArrow /> : null)),
     }), [product]);
 
     const [mainPic, setMainPic] = useState();

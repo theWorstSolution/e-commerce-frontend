@@ -5,6 +5,8 @@ import User from '../models/User'
 import LoadingPage from '../pages/LoadingPage'
 import { message } from 'antd';
 import { useMediaQuery } from 'react-responsive'
+import multiLangText from '../configs/multiLangText'
+
 
 export const globalContext = createContext();
 
@@ -26,7 +28,7 @@ export function UserProvider({children}){
   const [alertApi, alertHolder] = message.useMessage()
     const [user, setUser] = useState(); // Local signed-in state.
   const [isInit, setIsInit] = useState(false)
-  
+  const [langText, setLangText] = useState(multiLangText.vn)
   // Listen to the Firebase Auth state and set the local state.
   useEffect(() => {
     const unregisterAuthObserver = firebase.auth().onAuthStateChanged(async authUser => {
@@ -56,7 +58,7 @@ export function UserProvider({children}){
 
   return (
     
-    <globalContext.Provider value={{user, setUser, alertApi, screenSize}}>
+    <globalContext.Provider value={{user, setUser, alertApi, screenSize, langText, setLangText}}>
       {alertHolder}
       {isInit?children:<LoadingPage/>}
     </globalContext.Provider>

@@ -21,7 +21,7 @@ function AdminHeader({logoLink}){
   
     return (
       <header className='homeHeader' style={{paddingBottom:0}}>
-      <HeaderRow1 style={utils.getResponsiveValue(screenSize,{marginBottom:'0.5em'},{})}/>
+      <HeaderRow1 style={utils.getResponsiveValue(screenSize,()=>({marginBottom:'0.5em'}),()=>{})}/>
         <div className='header_row2' style={{display:'flex', justifyContent:'center', marginLeft:'auto', marginRight:'auto'}}>
           {screenSize.isPc && <Link to={logoLink} className='header_logo' style={{textAlign:'center'}}>{webName}</Link>}
         </div>

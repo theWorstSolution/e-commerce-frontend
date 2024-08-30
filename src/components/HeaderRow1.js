@@ -4,16 +4,19 @@ import { webName } from '../config';
 import { useCallback, useEffect, useState, useRef, useContext } from "react";
 import { globalContext } from '../contexts/globalContext';
 import { Link } from "react-router-dom";
+import LangSwitch from "./LangSwitch";
 
-export default function HeaderRow1({style}){
+export default function HeaderRow1({ style }) {
     const { screenSize } = useContext(globalContext);
-    
+
     return (<div>
-    {screenSize.isMobile && <div className="centerChildren" style={{marginBottom:'10px',...style}}><Link to='/' className='header_logo'>{webName}</Link></div>}
+        {screenSize.isMobile && <div className="centerChildren" style={{ marginBottom: '10px', ...style }}><Link to='/' className='header_logo'>{webName}</Link></div>}
         <ul className='horizontalUl headerRow1'>
-                    <li ><NotificationBell/></li>
-                    <li ><AccountDropdown/></li>
-                </ul>
-                </div>
+        <li ><LangSwitch /></li>
+            <li ><NotificationBell /></li>
+            <li ><AccountDropdown /></li>
+
+        </ul>
+    </div>
     )
 }
